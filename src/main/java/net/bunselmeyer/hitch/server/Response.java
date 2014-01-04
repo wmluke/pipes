@@ -1,6 +1,7 @@
 package net.bunselmeyer.hitch.server;
 
 import io.netty.handler.codec.http.Cookie;
+import net.bunselmeyer.hitch.app.Options;
 
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -16,6 +17,8 @@ public interface Response {
     String header(String name);
 
     Response cookie(String name, Cookie value);
+
+    Response cookie(String name, String value, Options<Cookie> cookieOptions);
 
     Cookie cookie(String name);
 

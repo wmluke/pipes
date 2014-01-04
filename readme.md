@@ -19,6 +19,10 @@ public class Main {
         });
 
         app.use((req, resp) -> {
+            resp.cookie("foo", "bar", (cookie) -> {
+                cookie.setPath("/");
+                cookie.setHttpOnly(true);
+            });
             resp.send(200, "<h1>hello world!</h1>");
         });
 

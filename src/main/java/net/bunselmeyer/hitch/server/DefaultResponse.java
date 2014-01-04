@@ -2,6 +2,7 @@ package net.bunselmeyer.hitch.server;
 
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultCookie;
+import net.bunselmeyer.hitch.app.Options;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -52,6 +53,14 @@ public class DefaultResponse implements Response {
     @Override
     public Response cookie(String name, Cookie value) {
         cookies.put(name, value);
+        return this;
+    }
+
+    @Override
+    public Response cookie(String name, String value, Options<Cookie> cookieOptions) {
+        Cookie cookie = new DefaultCookie(name, value);
+        cookieOptions.build(cookie);
+        cookies.put(name, cookie);
         return this;
     }
 
