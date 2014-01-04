@@ -1,5 +1,7 @@
 # Hitch
 
+> Middleware for Java 1.8
+
 A naive port of [Connect](http://www.senchalabs.org/connect) to Java 1.8 to try out Java's fancy new Lambda support!  Under the hood, Hitch uses [netty](http://netty.io).
 
 ## Example
