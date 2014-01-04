@@ -16,7 +16,6 @@ public class Main {
         app.use((req, resp) -> {
             resp.charset("UTF-8");
             resp.type("text/html");
-
         });
 
         app.use((req, resp) -> {
