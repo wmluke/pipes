@@ -34,11 +34,17 @@ public interface Request {
 
     Map<String, List<String>> queryParams();
 
-    List<String> queryParam(String name);
+    List<String> queryParams(String name);
 
-    String queryFirstParam(String name);
+    String queryParam(String name);
 
     <B> B bodyAsJson(Class<B> type) throws IOException;
 
     String bodyAsText() throws IOException;
+
+    Map<String, List<String>> bodyPostParameters();
+
+    List<String> bodyPostParameters(String name);
+
+    String bodyPostParameter(String name);
 }

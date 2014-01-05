@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultResponse implements Response {
+public class SimpleResponse implements Response {
 
 
     private final Map<String, String> headers = new HashMap<>();
@@ -19,7 +19,7 @@ public class DefaultResponse implements Response {
     private String type = "text/html";
     private String body; // TODO: change body type to stream or byte array
 
-    public DefaultResponse() {
+    public SimpleResponse() {
     }
 
     @Override

@@ -1,30 +1,28 @@
 package net.bunselmeyer.hitch.jetty;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimaps;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.CookieDecoder;
 import io.netty.handler.codec.http.HttpHeaders;
-import net.bunselmeyer.hitch.app.Request;
+import net.bunselmeyer.hitch.app.AbstractRequest;
 import net.bunselmeyer.hitch.json.JsonUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class HttpServletWrapperRequest implements Request {
+public class HttpServletWrapperRequest extends AbstractRequest {
 
     private final HttpServletRequest httpRequest;
-    private final Map<String, Cookie> cookies;
-    private final Map<String, String> headers;
 
     public HttpServletWrapperRequest(HttpServletRequest httpRequest) {
+        super(httpRequest.getRequestURI());
         this.httpRequest = httpRequest;
-        this.headers = buildHeaders(httpRequest);
-        this.cookies = buildCookies(httpRequest);
+        this.cookies.putAll(buildCookies(httpRequest));
+        this.headers.putAll(buildHeaders(httpRequest));
     }
 
     @Override
@@ -55,60 +53,6 @@ public class HttpServletWrapperRequest implements Request {
     @Override
     public String method() {
         return httpRequest.getMethod();
-    }
-
-    @Override
-    public Map<String, String> headers() {
-        return headers;
-    }
-
-    @Override
-    public String header(String name) {
-        return headers.get(name);
-    }
-
-    @Override
-    public Map<String, Cookie> cookies() {
-        return cookies;
-    }
-
-    @Override
-    public Cookie cookie(String name) {
-        return cookies.get(name);
-    }
-
-    @Override
-    public Map<String, String> routeParams() {
-        return null;
-    }
-
-    @Override
-    public String routeParam(String name) {
-        return null;
-    }
-
-    @Override
-    public Map<String, List<String>> queryParams() {
-        ListMultimap<String, String> params = ArrayListMultimap.create();
-        Enumeration<String> names = httpRequest.getParameterNames();
-        while (names.hasMoreElements()) {
-            String name = names.nextElement();
-            for (String value : httpRequest.getParameterValues(name)) {
-                params.put(name, value);
-            }
-        }
-        return Multimaps.asMap(params);
-    }
-
-    @Override
-    public List<String> queryParam(String name) {
-        return queryParams().get(name);
-    }
-
-    @Override
-    public String queryFirstParam(String name) {
-        Iterator<String> iterator = queryParam(name).iterator();
-        return iterator.hasNext() ? iterator.next() : null;
     }
 
     @Override

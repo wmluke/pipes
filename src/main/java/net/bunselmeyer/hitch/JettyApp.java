@@ -22,6 +22,12 @@ public class JettyApp {
         });
 
         app.use((req, resp) -> {
+            if (req.uri().startsWith("/restricted")) {
+                resp.send(401, "Restricted Area");
+            }
+        });
+
+        app.use((req, resp) -> {
             resp.cookie("foo", "bar", (cookie) -> {
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);

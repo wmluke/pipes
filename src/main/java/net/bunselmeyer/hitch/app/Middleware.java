@@ -3,11 +3,13 @@ package net.bunselmeyer.hitch.app;
 import io.netty.handler.codec.http.Cookie;
 import org.slf4j.Logger;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.Map;
 
 public interface Middleware {
 
-    void run(Request req, Response resp);
+    void run(Request req, Response resp) throws IOException, ServletException;
 
     public static Middleware requestLogger(Logger logger) {
         return (res, resp) -> {

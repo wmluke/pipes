@@ -2,6 +2,7 @@ package net.bunselmeyer.hitch.app;
 
 import io.netty.handler.codec.http.Cookie;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public interface Response {
 
     Response redirect(int status, String url);
 
-    Response redirect(String url);
+    Response redirect(String url) throws IOException;
 
     Response charset(String charset);
 
@@ -37,15 +38,15 @@ public interface Response {
 
     String type();
 
-    Response send(int status);
+    Response send(int status) throws IOException;
 
-    Response send(int status, String body);
+    Response send(int status, String body) throws IOException;
 
-    Response send(String body);
+    Response send(String body) throws IOException;
 
-    Response json(int status);
+    Response json(int status) throws IOException;
 
-    Response json(int status, String body);
+    Response json(int status, String body) throws IOException;
 
     Response json(String body);
 
@@ -54,4 +55,19 @@ public interface Response {
     Map<String, String> headers();
 
     Map<String, Cookie> cookies();
+
+
+    public static javax.servlet.http.Cookie servletCookie(Cookie nettyCookie) {
+        javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(nettyCookie.getName(), nettyCookie.getValue());
+        c.setHttpOnly(nettyCookie.isHttpOnly());
+        c.setComment(nettyCookie.getComment());
+        if (nettyCookie.getDomain() != null) {
+            c.setDomain(nettyCookie.getDomain());
+        }
+        c.setPath(nettyCookie.getPath());
+        c.setMaxAge((int) nettyCookie.getMaxAge());
+        c.setSecure(nettyCookie.isSecure());
+        c.setVersion(nettyCookie.getVersion());
+        return c;
+    }
 }

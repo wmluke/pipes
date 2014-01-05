@@ -6,9 +6,10 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
+import net.bunselmeyer.hitch.app.AbstractRequest;
 import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.app.DefaultResponse;
 import net.bunselmeyer.hitch.app.Middleware;
+import net.bunselmeyer.hitch.app.SimpleResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -51,9 +52,9 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
 
             boolean keepAlive = isKeepAlive(request);
 
-            NettyWrapperRequest req = new NettyWrapperRequest(request);
+            AbstractRequest req = new NettyWrapperRequest(request);
 
-            DefaultResponse res = new DefaultResponse();
+            SimpleResponse res = new SimpleResponse();
             res.charset("UTF-8");
 
 
@@ -62,9 +63,12 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
             }
 
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(
-                    HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(res.status()),
-                    Unpooled.copiedBuffer(res.body(), res.charset())
+                    HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(res.status())
             );
+
+
+            httpResponse.content().writeBytes(Unpooled.copiedBuffer(res.body(), res.charset()));
+
 
             for (Map.Entry<String, String> entry : res.headers().entrySet()) {
                 httpResponse.headers().set(entry.getKey(), entry.getValue());
