@@ -1,8 +1,7 @@
-package net.bunselmeyer.hitch.server;
+package net.bunselmeyer.hitch.app;
 
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultCookie;
-import net.bunselmeyer.hitch.app.Options;
 
 import java.nio.charset.Charset;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.server;
+package net.bunselmeyer.hitch.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -7,13 +7,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import net.bunselmeyer.hitch.app.App;
+import net.bunselmeyer.hitch.app.HttpServer;
 
 
-public class HttpServerImpl implements HttpServer {
+public class NettyHttpServer implements HttpServer {
 
     private final App app;
 
-    public HttpServerImpl(App app) {
+    public NettyHttpServer(App app) {
         this.app = app;
     }
 

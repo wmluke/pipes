@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.server;
+package net.bunselmeyer.hitch.netty;
 
 import com.google.common.base.Joiner;
 import io.netty.buffer.Unpooled;
@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import net.bunselmeyer.hitch.app.App;
+import net.bunselmeyer.hitch.app.DefaultResponse;
 import net.bunselmeyer.hitch.app.Middleware;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,8 +42,8 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, HttpMessage msg) throws Exception {
-        if (msg instanceof HttpRequest) {
-            HttpRequest request = (HttpRequest) msg;
+        if (msg instanceof DefaultFullHttpRequest) {
+            DefaultFullHttpRequest request = (DefaultFullHttpRequest) msg;
 
             if (is100ContinueExpected(request)) {
                 ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
@@ -50,7 +51,7 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
 
             boolean keepAlive = isKeepAlive(request);
 
-            DefaultRequest defaultRequest = new DefaultRequest();
+            NettyWrapperRequest defaultRequest = new NettyWrapperRequest(request);
 
             DefaultResponse response = new DefaultResponse();
             response.charset("UTF-8");

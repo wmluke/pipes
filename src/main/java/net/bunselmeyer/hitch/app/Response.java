@@ -1,7 +1,6 @@
-package net.bunselmeyer.hitch.server;
+package net.bunselmeyer.hitch.app;
 
 import io.netty.handler.codec.http.Cookie;
-import net.bunselmeyer.hitch.app.Options;
 
 import java.nio.charset.Charset;
 import java.util.Map;
