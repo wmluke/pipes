@@ -1,8 +1,9 @@
 package net.bunselmeyer.hitch.jetty;
 
 import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.app.Middleware;
 import net.bunselmeyer.hitch.app.Response;
+import net.bunselmeyer.hitch.servlet.HttpServletWrapperRequest;
+import net.bunselmeyer.hitch.servlet.HttpServletWrapperResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -26,11 +27,16 @@ public class MiddlewareHandler extends AbstractHandler {
         net.bunselmeyer.hitch.app.Request req = new HttpServletWrapperRequest(request);
         Response res = new HttpServletWrapperResponse(response);
 
-        for (Middleware middleware : app.middleware()) {
+        app.routes(req).forEach((route) -> {
             if (!response.isCommitted()) {
-                middleware.run(req, res);
+                try {
+                    route.middleware().run(req, res);
+                } catch (Exception e) {
+                    // yuk
+                    throw new RuntimeException(e);
+                }
             }
-        }
+        });
 
         baseRequest.setHandled(true);
     }

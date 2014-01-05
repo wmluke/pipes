@@ -96,7 +96,11 @@ public abstract class AbstractRequest implements Request {
 
     @Override
     public String bodyPostParameter(String name) {
-        Iterator<String> iterator = bodyPostParameters(name).iterator();
+        List<String> values = bodyPostParameters(name);
+        if (values == null) {
+            return null;
+        }
+        Iterator<String> iterator = values.iterator();
         return iterator.hasNext() ? iterator.next() : null;
     }
 }

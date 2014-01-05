@@ -1,6 +1,6 @@
 package net.bunselmeyer.hitch.app;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 public interface App {
 
@@ -16,7 +16,7 @@ public interface App {
 
     App delete(String uriPattern, Middleware middleware);
 
-    List<Middleware> middleware();
+    Stream<Route> routes(Request request);
 
     static App create() {
         return new AppImpl();

@@ -8,7 +8,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import net.bunselmeyer.hitch.app.AbstractRequest;
 import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.app.Middleware;
 import net.bunselmeyer.hitch.app.SimpleResponse;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,9 +57,14 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
             res.charset("UTF-8");
 
 
-            for (Middleware middleware : app.middleware()) {
-                middleware.run(req, res);
-            }
+            app.routes(req).forEach((route) -> {
+                try {
+                    route.middleware().run(req, res);
+                } catch (Exception e) {
+                    // yuk
+                    throw new RuntimeException(e);
+                }
+            });
 
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(
                     HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(res.status())
