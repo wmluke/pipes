@@ -51,33 +51,33 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
 
             boolean keepAlive = isKeepAlive(request);
 
-            NettyWrapperRequest defaultRequest = new NettyWrapperRequest(request);
+            NettyWrapperRequest req = new NettyWrapperRequest(request);
 
-            DefaultResponse response = new DefaultResponse();
-            response.charset("UTF-8");
+            DefaultResponse res = new DefaultResponse();
+            res.charset("UTF-8");
 
 
             for (Middleware middleware : app.middleware()) {
-                middleware.run(defaultRequest, response);
+                middleware.run(req, res);
             }
 
             FullHttpResponse httpResponse = new DefaultFullHttpResponse(
-                    HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.status()),
-                    Unpooled.copiedBuffer(response.body(), response.charset())
+                    HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(res.status()),
+                    Unpooled.copiedBuffer(res.body(), res.charset())
             );
 
-            for (Map.Entry<String, String> entry : response.headers().entrySet()) {
+            for (Map.Entry<String, String> entry : res.headers().entrySet()) {
                 httpResponse.headers().set(entry.getKey(), entry.getValue());
             }
 
-            for (Map.Entry<String, Cookie> entry : response.cookies().entrySet()) {
+            for (Map.Entry<String, Cookie> entry : res.cookies().entrySet()) {
                 httpResponse.headers().set(SET_COOKIE, ServerCookieEncoder.encode(entry.getValue()));
             }
 
             List<String> contentType = new ArrayList<>();
-            contentType.add(StringUtils.trimToNull(response.type()));
-            if (response.charset() != null) {
-                contentType.add("charset=" + response.charset().name());
+            contentType.add(StringUtils.trimToNull(res.type()));
+            if (res.charset() != null) {
+                contentType.add("charset=" + res.charset().name());
             }
             httpResponse.headers().set(CONTENT_TYPE, Joiner.on("; ").skipNulls().join(contentType));
             httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());

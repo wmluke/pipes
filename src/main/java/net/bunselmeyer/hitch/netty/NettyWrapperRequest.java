@@ -138,9 +138,9 @@ public class NettyWrapperRequest implements Request {
 //        return data;
 //    }
 
-    private Map<String, String> buildHeaders(HttpRequest httpRequest1) {
+    private Map<String, String> buildHeaders(HttpRequest httpRequest) {
         LinkedHashMap<String, String> headers = new LinkedHashMap<>();
-        for (Map.Entry<String, String> entry : httpRequest1.headers()) {
+        for (Map.Entry<String, String> entry : httpRequest.headers()) {
             headers.put(entry.getKey(), entry.getValue());
         }
         return headers;

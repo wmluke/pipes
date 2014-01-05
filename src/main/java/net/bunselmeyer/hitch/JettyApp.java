@@ -6,9 +6,9 @@ import net.bunselmeyer.hitch.app.Middleware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NettyApp {
+public class JettyApp {
 
-    private static final Logger logger = LoggerFactory.getLogger(NettyApp.class);
+    private static final Logger logger = LoggerFactory.getLogger(JettyApp.class);
 
     public static void main(String[] args) throws Exception {
 
@@ -29,7 +29,7 @@ public class NettyApp {
             resp.send(200, "<h1>hello world!</h1>");
         });
 
-        HttpServer.createNettyHttpServer(app).listen(8888);
+        HttpServer.createJettyServer(app).listen(8888);
 
     }
 }

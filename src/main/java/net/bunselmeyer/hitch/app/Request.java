@@ -40,5 +40,5 @@ public interface Request {
 
     <B> B bodyAsJson(Class<B> type) throws IOException;
 
-    String bodyAsText();
+    String bodyAsText() throws IOException;
 }
