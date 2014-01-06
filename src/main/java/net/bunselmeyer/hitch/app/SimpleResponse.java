@@ -100,27 +100,14 @@ public class SimpleResponse extends AbstractResponse {
     }
 
     @Override
-    public Response send(int status) {
-        this.status = status;
-        this.committed = true;
-        return this;
-    }
-
-    @Override
-    public Response send(int status, String body) {
-        this.status = status;
-        this.body = body;
-        return this;
-    }
-
-    @Override
     public Response send(String body) {
         this.body = body;
+        writeResponse();
         return this;
     }
 
     @Override
     protected void writeResponse() {
-        // noop
+        this.committed = true;
     }
 }

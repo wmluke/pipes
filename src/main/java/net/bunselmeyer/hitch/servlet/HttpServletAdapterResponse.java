@@ -8,11 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public class HttpServletWrapperResponse extends AbstractResponse {
+public class HttpServletAdapterResponse extends AbstractResponse {
 
     private final HttpServletResponse httpResponse;
 
-    public HttpServletWrapperResponse(HttpServletResponse httpResponse) {
+    public HttpServletAdapterResponse(HttpServletResponse httpResponse) {
         this.httpResponse = httpResponse;
     }
 
