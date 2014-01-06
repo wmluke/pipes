@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch;
 
+import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.app.HttpServer;
 import net.bunselmeyer.hitch.app.Middleware;
@@ -34,11 +35,18 @@ public class JettyApp {
             });
         });
 
-        app.get("/*", (req, res) -> {
+        app.get("/", (req, res) -> {
             res.send(200, "<h1>hello world!</h1>");
         });
 
-        app.post("/*", (req, res) -> {
+        app.get("/locations/{country}/{state}/{city}", (req, res) -> {
+            String country = req.routeParam("country");
+            String state = req.routeParam("state");
+            String city = req.routeParam("city");
+            res.send(200, "<h1>" + Joiner.on(", ").join(country, state, city) + "</h1>");
+        });
+
+        app.post("/", (req, res) -> {
             //String s = req.bodyPostParameter("aaa");
             String s = req.bodyAsText();
             res.send(200, "<h1>bye bye world!</h1>\n<p>" + s + "</p>");

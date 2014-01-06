@@ -12,6 +12,7 @@ public abstract class AbstractRequest implements Request {
     protected final QueryStringDecoder queryStringDecoder;
     protected final Map<String, Cookie> cookies = new LinkedHashMap<>();
     protected final Map<String, String> headers = new LinkedHashMap<>();
+    protected final Map<String, String> routeParams = new LinkedHashMap<>();
 
     public AbstractRequest(String uri) {
         this.queryStringDecoder = new QueryStringDecoder(uri);
@@ -70,12 +71,12 @@ public abstract class AbstractRequest implements Request {
 
     @Override
     public Map<String, String> routeParams() {
-        return null;
+        return routeParams;
     }
 
     @Override
     public String routeParam(String name) {
-        return null;
+        return routeParams.get(name);
     }
 
     @Override
