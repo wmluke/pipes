@@ -1,13 +1,15 @@
 package net.bunselmeyer.hitch.app;
 
+import org.glassfish.jersey.uri.PathTemplate;
+
 public class Route {
     private final String method;
-    private final String uriPattern;
+    private final PathTemplate uriPattern;
     private final Middleware middleware;
 
     public Route(String method, String uriPattern, Middleware middleware) {
         this.method = method;
-        this.uriPattern = uriPattern;
+        this.uriPattern = new PathTemplate(uriPattern);
         this.middleware = middleware;
     }
 
@@ -19,7 +21,7 @@ public class Route {
         return middleware;
     }
 
-    public String uriPattern() {
+    public PathTemplate uriPattern() {
         return uriPattern;
     }
 }

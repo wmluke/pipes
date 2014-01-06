@@ -2,7 +2,7 @@ package net.bunselmeyer.hitch.app;
 
 import io.netty.handler.codec.http.Cookie;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -38,9 +38,11 @@ public interface Request {
 
     String queryParam(String name);
 
-    <B> B bodyAsJson(Class<B> type) throws IOException;
+    InputStream bodyAsInputStream();
 
-    String bodyAsText() throws IOException;
+    String bodyAsText();
+
+    <B> B bodyAsJson(Class<B> type);
 
     Map<String, List<String>> bodyPostParameters();
 

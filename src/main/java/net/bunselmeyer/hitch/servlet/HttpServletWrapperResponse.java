@@ -1,21 +1,24 @@
 package net.bunselmeyer.hitch.servlet;
 
 import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.DefaultCookie;
-import net.bunselmeyer.hitch.app.Options;
+import net.bunselmeyer.hitch.app.AbstractResponse;
 import net.bunselmeyer.hitch.app.Response;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Map;
 
-public class HttpServletWrapperResponse implements Response {
+public class HttpServletWrapperResponse extends AbstractResponse {
 
     private final HttpServletResponse httpResponse;
 
     public HttpServletWrapperResponse(HttpServletResponse httpResponse) {
         this.httpResponse = httpResponse;
+    }
+
+    @Override
+    public boolean isCommitted() {
+        return httpResponse.isCommitted();
     }
 
     @Override
@@ -46,33 +49,13 @@ public class HttpServletWrapperResponse implements Response {
         return this;
     }
 
-
     @Override
-    public Response cookie(String name, String value, Options<Cookie> cookieOptions) {
-        Cookie cookie = new DefaultCookie(name, value);
-        cookieOptions.build(cookie);
-        httpResponse.addCookie(Response.servletCookie(cookie));
-        return this;
-    }
-
-    @Override
-    public Cookie cookie(String name) {
-        return null;
-    }
-
-    @Override
-    public Response clearCookie(String name) {
-        return null;
-    }
-
-    @Override
-    public Response redirect(int status, String url) {
-        return null;
-    }
-
-    @Override
-    public Response redirect(String url) throws IOException {
-        httpResponse.sendRedirect(url);
+    public Response redirect(String url) {
+        try {
+            httpResponse.sendRedirect(url);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return this;
     }
 
@@ -105,66 +88,22 @@ public class HttpServletWrapperResponse implements Response {
     }
 
     @Override
-    public Response send(int status) throws IOException {
-        status(status);
-        httpResponse.flushBuffer();
+    public Response send(String body) {
+        try {
+            httpResponse.getWriter().append(body);
+            writeResponse();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return this;
     }
 
     @Override
-    public Response send(int status, String body) throws IOException {
-        status(status);
-        httpResponse.getWriter().append(body);
-        httpResponse.flushBuffer();
-        return this;
-
-    }
-
-    @Override
-    public Response send(String body) throws IOException {
-        httpResponse.getWriter().append(body);
-        httpResponse.flushBuffer();
-        return this;
-
-    }
-
-    @Override
-    public Response json(int status) throws IOException {
-        type("application/json");
-        charset("UTF-8");
-        send(status);
-        return this;
-    }
-
-    @Override
-    public Response json(int status, String body) throws IOException {
-        type("application/json");
-        charset("UTF-8");
-        send(status, body);
-        return this;
-
-    }
-
-    @Override
-    public Response json(String body) {
-        type("application/json");
-        charset("UTF-8");
-        return this;
-
-    }
-
-    @Override
-    public String body() {
-        return null;
-    }
-
-    @Override
-    public Map<String, String> headers() {
-        return null;
-    }
-
-    @Override
-    public Map<String, Cookie> cookies() {
-        return null;
+    protected void writeResponse() {
+        try {
+            httpResponse.flushBuffer();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

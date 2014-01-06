@@ -1,14 +1,13 @@
 package net.bunselmeyer.hitch.app;
 
 import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.DefaultCookie;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimpleResponse implements Response {
+public class SimpleResponse extends AbstractResponse {
 
 
     private final Map<String, String> headers = new HashMap<>();
@@ -18,8 +17,14 @@ public class SimpleResponse implements Response {
     private Charset charset = Charset.forName("UTF-8");
     private String type = "text/html";
     private String body; // TODO: change body type to stream or byte array
+    private boolean committed;
 
     public SimpleResponse() {
+    }
+
+    @Override
+    public boolean isCommitted() {
+        return committed;
     }
 
     @Override
@@ -44,7 +49,6 @@ public class SimpleResponse implements Response {
         return null;
     }
 
-    @Override
     public Map<String, String> headers() {
         return Collections.unmodifiableMap(headers);
     }
@@ -55,44 +59,12 @@ public class SimpleResponse implements Response {
         return this;
     }
 
-    @Override
-    public Response cookie(String name, String value, Options<Cookie> cookieOptions) {
-        Cookie cookie = new DefaultCookie(name, value);
-        cookieOptions.build(cookie);
-        cookies.put(name, cookie);
-        return this;
-    }
-
-    @Override
     public Cookie cookie(String name) {
         return cookies.get(name);
     }
 
-    @Override
     public Map<String, Cookie> cookies() {
         return Collections.unmodifiableMap(cookies);
-    }
-
-    @Override
-    public Response clearCookie(String name) {
-        DefaultCookie cookie = new DefaultCookie(name, null);
-        cookie.setDiscard(true);
-        cookie.setMaxAge(-1);
-        cookies.put(name, cookie);
-        return this;
-    }
-
-    @Override
-    public Response redirect(int status, String url) {
-        this.status = status;
-        headers.put("Location", url);
-        return this;
-    }
-
-    @Override
-    public Response redirect(String url) {
-        redirect(302, url);
-        return this;
     }
 
     @Override
@@ -123,7 +95,6 @@ public class SimpleResponse implements Response {
         return type;
     }
 
-    @Override
     public String body() {
         return body;
     }
@@ -131,6 +102,7 @@ public class SimpleResponse implements Response {
     @Override
     public Response send(int status) {
         this.status = status;
+        this.committed = true;
         return this;
     }
 
@@ -148,24 +120,7 @@ public class SimpleResponse implements Response {
     }
 
     @Override
-    public Response json(int status) {
-        this.status = status;
-        this.type = "application/json";
-        return this;
-    }
-
-    @Override
-    public Response json(int status, String body) {
-        this.status = status;
-        this.type = "application/json";
-        this.body = body;
-        return this;
-    }
-
-    @Override
-    public Response json(String body) {
-        this.type = "application/json";
-        this.body = body;
-        return this;
+    protected void writeResponse() {
+        // noop
     }
 }

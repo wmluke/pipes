@@ -2,10 +2,15 @@ package net.bunselmeyer.hitch.app;
 
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import net.bunselmeyer.hitch.json.JsonUtil;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractRequest implements Request {
 
@@ -80,14 +85,26 @@ public abstract class AbstractRequest implements Request {
     }
 
     @Override
-    public Map<String, List<String>> bodyPostParameters() {
-        String postParams = null;
+    public <B> B bodyAsJson(Class<B> type) {
         try {
-            postParams = bodyAsText();
+            return JsonUtil.fromJson(bodyAsInputStream(), type);
         } catch (IOException e) {
-            return new HashMap<>();
+            throw new RuntimeException(e);
         }
-        return new QueryStringDecoder(postParams).parameters();
+    }
+
+    @Override
+    public String bodyAsText() {
+        try {
+            return IOUtils.toString(bodyAsInputStream(), "UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Map<String, List<String>> bodyPostParameters() {
+        return new QueryStringDecoder(bodyAsText()).parameters();
     }
 
     @Override

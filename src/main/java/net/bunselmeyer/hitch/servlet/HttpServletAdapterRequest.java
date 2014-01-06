@@ -4,21 +4,20 @@ import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.CookieDecoder;
 import io.netty.handler.codec.http.HttpHeaders;
 import net.bunselmeyer.hitch.app.AbstractRequest;
-import net.bunselmeyer.hitch.json.JsonUtil;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class HttpServletWrapperRequest extends AbstractRequest {
+public class HttpServletAdapterRequest extends AbstractRequest {
 
     private final HttpServletRequest httpRequest;
 
-    public HttpServletWrapperRequest(HttpServletRequest httpRequest) {
+    public HttpServletAdapterRequest(HttpServletRequest httpRequest) {
         super(httpRequest.getRequestURI());
         this.httpRequest = httpRequest;
         this.cookies.putAll(buildCookies(httpRequest));
@@ -56,13 +55,12 @@ public class HttpServletWrapperRequest extends AbstractRequest {
     }
 
     @Override
-    public <B> B bodyAsJson(Class<B> type) throws IOException {
-        return JsonUtil.fromJson(httpRequest.getInputStream(), type);
-    }
-
-    @Override
-    public String bodyAsText() throws IOException {
-        return IOUtils.toString(httpRequest.getInputStream());
+    public InputStream bodyAsInputStream() {
+        try {
+            return httpRequest.getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<String, String> buildHeaders(HttpServletRequest httpRequest) {

@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch.app;
 
+import java.io.IOException;
 import java.util.stream.Stream;
 
 public interface App {
@@ -17,6 +18,8 @@ public interface App {
     App delete(String uriPattern, Middleware middleware);
 
     Stream<Route> routes(Request request);
+
+    void dispatch(Request req, Response res) throws IOException;
 
     static App create() {
         return new AppImpl();

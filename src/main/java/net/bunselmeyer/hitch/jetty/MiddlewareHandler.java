@@ -2,7 +2,7 @@ package net.bunselmeyer.hitch.jetty;
 
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.app.Response;
-import net.bunselmeyer.hitch.servlet.HttpServletWrapperRequest;
+import net.bunselmeyer.hitch.servlet.HttpServletAdapterRequest;
 import net.bunselmeyer.hitch.servlet.HttpServletWrapperResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -22,21 +22,10 @@ public class MiddlewareHandler extends AbstractHandler {
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
-
-        net.bunselmeyer.hitch.app.Request req = new HttpServletWrapperRequest(request);
+        net.bunselmeyer.hitch.app.Request req = new HttpServletAdapterRequest(request);
         Response res = new HttpServletWrapperResponse(response);
 
-        app.routes(req).forEach((route) -> {
-            if (!response.isCommitted()) {
-                try {
-                    route.middleware().run(req, res);
-                } catch (Exception e) {
-                    // yuk
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+        app.dispatch(req, res);
 
         baseRequest.setHandled(true);
     }
