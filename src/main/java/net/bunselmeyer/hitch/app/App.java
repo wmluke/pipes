@@ -7,15 +7,19 @@ public interface App {
 
     App use(MiddlewareFactory middlewareFactory);
 
-    App use(Middleware middleware);
+    App use(Middleware.BasicMiddleware middleware);
 
-    App get(String uriPattern, Middleware middleware);
+    App use(Middleware.AdvancedMiddleware middleware);
 
-    App post(String uriPattern, Middleware middleware);
+    App use(Middleware.IntermediateMiddleware middleware);
 
-    App put(String uriPattern, Middleware middleware);
+    App get(String uriPattern, Middleware.BasicMiddleware middleware);
 
-    App delete(String uriPattern, Middleware middleware);
+    App post(String uriPattern, Middleware.BasicMiddleware middleware);
+
+    App put(String uriPattern, Middleware.BasicMiddleware middleware);
+
+    App delete(String uriPattern, Middleware.BasicMiddleware middleware);
 
     Stream<Route> routes(Request request);
 

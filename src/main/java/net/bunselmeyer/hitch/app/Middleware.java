@@ -5,11 +5,10 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 
+
 public interface Middleware {
 
-    void run(Request req, Response resp);
-
-    public static Middleware requestLogger(Logger logger) {
+    public static BasicMiddleware requestLogger(Logger logger) {
         return (res, resp) -> {
             logger.info("REQUEST: " + res.method() + " " + res.uri());
             logger.info("  HEADERS:");
@@ -21,6 +20,33 @@ public interface Middleware {
                 logger.info("    " + entry.getKey() + ": " + entry.getValue().toString());
             }
         };
+    }
+
+    @FunctionalInterface
+    public static interface BasicMiddleware extends Middleware {
+
+        void run(Request req, Response resp) throws Exception;
+
+    }
+
+    @FunctionalInterface
+    public static interface IntermediateMiddleware extends Middleware {
+
+        void run(Request req, Response resp, Next next) throws Exception;
+
+    }
+
+    @FunctionalInterface
+    public static interface AdvancedMiddleware extends Middleware {
+
+        void run(Exception e, Request req, Response resp, Next next) throws Exception;
+
+    }
+
+    @FunctionalInterface
+    public static interface Next {
+
+        void run(Exception e);
     }
 
 }

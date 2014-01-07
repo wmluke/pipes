@@ -9,7 +9,7 @@ public class Route {
 
     public Route(String method, String uriPattern, Middleware middleware) {
         this.method = method;
-        this.uriPattern = new PathTemplate(uriPattern);
+        this.uriPattern = uriPattern != null ? new PathTemplate(uriPattern) : null;
         this.middleware = middleware;
     }
 

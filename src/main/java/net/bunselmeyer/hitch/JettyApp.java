@@ -46,10 +46,22 @@ public class JettyApp {
             res.send(200, "<h1>" + Joiner.on(", ").join(country, state, city) + "</h1>");
         });
 
+        app.get("/error", (req, res) -> {
+            throw new RuntimeException("Fail!");
+        });
+
         app.post("/", (req, res) -> {
             //String s = req.bodyPostParameter("aaa");
             String s = req.bodyAsText();
             res.send(200, "<h1>bye bye world!</h1>\n<p>" + s + "</p>");
+        });
+
+        app.use((err, req, res, next) -> {
+            if (err != null) {
+                res.send(400, "Hanlded error: " + err.getMessage());
+                return;
+            }
+            next.run(null);
         });
 
         HttpServer.createJettyServer(app).listen(8888);

@@ -2,5 +2,5 @@ package net.bunselmeyer.hitch.app;
 
 public interface MiddlewareFactory {
 
-    Middleware build();
+    Middleware.BasicMiddleware build();
 }
