@@ -13,13 +13,14 @@ import java.util.function.Supplier;
 
 public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper jsonMapper;
+    private final ObjectMapper xmlMapper;
     private Object transformedBody;
 
-    protected AbstractHttpRequestBody(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    protected AbstractHttpRequestBody(ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
+        this.jsonMapper = jsonMapper;
+        this.xmlMapper = xmlMapper;
     }
-
 
     @Override
     public String asText() {
@@ -38,7 +39,7 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     @Override
     public JsonNode asJson() {
         try {
-            return objectMapper.readTree(asInputStream());
+            return jsonMapper.readTree(asInputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -47,7 +48,7 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     @Override
     public <B> B asJson(Class<B> type) {
         try {
-            return objectMapper.readValue(asInputStream(), type);
+            return jsonMapper.readValue(asInputStream(), type);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,7 +57,25 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     @Override
     public <B> B asJson(TypeReference type) {
         try {
-            return objectMapper.readValue(asInputStream(), type);
+            return jsonMapper.readValue(asInputStream(), type);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public <B> B asXml(Class<B> type) {
+        try {
+            return xmlMapper.readValue(asInputStream(), type);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public <B> B asXml(TypeReference type) {
+        try {
+            return xmlMapper.readValue(asInputStream(), type);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -66,6 +85,11 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     @Override
     public <B> B asTransformed() {
         return (B) transformedBody;
+    }
+
+    @Override
+    public <B> B asTransformed(Class<B> hint) {
+        return asTransformed();
     }
 
     @SuppressWarnings("unchecked")

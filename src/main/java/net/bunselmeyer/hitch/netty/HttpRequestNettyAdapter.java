@@ -17,10 +17,14 @@ import java.util.Map;
 public class HttpRequestNettyAdapter extends AbstractHttpRequest {
 
     private final DefaultFullHttpRequest httpRequest;
+    private final ObjectMapper jsonMapper;
+    private final ObjectMapper xmlMapper;
 
-    public HttpRequestNettyAdapter(DefaultFullHttpRequest httpRequest) {
+    public HttpRequestNettyAdapter(DefaultFullHttpRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
         super(httpRequest.getUri());
         this.httpRequest = httpRequest;
+        this.jsonMapper = jsonMapper;
+        this.xmlMapper = xmlMapper;
         this.cookies.putAll(buildCookies(httpRequest));
         this.headers.putAll(buildHeaders(httpRequest));
     }
@@ -47,7 +51,7 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
 
     @Override
     public Body body() {
-        return new Body(new ObjectMapper());
+        return new Body();
     }
 
     private Map<String, String> buildHeaders(HttpRequest httpRequest) {
@@ -64,8 +68,8 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
 
     protected class Body extends AbstractHttpRequestBody {
 
-        protected Body(ObjectMapper objectMapper) {
-            super(objectMapper);
+        protected Body() {
+            super(jsonMapper, xmlMapper);
         }
 
         @Override

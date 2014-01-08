@@ -59,7 +59,12 @@ public interface HttpRequest {
 
         <B> B asTransformed();
 
+        <B> B asTransformed(Class<B> hint);
+
         <B> void transform(Supplier<B> transformer);
 
+        <B> B asXml(Class<B> type);
+
+        <B> B asXml(TypeReference type);
     }
 }

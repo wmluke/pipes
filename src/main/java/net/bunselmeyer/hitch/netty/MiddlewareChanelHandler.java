@@ -41,7 +41,7 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
                 ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
             }
 
-            AbstractHttpRequest req = new HttpRequestNettyAdapter(request);
+            AbstractHttpRequest req = new HttpRequestNettyAdapter(request, app.configuration().jsonObjectMapper(), app.configuration().jsonObjectMapper());
             HttpResponseNettyAdapter res = new HttpResponseNettyAdapter(ctx, isKeepAlive(request));
 
             app.dispatch(req, res);

@@ -19,10 +19,14 @@ import java.util.Map;
 public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     private final HttpServletRequest httpRequest;
+    private final ObjectMapper jsonMapper;
+    private final ObjectMapper xmlMapper;
 
-    public HttpRequestServletAdapter(HttpServletRequest httpRequest) {
+    public HttpRequestServletAdapter(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
         super(httpRequest.getRequestURI());
         this.httpRequest = httpRequest;
+        this.jsonMapper = jsonMapper;
+        this.xmlMapper = xmlMapper;
         this.cookies.putAll(buildCookies(httpRequest));
         this.headers.putAll(buildHeaders(httpRequest));
     }
@@ -59,7 +63,7 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     @Override
     public HttpRequest.Body body() {
-        return new Body(new ObjectMapper());
+        return new Body();
     }
 
     private Map<String, String> buildHeaders(HttpServletRequest httpRequest) {
@@ -85,8 +89,8 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     protected class Body extends AbstractHttpRequestBody {
 
-        protected Body(ObjectMapper objectMapper) {
-            super(objectMapper);
+        protected Body() {
+            super(jsonMapper, xmlMapper);
         }
 
         @Override

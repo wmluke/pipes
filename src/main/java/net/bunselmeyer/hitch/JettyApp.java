@@ -1,9 +1,9 @@
 package net.bunselmeyer.hitch;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.http.HttpServer;
+import net.bunselmeyer.hitch.json.JsonUtil;
 import net.bunselmeyer.hitch.middleware.BodyTransformers;
 import net.bunselmeyer.hitch.middleware.Middleware;
 import org.slf4j.Logger;
@@ -16,6 +16,10 @@ public class JettyApp {
     public static void main(String[] args) throws Exception {
 
         App app = App.create();
+
+        app.configure((config) -> {
+            JsonUtil.configureJsonObjectMapper(config.jsonObjectMapper());
+        });
 
         app.use(Middleware.requestLogger(logger));
 
@@ -60,8 +64,6 @@ public class JettyApp {
         app.post("/foo", (req, res) -> {
             String foo = req.body().asJson(String.class);
         });
-
-        ObjectMapper objectMapper = new ObjectMapper();
 
         app.post("/abc", BodyTransformers.json(String.class));
         app.post("/abc", (req, res) -> {

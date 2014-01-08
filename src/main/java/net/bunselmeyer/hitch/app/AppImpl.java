@@ -12,13 +12,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class AppImpl implements App {
 
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
+    private final Configuration configuration = new AppConfiguration();
     private final List<Route> routes = new ArrayList<>();
+
+    @Override
+    public App configure(Consumer<Configuration> consumer) {
+        consumer.accept(configuration);
+        return this;
+    }
+
+    @Override
+    public Configuration configuration() {
+        return configuration;
+    }
 
     @Override
     public App use(MiddlewareFactory middlewareFactory) {
@@ -113,7 +126,7 @@ public class AppImpl implements App {
                     res.charset("UTF-8");
                     res.send("Internal server error");
                     logger.error(err.getMessage());
-                    //throw new RuntimeException(err);
+                    throw new RuntimeException(err);
 
                 } else {
                     res.send(404, "404 Not found");
