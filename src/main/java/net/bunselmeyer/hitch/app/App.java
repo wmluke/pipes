@@ -1,5 +1,10 @@
 package net.bunselmeyer.hitch.app;
 
+import net.bunselmeyer.hitch.http.Request;
+import net.bunselmeyer.hitch.http.Response;
+import net.bunselmeyer.hitch.middleware.Middleware;
+import net.bunselmeyer.hitch.middleware.MiddlewareFactory;
+
 import java.io.IOException;
 import java.util.stream.Stream;
 

@@ -1,8 +1,8 @@
 package net.bunselmeyer.hitch.servlet;
 
 import io.netty.handler.codec.http.Cookie;
-import net.bunselmeyer.hitch.app.AbstractResponse;
-import net.bunselmeyer.hitch.app.Response;
+import net.bunselmeyer.hitch.http.AbstractResponse;
+import net.bunselmeyer.hitch.http.Response;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

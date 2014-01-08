@@ -1,5 +1,6 @@
-package net.bunselmeyer.hitch.app;
+package net.bunselmeyer.hitch.http;
 
+import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.jetty.JettyHttpServer;
 import net.bunselmeyer.hitch.netty.NettyHttpServer;
 

@@ -1,7 +1,7 @@
 package net.bunselmeyer.hitch.jetty;
 
 import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.app.HttpServer;
+import net.bunselmeyer.hitch.http.HttpServer;
 import org.eclipse.jetty.server.Server;
 
 public class JettyHttpServer implements HttpServer {

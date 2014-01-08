@@ -7,7 +7,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.app.HttpServer;
+import net.bunselmeyer.hitch.http.HttpServer;
 
 
 public class NettyHttpServer implements HttpServer {

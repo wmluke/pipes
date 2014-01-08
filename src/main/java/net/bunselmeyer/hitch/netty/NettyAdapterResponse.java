@@ -5,8 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import net.bunselmeyer.hitch.app.AbstractResponse;
-import net.bunselmeyer.hitch.app.Response;
+import net.bunselmeyer.hitch.http.AbstractResponse;
+import net.bunselmeyer.hitch.http.Response;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.Charset;

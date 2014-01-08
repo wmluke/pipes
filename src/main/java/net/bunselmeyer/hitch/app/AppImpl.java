@@ -1,5 +1,9 @@
 package net.bunselmeyer.hitch.app;
 
+import net.bunselmeyer.hitch.http.Request;
+import net.bunselmeyer.hitch.http.Response;
+import net.bunselmeyer.hitch.middleware.Middleware;
+import net.bunselmeyer.hitch.middleware.MiddlewareFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

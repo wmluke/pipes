@@ -5,8 +5,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpMessage;
-import net.bunselmeyer.hitch.app.AbstractRequest;
 import net.bunselmeyer.hitch.app.App;
+import net.bunselmeyer.hitch.http.AbstractRequest;
 
 import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;

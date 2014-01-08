@@ -1,16 +1,18 @@
-package net.bunselmeyer.hitch.app;
+package net.bunselmeyer.hitch.http;
 
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultCookie;
+
+import java.util.function.Consumer;
 
 public abstract class AbstractResponse implements Response {
 
     protected abstract void writeResponse();
 
     @Override
-    public Response cookie(String name, String value, Options<Cookie> cookieOptions) {
+    public Response cookie(String name, String value, Consumer<Cookie> cookieOptions) {
         Cookie cookie = new DefaultCookie(name, value);
-        cookieOptions.build(cookie);
+        cookieOptions.accept(cookie);
         cookie(name, cookie);
         return this;
     }

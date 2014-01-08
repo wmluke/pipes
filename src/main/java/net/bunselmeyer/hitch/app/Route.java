@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch.app;
 
+import net.bunselmeyer.hitch.middleware.Middleware;
 import org.glassfish.jersey.uri.PathTemplate;
 
 public class Route {

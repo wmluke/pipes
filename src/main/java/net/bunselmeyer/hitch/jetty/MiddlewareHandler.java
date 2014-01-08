@@ -1,7 +1,7 @@
 package net.bunselmeyer.hitch.jetty;
 
 import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.app.Response;
+import net.bunselmeyer.hitch.http.Response;
 import net.bunselmeyer.hitch.servlet.HttpServletAdapterRequest;
 import net.bunselmeyer.hitch.servlet.HttpServletAdapterResponse;
 import org.eclipse.jetty.server.Request;
@@ -22,7 +22,7 @@ public class MiddlewareHandler extends AbstractHandler {
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        net.bunselmeyer.hitch.app.Request req = new HttpServletAdapterRequest(request);
+        net.bunselmeyer.hitch.http.Request req = new HttpServletAdapterRequest(request);
         Response res = new HttpServletAdapterResponse(response);
 
         app.dispatch(req, res);

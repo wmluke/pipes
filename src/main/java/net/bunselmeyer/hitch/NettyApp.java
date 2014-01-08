@@ -2,8 +2,8 @@ package net.bunselmeyer.hitch;
 
 import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.app.HttpServer;
-import net.bunselmeyer.hitch.app.Middleware;
+import net.bunselmeyer.hitch.http.HttpServer;
+import net.bunselmeyer.hitch.middleware.Middleware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class NettyApp {
 
         app.post("/", (req, res) -> {
             //String s = req.bodyPostParameter("aaa");
-            String s = req.bodyAsText();
+            String s = req.body().asText();
             res.send(200, "<h1>bye bye world!</h1>\n<p>" + s + "</p>");
         });
 

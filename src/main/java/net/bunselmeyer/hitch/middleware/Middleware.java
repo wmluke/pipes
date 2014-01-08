@@ -1,6 +1,8 @@
-package net.bunselmeyer.hitch.app;
+package net.bunselmeyer.hitch.middleware;
 
 import io.netty.handler.codec.http.Cookie;
+import net.bunselmeyer.hitch.http.Request;
+import net.bunselmeyer.hitch.http.Response;
 import org.slf4j.Logger;
 
 import java.util.Map;

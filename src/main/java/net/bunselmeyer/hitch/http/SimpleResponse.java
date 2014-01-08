@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.app;
+package net.bunselmeyer.hitch.http;
 
 import io.netty.handler.codec.http.Cookie;
 

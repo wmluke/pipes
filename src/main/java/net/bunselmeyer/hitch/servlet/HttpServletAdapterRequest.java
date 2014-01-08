@@ -1,9 +1,12 @@
 package net.bunselmeyer.hitch.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.CookieDecoder;
 import io.netty.handler.codec.http.HttpHeaders;
-import net.bunselmeyer.hitch.app.AbstractRequest;
+import net.bunselmeyer.hitch.http.AbstractHttpRequestBody;
+import net.bunselmeyer.hitch.http.AbstractRequest;
+import net.bunselmeyer.hitch.http.Request;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,12 +58,8 @@ public class HttpServletAdapterRequest extends AbstractRequest {
     }
 
     @Override
-    public InputStream bodyAsInputStream() {
-        try {
-            return httpRequest.getInputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Request.Body body() {
+        return new Body(new ObjectMapper());
     }
 
     private Map<String, String> buildHeaders(HttpServletRequest httpRequest) {
@@ -82,5 +81,21 @@ public class HttpServletAdapterRequest extends AbstractRequest {
             }
         }
         return cookies;
+    }
+
+    protected class Body extends AbstractHttpRequestBody {
+
+        protected Body(ObjectMapper objectMapper) {
+            super(objectMapper);
+        }
+
+        @Override
+        public InputStream asInputStream() {
+            try {
+                return httpRequest.getInputStream();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

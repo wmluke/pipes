@@ -1,10 +1,13 @@
-package net.bunselmeyer.hitch.app;
+package net.bunselmeyer.hitch.http;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.handler.codec.http.Cookie;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public interface Request {
 
@@ -38,15 +41,25 @@ public interface Request {
 
     String queryParam(String name);
 
-    InputStream bodyAsInputStream();
+    Body body();
 
-    String bodyAsText();
+    public static interface Body {
 
-    <B> B bodyAsJson(Class<B> type);
+        InputStream asInputStream();
 
-    Map<String, List<String>> bodyPostParameters();
+        String asText();
 
-    List<String> bodyPostParameters(String name);
+        Map<String, List<String>> asFormUrlEncoded();
 
-    String bodyPostParameter(String name);
+        JsonNode asJson();
+
+        <B> B asJson(Class<B> type);
+
+        <B> B asJson(TypeReference type);
+
+        <B> B asTransformed();
+
+        <B> void transform(Supplier<B> transformer);
+
+    }
 }

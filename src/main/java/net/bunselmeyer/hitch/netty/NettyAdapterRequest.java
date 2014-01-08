@@ -1,11 +1,13 @@
 package net.bunselmeyer.hitch.netty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
-import net.bunselmeyer.hitch.app.AbstractRequest;
+import net.bunselmeyer.hitch.http.AbstractHttpRequestBody;
+import net.bunselmeyer.hitch.http.AbstractRequest;
 import net.bunselmeyer.hitch.util.HttpUtil;
 
 import java.io.InputStream;
@@ -44,8 +46,8 @@ public class NettyAdapterRequest extends AbstractRequest {
     }
 
     @Override
-    public InputStream bodyAsInputStream() {
-        return new ByteBufInputStream(httpRequest.content());
+    public Body body() {
+        return new Body(new ObjectMapper());
     }
 
     private Map<String, String> buildHeaders(HttpRequest httpRequest) {
@@ -60,4 +62,15 @@ public class NettyAdapterRequest extends AbstractRequest {
         return HttpUtil.parseCookieHeader(httpRequest.headers().get(HttpHeaders.Names.COOKIE));
     }
 
+    protected class Body extends AbstractHttpRequestBody {
+
+        protected Body(ObjectMapper objectMapper) {
+            super(objectMapper);
+        }
+
+        @Override
+        public InputStream asInputStream() {
+            return new ByteBufInputStream(httpRequest.content());
+        }
+    }
 }
