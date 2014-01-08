@@ -15,7 +15,7 @@ public class NettyApp {
 
         App app = App.create();
 
-        app.use(Middleware.requestLogger(logger));
+        app.use(Middleware.requestLogger(logger, false));
 
         app.use((req, res) -> {
             res.charset("UTF-8");

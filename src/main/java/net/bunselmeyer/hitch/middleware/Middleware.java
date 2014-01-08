@@ -1,25 +1,26 @@
 package net.bunselmeyer.hitch.middleware;
 
-import io.netty.handler.codec.http.Cookie;
 import net.bunselmeyer.hitch.http.HttpRequest;
 import net.bunselmeyer.hitch.http.HttpResponse;
 import org.slf4j.Logger;
 
+import java.util.Date;
 import java.util.Map;
 
 
 public interface Middleware {
 
-    public static BasicMiddleware requestLogger(Logger logger) {
-        return (res, resp) -> {
-            logger.info("REQUEST: " + res.method() + " " + res.uri());
-            logger.info("  HEADERS:");
-            for (Map.Entry<String, String> entry : res.headers().entrySet()) {
-                logger.info("    " + entry.getKey() + ": " + entry.getValue());
-            }
-            logger.info("  COOKIES:");
-            for (Map.Entry<String, Cookie> entry : res.cookies().entrySet()) {
-                logger.info("    " + entry.getKey() + ": " + entry.getValue().toString());
+    public static IntermediateMiddleware requestLogger(Logger logger, boolean detailed) {
+        return (res, resp, next) -> {
+            Date start = new Date();
+            next.run(null);
+            long duration = new Date().getTime() - start.getTime();
+            logger.info(res.method() + " " + res.uri() + " " + resp.status() + " " + duration + "msec");
+            if (detailed) {
+                logger.info("  HEADERS:");
+                for (Map.Entry<String, String> entry : res.headers().entrySet()) {
+                    logger.info("    " + entry.getKey() + ": " + entry.getValue());
+                }
             }
         };
     }

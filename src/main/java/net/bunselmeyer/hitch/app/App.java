@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch.app;
 
+import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.hitch.http.HttpRequest;
 import net.bunselmeyer.hitch.http.HttpResponse;
@@ -45,5 +46,7 @@ public interface App {
         ObjectMapper jsonObjectMapper();
 
         ObjectMapper xmlObjectMapper();
+
+        LoggerContext loggerContext();
     }
 }

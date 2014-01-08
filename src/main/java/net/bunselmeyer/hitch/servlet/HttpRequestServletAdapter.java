@@ -1,6 +1,7 @@
 package net.bunselmeyer.hitch.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.CookieDecoder;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -53,7 +54,7 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     @Override
     public String uri() {
-        return httpRequest.getRequestURI();
+        return Joiner.on("?").skipNulls().join(httpRequest.getRequestURI(), httpRequest.getQueryString());
     }
 
     @Override
