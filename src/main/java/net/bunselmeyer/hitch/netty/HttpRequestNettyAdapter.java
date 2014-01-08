@@ -6,19 +6,19 @@ import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
+import net.bunselmeyer.hitch.http.AbstractHttpRequest;
 import net.bunselmeyer.hitch.http.AbstractHttpRequestBody;
-import net.bunselmeyer.hitch.http.AbstractRequest;
 import net.bunselmeyer.hitch.util.HttpUtil;
 
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class NettyAdapterRequest extends AbstractRequest {
+public class HttpRequestNettyAdapter extends AbstractHttpRequest {
 
     private final DefaultFullHttpRequest httpRequest;
 
-    public NettyAdapterRequest(DefaultFullHttpRequest httpRequest) {
+    public HttpRequestNettyAdapter(DefaultFullHttpRequest httpRequest) {
         super(httpRequest.getUri());
         this.httpRequest = httpRequest;
         this.cookies.putAll(buildCookies(httpRequest));

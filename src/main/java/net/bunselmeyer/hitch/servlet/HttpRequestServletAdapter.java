@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.CookieDecoder;
 import io.netty.handler.codec.http.HttpHeaders;
+import net.bunselmeyer.hitch.http.AbstractHttpRequest;
 import net.bunselmeyer.hitch.http.AbstractHttpRequestBody;
-import net.bunselmeyer.hitch.http.AbstractRequest;
-import net.bunselmeyer.hitch.http.Request;
+import net.bunselmeyer.hitch.http.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,11 +16,11 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class HttpServletAdapterRequest extends AbstractRequest {
+public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     private final HttpServletRequest httpRequest;
 
-    public HttpServletAdapterRequest(HttpServletRequest httpRequest) {
+    public HttpRequestServletAdapter(HttpServletRequest httpRequest) {
         super(httpRequest.getRequestURI());
         this.httpRequest = httpRequest;
         this.cookies.putAll(buildCookies(httpRequest));
@@ -58,7 +58,7 @@ public class HttpServletAdapterRequest extends AbstractRequest {
     }
 
     @Override
-    public Request.Body body() {
+    public HttpRequest.Body body() {
         return new Body(new ObjectMapper());
     }
 

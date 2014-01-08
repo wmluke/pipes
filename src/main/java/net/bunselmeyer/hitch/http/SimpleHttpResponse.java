@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimpleResponse extends AbstractResponse {
+public class SimpleHttpResponse extends AbstractHttpResponse {
 
 
     private final Map<String, String> headers = new HashMap<>();
@@ -19,7 +19,7 @@ public class SimpleResponse extends AbstractResponse {
     private String body; // TODO: change body type to stream or byte array
     private boolean committed;
 
-    public SimpleResponse() {
+    public SimpleHttpResponse() {
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SimpleResponse extends AbstractResponse {
     }
 
     @Override
-    public Response status(int status) {
+    public HttpResponse status(int status) {
         this.status = status;
         return this;
     }
@@ -39,7 +39,7 @@ public class SimpleResponse extends AbstractResponse {
     }
 
     @Override
-    public Response header(String name, String value) {
+    public HttpResponse header(String name, String value) {
         headers.put(name, value);
         return this;
     }
@@ -54,7 +54,7 @@ public class SimpleResponse extends AbstractResponse {
     }
 
     @Override
-    public Response cookie(String name, Cookie value) {
+    public HttpResponse cookie(String name, Cookie value) {
         cookies.put(name, value);
         return this;
     }
@@ -68,13 +68,13 @@ public class SimpleResponse extends AbstractResponse {
     }
 
     @Override
-    public Response charset(String charset) {
+    public HttpResponse charset(String charset) {
         this.charset = Charset.forName(charset);
         return this;
     }
 
     @Override
-    public Response charset(Charset charset) {
+    public HttpResponse charset(Charset charset) {
         this.charset = charset;
         return this;
     }
@@ -85,7 +85,7 @@ public class SimpleResponse extends AbstractResponse {
     }
 
     @Override
-    public Response type(String type) {
+    public HttpResponse type(String type) {
         this.type = type;
         return this;
     }
@@ -100,7 +100,7 @@ public class SimpleResponse extends AbstractResponse {
     }
 
     @Override
-    public Response send(String body) {
+    public HttpResponse send(String body) {
         this.body = body;
         writeResponse();
         return this;

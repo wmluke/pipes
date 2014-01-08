@@ -1,8 +1,8 @@
 package net.bunselmeyer.hitch.middleware;
 
 import io.netty.handler.codec.http.Cookie;
-import net.bunselmeyer.hitch.http.Request;
-import net.bunselmeyer.hitch.http.Response;
+import net.bunselmeyer.hitch.http.HttpRequest;
+import net.bunselmeyer.hitch.http.HttpResponse;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -27,21 +27,21 @@ public interface Middleware {
     @FunctionalInterface
     public static interface BasicMiddleware extends Middleware {
 
-        void run(Request req, Response resp) throws Exception;
+        void run(HttpRequest req, HttpResponse resp) throws Exception;
 
     }
 
     @FunctionalInterface
     public static interface IntermediateMiddleware extends Middleware {
 
-        void run(Request req, Response resp, Next next) throws Exception;
+        void run(HttpRequest req, HttpResponse resp, Next next) throws Exception;
 
     }
 
     @FunctionalInterface
     public static interface AdvancedMiddleware extends Middleware {
 
-        void run(Exception e, Request req, Response resp, Next next) throws Exception;
+        void run(Exception e, HttpRequest req, HttpResponse resp, Next next) throws Exception;
 
     }
 

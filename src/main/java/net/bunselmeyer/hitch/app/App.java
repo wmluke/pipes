@@ -1,7 +1,7 @@
 package net.bunselmeyer.hitch.app;
 
-import net.bunselmeyer.hitch.http.Request;
-import net.bunselmeyer.hitch.http.Response;
+import net.bunselmeyer.hitch.http.HttpRequest;
+import net.bunselmeyer.hitch.http.HttpResponse;
 import net.bunselmeyer.hitch.middleware.Middleware;
 import net.bunselmeyer.hitch.middleware.MiddlewareFactory;
 
@@ -26,9 +26,9 @@ public interface App {
 
     App delete(String uriPattern, Middleware.BasicMiddleware middleware);
 
-    Stream<Route> routes(Request request);
+    Stream<Route> routes(HttpRequest request);
 
-    void dispatch(Request req, Response res) throws IOException;
+    void dispatch(HttpRequest req, HttpResponse res) throws IOException;
 
     static App create() {
         return new AppImpl();

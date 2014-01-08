@@ -1,18 +1,18 @@
 package net.bunselmeyer.hitch.servlet;
 
 import io.netty.handler.codec.http.Cookie;
-import net.bunselmeyer.hitch.http.AbstractResponse;
-import net.bunselmeyer.hitch.http.Response;
+import net.bunselmeyer.hitch.http.AbstractHttpResponse;
+import net.bunselmeyer.hitch.http.HttpResponse;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public class HttpServletAdapterResponse extends AbstractResponse {
+public class HttpResponseServletAdapter extends AbstractHttpResponse {
 
     private final HttpServletResponse httpResponse;
 
-    public HttpServletAdapterResponse(HttpServletResponse httpResponse) {
+    public HttpResponseServletAdapter(HttpServletResponse httpResponse) {
         this.httpResponse = httpResponse;
     }
 
@@ -22,7 +22,7 @@ public class HttpServletAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response status(int status) {
+    public HttpResponse status(int status) {
         httpResponse.setStatus(status);
         return this;
     }
@@ -33,7 +33,7 @@ public class HttpServletAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response header(String name, String value) {
+    public HttpResponse header(String name, String value) {
         httpResponse.setHeader(name, value);
         return this;
     }
@@ -44,13 +44,13 @@ public class HttpServletAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response cookie(String name, Cookie value) {
-        httpResponse.addCookie(Response.servletCookie(value));
+    public HttpResponse cookie(String name, Cookie value) {
+        httpResponse.addCookie(HttpResponse.servletCookie(value));
         return this;
     }
 
     @Override
-    public Response redirect(String url) {
+    public HttpResponse redirect(String url) {
         try {
             httpResponse.sendRedirect(url);
         } catch (IOException e) {
@@ -60,13 +60,13 @@ public class HttpServletAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response charset(String charset) {
+    public HttpResponse charset(String charset) {
         httpResponse.setCharacterEncoding(charset);
         return this;
     }
 
     @Override
-    public Response charset(Charset charset) {
+    public HttpResponse charset(Charset charset) {
         httpResponse.setCharacterEncoding(charset.name());
         return this;
     }
@@ -77,7 +77,7 @@ public class HttpServletAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response type(String type) {
+    public HttpResponse type(String type) {
         httpResponse.setContentType(type);
         return this;
     }
@@ -88,7 +88,7 @@ public class HttpServletAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response send(String body) {
+    public HttpResponse send(String body) {
         try {
             httpResponse.getWriter().append(body);
             writeResponse();

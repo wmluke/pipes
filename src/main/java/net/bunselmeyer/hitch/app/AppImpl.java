@@ -1,7 +1,7 @@
 package net.bunselmeyer.hitch.app;
 
-import net.bunselmeyer.hitch.http.Request;
-import net.bunselmeyer.hitch.http.Response;
+import net.bunselmeyer.hitch.http.HttpRequest;
+import net.bunselmeyer.hitch.http.HttpResponse;
 import net.bunselmeyer.hitch.middleware.Middleware;
 import net.bunselmeyer.hitch.middleware.MiddlewareFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +68,7 @@ public class AppImpl implements App {
     }
 
     @Override
-    public Stream<Route> routes(Request req) {
+    public Stream<Route> routes(HttpRequest req) {
         String method = req.method();
         return routes.stream().filter((r) -> {
             // match method
@@ -81,7 +81,7 @@ public class AppImpl implements App {
     }
 
     @Override
-    public void dispatch(Request req, Response res) throws IOException {
+    public void dispatch(HttpRequest req, HttpResponse res) throws IOException {
         final Iterator<Route> stack = routes(req).iterator();
         Next next = new Next(stack, req, res);
         next.run(null);
@@ -91,10 +91,10 @@ public class AppImpl implements App {
     private static class Next implements Middleware.Next {
 
         private final Iterator<Route> stack;
-        private final Request req;
-        private final Response res;
+        private final HttpRequest req;
+        private final HttpResponse res;
 
-        private Next(Iterator<Route> stack, Request req, Response res) {
+        private Next(Iterator<Route> stack, HttpRequest req, HttpResponse res) {
             this.stack = stack;
             this.req = req;
             this.res = res;
@@ -128,7 +128,7 @@ public class AppImpl implements App {
             runner(route.middleware(), err, req, res, this);
         }
 
-        private void runner(Middleware middleware, Exception err, Request req, Response res, Middleware.Next next) {
+        private void runner(Middleware middleware, Exception err, HttpRequest req, HttpResponse res, Middleware.Next next) {
             try {
                 if (err != null) {
                     if (middleware instanceof Middleware.AdvancedMiddleware) {

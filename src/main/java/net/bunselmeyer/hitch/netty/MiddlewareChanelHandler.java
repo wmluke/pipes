@@ -6,7 +6,7 @@ import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpMessage;
 import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.http.AbstractRequest;
+import net.bunselmeyer.hitch.http.AbstractHttpRequest;
 
 import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
@@ -41,8 +41,8 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
                 ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
             }
 
-            AbstractRequest req = new NettyAdapterRequest(request);
-            NettyAdapterResponse res = new NettyAdapterResponse(ctx, isKeepAlive(request));
+            AbstractHttpRequest req = new HttpRequestNettyAdapter(request);
+            HttpResponseNettyAdapter res = new HttpResponseNettyAdapter(ctx, isKeepAlive(request));
 
             app.dispatch(req, res);
 

@@ -9,14 +9,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractRequest implements Request {
+public abstract class AbstractHttpRequest implements HttpRequest {
 
     protected final QueryStringDecoder queryStringDecoder;
     protected final Map<String, Cookie> cookies = new LinkedHashMap<>();
     protected final Map<String, String> headers = new LinkedHashMap<>();
     protected final Map<String, String> routeParams = new LinkedHashMap<>();
 
-    public AbstractRequest(String uri) {
+    public AbstractHttpRequest(String uri) {
         this.queryStringDecoder = new QueryStringDecoder(uri);
     }
 

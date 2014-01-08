@@ -5,47 +5,47 @@ import io.netty.handler.codec.http.Cookie;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
 
-public interface Response {
+public interface HttpResponse {
 
     boolean isCommitted();
 
-    Response status(int status);
+    HttpResponse status(int status);
 
     Integer status();
 
-    Response header(String name, String value);
+    HttpResponse header(String name, String value);
 
     String header(String name);
 
-    Response cookie(String name, Cookie value);
+    HttpResponse cookie(String name, Cookie value);
 
-    Response cookie(String name, String value, Consumer<Cookie> cookieOptions);
+    HttpResponse cookie(String name, String value, Consumer<Cookie> cookieOptions);
 
-    Response clearCookie(String name);
+    HttpResponse clearCookie(String name);
 
-    Response redirect(String url);
+    HttpResponse redirect(String url);
 
-    Response charset(String charset);
+    HttpResponse charset(String charset);
 
-    Response charset(Charset charset);
+    HttpResponse charset(Charset charset);
 
     Charset charset();
 
-    Response type(String type);
+    HttpResponse type(String type);
 
     String type();
 
-    Response send(int status);
+    HttpResponse send(int status);
 
-    Response send(int status, String body);
+    HttpResponse send(int status, String body);
 
-    Response send(String body);
+    HttpResponse send(String body);
 
-    Response json(int status);
+    HttpResponse json(int status);
 
-    Response json(int status, String body);
+    HttpResponse json(int status, String body);
 
-    Response json(String body);
+    HttpResponse json(String body);
 
 
     public static javax.servlet.http.Cookie servletCookie(Cookie nettyCookie) {

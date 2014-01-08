@@ -5,8 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import net.bunselmeyer.hitch.http.AbstractResponse;
-import net.bunselmeyer.hitch.http.Response;
+import net.bunselmeyer.hitch.http.AbstractHttpResponse;
+import net.bunselmeyer.hitch.http.HttpResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.Charset;
@@ -15,7 +15,7 @@ import java.util.List;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
-public class NettyAdapterResponse extends AbstractResponse {
+public class HttpResponseNettyAdapter extends AbstractHttpResponse {
 
     private final ChannelHandlerContext ctx;
     private final DefaultFullHttpResponse httpResponse;
@@ -25,7 +25,7 @@ public class NettyAdapterResponse extends AbstractResponse {
     private boolean committed;
 
 
-    public NettyAdapterResponse(ChannelHandlerContext ctx, boolean keepAlive) {
+    public HttpResponseNettyAdapter(ChannelHandlerContext ctx, boolean keepAlive) {
         this.ctx = ctx;
         this.httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         this.keepAlive = keepAlive;
@@ -37,7 +37,7 @@ public class NettyAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response status(int status) {
+    public HttpResponse status(int status) {
         httpResponse.setStatus(HttpResponseStatus.valueOf(status));
         return this;
     }
@@ -48,7 +48,7 @@ public class NettyAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response header(String name, String value) {
+    public HttpResponse header(String name, String value) {
         httpResponse.headers().set(name, value);
         return this;
     }
@@ -59,19 +59,19 @@ public class NettyAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response cookie(String name, Cookie value) {
+    public HttpResponse cookie(String name, Cookie value) {
         header(SET_COOKIE.toString(), ServerCookieEncoder.encode(value));
         return this;
     }
 
     @Override
-    public Response charset(String charset) {
+    public HttpResponse charset(String charset) {
         this.charset = Charset.forName(charset);
         return this;
     }
 
     @Override
-    public Response charset(Charset charset) {
+    public HttpResponse charset(Charset charset) {
         this.charset = charset;
         return this;
     }
@@ -82,7 +82,7 @@ public class NettyAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response type(String type) {
+    public HttpResponse type(String type) {
         this.type = type;
         return this;
     }
@@ -93,7 +93,7 @@ public class NettyAdapterResponse extends AbstractResponse {
     }
 
     @Override
-    public Response send(String body) {
+    public net.bunselmeyer.hitch.http.HttpResponse send(String body) {
         httpResponse.content().writeBytes(Unpooled.copiedBuffer(body, charset()));
         writeResponse();
         return this;

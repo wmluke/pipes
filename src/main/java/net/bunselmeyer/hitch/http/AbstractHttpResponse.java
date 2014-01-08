@@ -5,12 +5,12 @@ import io.netty.handler.codec.http.DefaultCookie;
 
 import java.util.function.Consumer;
 
-public abstract class AbstractResponse implements Response {
+public abstract class AbstractHttpResponse implements HttpResponse {
 
     protected abstract void writeResponse();
 
     @Override
-    public Response cookie(String name, String value, Consumer<Cookie> cookieOptions) {
+    public HttpResponse cookie(String name, String value, Consumer<Cookie> cookieOptions) {
         Cookie cookie = new DefaultCookie(name, value);
         cookieOptions.accept(cookie);
         cookie(name, cookie);
@@ -18,7 +18,7 @@ public abstract class AbstractResponse implements Response {
     }
 
     @Override
-    public Response clearCookie(String name) {
+    public HttpResponse clearCookie(String name) {
         DefaultCookie cookie = new DefaultCookie(name, null);
         cookie.setDiscard(true);
         cookie.setMaxAge(-1);
@@ -27,14 +27,14 @@ public abstract class AbstractResponse implements Response {
     }
 
     @Override
-    public Response redirect(String url) {
+    public HttpResponse redirect(String url) {
         status(302);
         header("Location", url);
         return this;
     }
 
     @Override
-    public Response json(int status) {
+    public HttpResponse json(int status) {
         type("application/json");
         charset("UTF-8");
         send(status);
@@ -42,7 +42,7 @@ public abstract class AbstractResponse implements Response {
     }
 
     @Override
-    public Response json(int status, String body) {
+    public HttpResponse json(int status, String body) {
         type("application/json");
         charset("UTF-8");
         send(status, body);
@@ -51,7 +51,7 @@ public abstract class AbstractResponse implements Response {
     }
 
     @Override
-    public Response json(String body) {
+    public HttpResponse json(String body) {
         type("application/json");
         charset("UTF-8");
         return this;
@@ -59,14 +59,14 @@ public abstract class AbstractResponse implements Response {
     }
 
     @Override
-    public Response send(int status) {
+    public HttpResponse send(int status) {
         status(status);
         writeResponse();
         return this;
     }
 
     @Override
-    public Response send(int status, String body) {
+    public HttpResponse send(int status, String body) {
         status(status);
         send(body);
         return this;
