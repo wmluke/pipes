@@ -15,7 +15,7 @@ public interface Middleware {
             Date start = new Date();
             next.run(null);
             long duration = new Date().getTime() - start.getTime();
-            logger.info(res.method() + " " + res.uri() + " " + resp.status() + " " + duration + "msec");
+            logger.info(res.method() + " " + res.uri() + "?" + res.query() + " " + resp.status() + " " + duration + "msec");
             if (detailed) {
                 logger.info("  HEADERS:");
                 for (Map.Entry<String, String> entry : res.headers().entrySet()) {

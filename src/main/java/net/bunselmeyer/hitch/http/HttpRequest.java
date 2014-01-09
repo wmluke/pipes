@@ -55,7 +55,7 @@ public interface HttpRequest {
 
         <B> B asJson(Class<B> type);
 
-        <B> B asJson(TypeReference type);
+        <B> B asJson(TypeReference<B> type);
 
         <B> B asTransformed();
 

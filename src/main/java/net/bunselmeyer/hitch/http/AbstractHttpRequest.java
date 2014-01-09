@@ -4,10 +4,7 @@ import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractHttpRequest implements HttpRequest {
 
@@ -16,8 +13,8 @@ public abstract class AbstractHttpRequest implements HttpRequest {
     protected final Map<String, String> headers = new LinkedHashMap<>();
     protected final Map<String, String> routeParams = new LinkedHashMap<>();
 
-    public AbstractHttpRequest(String uri) {
-        this.queryStringDecoder = new QueryStringDecoder(uri);
+    public AbstractHttpRequest(String queryString) {
+        this.queryStringDecoder = new QueryStringDecoder("?" + queryString);
     }
 
     @Override
@@ -42,7 +39,8 @@ public abstract class AbstractHttpRequest implements HttpRequest {
 
     @Override
     public List<String> queryParams(String name) {
-        return queryParams().get(name);
+        Map<String, List<String>> params = queryParams();
+        return params.containsKey(name) ? params.get(name) : Collections.emptyList();
     }
 
     @Override

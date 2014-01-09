@@ -1,7 +1,6 @@
 package net.bunselmeyer.hitch.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Joiner;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.CookieDecoder;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -20,16 +19,14 @@ import java.util.Map;
 public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     private final HttpServletRequest httpRequest;
-    private final ObjectMapper jsonMapper;
-    private final ObjectMapper xmlMapper;
+    private final HttpRequest.Body body;
 
     public HttpRequestServletAdapter(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
-        super(httpRequest.getRequestURI());
+        super(httpRequest.getQueryString());
         this.httpRequest = httpRequest;
-        this.jsonMapper = jsonMapper;
-        this.xmlMapper = xmlMapper;
-        this.cookies.putAll(buildCookies(httpRequest));
+        this.body = new Body(httpRequest, jsonMapper, xmlMapper);
         this.headers.putAll(buildHeaders(httpRequest));
+        this.cookies.putAll(buildCookies(httpRequest));
     }
 
     @Override
@@ -54,7 +51,7 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     @Override
     public String uri() {
-        return Joiner.on("?").skipNulls().join(httpRequest.getRequestURI(), httpRequest.getQueryString());
+        return httpRequest.getRequestURI();
     }
 
     @Override
@@ -64,7 +61,7 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     @Override
     public HttpRequest.Body body() {
-        return new Body();
+        return body;
     }
 
     private Map<String, String> buildHeaders(HttpServletRequest httpRequest) {
@@ -88,10 +85,13 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
         return cookies;
     }
 
-    protected class Body extends AbstractHttpRequestBody {
+    public static class Body extends AbstractHttpRequestBody {
 
-        protected Body() {
+        private final HttpServletRequest httpRequest;
+
+        protected Body(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
             super(jsonMapper, xmlMapper);
+            this.httpRequest = httpRequest;
         }
 
         @Override

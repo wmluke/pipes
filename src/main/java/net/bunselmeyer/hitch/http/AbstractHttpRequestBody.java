@@ -16,6 +16,7 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     private final ObjectMapper jsonMapper;
     private final ObjectMapper xmlMapper;
     private Object transformedBody;
+    private String bodyText;
 
     protected AbstractHttpRequestBody(ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
         this.jsonMapper = jsonMapper;
@@ -25,7 +26,10 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     @Override
     public String asText() {
         try {
-            return IOUtils.toString(asInputStream(), "UTF-8");
+            if (bodyText == null) {
+                bodyText = IOUtils.toString(asInputStream(), "UTF-8");
+            }
+            return bodyText;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -33,13 +37,13 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
 
     @Override
     public Map<String, List<String>> asFormUrlEncoded() {
-        return new QueryStringDecoder(asText()).parameters();
+        return new QueryStringDecoder("?" + asText()).parameters();
     }
 
     @Override
     public JsonNode asJson() {
         try {
-            return jsonMapper.readTree(asInputStream());
+            return jsonMapper.readTree(asText());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -48,16 +52,16 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     @Override
     public <B> B asJson(Class<B> type) {
         try {
-            return jsonMapper.readValue(asInputStream(), type);
+            return jsonMapper.readValue(asText(), type);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public <B> B asJson(TypeReference type) {
+    public <B> B asJson(TypeReference<B> type) {
         try {
-            return jsonMapper.readValue(asInputStream(), type);
+            return jsonMapper.readValue(asText(), type);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -66,7 +70,7 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     @Override
     public <B> B asXml(Class<B> type) {
         try {
-            return xmlMapper.readValue(asInputStream(), type);
+            return xmlMapper.readValue(asText(), type);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +79,7 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
     @Override
     public <B> B asXml(TypeReference type) {
         try {
-            return xmlMapper.readValue(asInputStream(), type);
+            return xmlMapper.readValue(asText(), type);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
