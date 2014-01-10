@@ -90,6 +90,9 @@ public class HttpResponseServletAdapter extends AbstractHttpResponse {
     @Override
     public HttpResponse send(String body) {
         try {
+            if (status() < 200) {
+                status(200);
+            }
             httpResponse.getWriter().append(body);
             writeResponse();
         } catch (IOException e) {

@@ -49,16 +49,19 @@ public interface HttpResponse {
 
 
     public static javax.servlet.http.Cookie servletCookie(Cookie nettyCookie) {
-        javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(nettyCookie.getName(), nettyCookie.getValue());
-        c.setHttpOnly(nettyCookie.isHttpOnly());
-        c.setComment(nettyCookie.getComment());
+        javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(nettyCookie.getName(), nettyCookie.getValue());
+        servletCookie.setHttpOnly(nettyCookie.isHttpOnly());
+        servletCookie.setComment(nettyCookie.getComment());
         if (nettyCookie.getDomain() != null) {
-            c.setDomain(nettyCookie.getDomain());
+            servletCookie.setDomain(nettyCookie.getDomain());
         }
-        c.setPath(nettyCookie.getPath());
-        c.setMaxAge((int) nettyCookie.getMaxAge());
-        c.setSecure(nettyCookie.isSecure());
-        c.setVersion(nettyCookie.getVersion());
-        return c;
+        servletCookie.setPath(nettyCookie.getPath());
+        servletCookie.setMaxAge((int) nettyCookie.getMaxAge());
+        if (nettyCookie.isDiscard()) {
+            servletCookie.setMaxAge(0);
+        }
+        servletCookie.setSecure(nettyCookie.isSecure());
+        servletCookie.setVersion(nettyCookie.getVersion());
+        return servletCookie;
     }
 }

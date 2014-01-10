@@ -19,9 +19,9 @@ public abstract class AbstractHttpResponse implements HttpResponse {
 
     @Override
     public HttpResponse clearCookie(String name) {
-        DefaultCookie cookie = new DefaultCookie(name, null);
+        DefaultCookie cookie = new DefaultCookie(name, "");
+        cookie.setMaxAge(0);
         cookie.setDiscard(true);
-        cookie.setMaxAge(-1);
         cookie(name, cookie);
         return this;
     }
@@ -54,6 +54,7 @@ public abstract class AbstractHttpResponse implements HttpResponse {
     public HttpResponse json(String body) {
         type("application/json");
         charset("UTF-8");
+        send(body);
         return this;
 
     }
