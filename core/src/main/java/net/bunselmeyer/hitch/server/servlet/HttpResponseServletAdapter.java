@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.servlet;
+package net.bunselmeyer.hitch.server.servlet;
 
 import io.netty.handler.codec.http.Cookie;
 import net.bunselmeyer.hitch.http.AbstractHttpResponse;
