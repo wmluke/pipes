@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.netty;
+package net.bunselmeyer.hitch.server.netty;
 
 import com.google.common.base.Joiner;
 import io.netty.buffer.Unpooled;

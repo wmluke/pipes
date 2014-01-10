@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.netty;
+package net.bunselmeyer.hitch.server.netty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBufInputStream;

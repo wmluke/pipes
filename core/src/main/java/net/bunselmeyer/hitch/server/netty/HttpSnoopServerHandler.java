@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.netty;
+package net.bunselmeyer.hitch.server.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
