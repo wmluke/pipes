@@ -10,9 +10,9 @@ import ch.qos.logback.core.status.StatusManager;
 import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.http.HttpServer;
-import net.bunselmeyer.hitch.json.JsonUtil;
 import net.bunselmeyer.hitch.middleware.BodyTransformers;
 import net.bunselmeyer.hitch.middleware.Middleware;
+import net.bunselmeyer.hitch.transport.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

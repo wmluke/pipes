@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.server.netty;
+package net.bunselmeyer.hitch.container.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

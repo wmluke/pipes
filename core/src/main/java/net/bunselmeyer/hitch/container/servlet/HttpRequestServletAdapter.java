@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.server.servlet;
+package net.bunselmeyer.hitch.container.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;

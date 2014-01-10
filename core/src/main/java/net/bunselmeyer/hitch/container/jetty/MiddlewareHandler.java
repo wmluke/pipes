@@ -1,10 +1,10 @@
-package net.bunselmeyer.hitch.server.jetty;
+package net.bunselmeyer.hitch.container.jetty;
 
 import net.bunselmeyer.hitch.app.App;
+import net.bunselmeyer.hitch.container.servlet.HttpRequestServletAdapter;
+import net.bunselmeyer.hitch.container.servlet.HttpResponseServletAdapter;
 import net.bunselmeyer.hitch.http.HttpRequest;
 import net.bunselmeyer.hitch.http.HttpResponse;
-import net.bunselmeyer.hitch.server.servlet.HttpRequestServletAdapter;
-import net.bunselmeyer.hitch.server.servlet.HttpResponseServletAdapter;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 

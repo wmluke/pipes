@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.json;
+package net.bunselmeyer.hitch.transport.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;

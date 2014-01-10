@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch.server.servlet;
+package net.bunselmeyer.hitch.container.servlet;
 
 import net.bunselmeyer.hitch.http.HttpResponse;
 import org.junit.Before;

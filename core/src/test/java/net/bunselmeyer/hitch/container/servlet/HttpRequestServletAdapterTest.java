@@ -1,9 +1,9 @@
-package net.bunselmeyer.hitch.server.servlet;
+package net.bunselmeyer.hitch.container.servlet;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import net.bunselmeyer.hitch.json.JsonUtil;
+import net.bunselmeyer.hitch.transport.json.JsonUtil;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
