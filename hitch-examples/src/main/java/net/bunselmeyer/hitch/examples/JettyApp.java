@@ -1,4 +1,4 @@
-package net.bunselmeyer.hitch;
+package net.bunselmeyer.hitch.examples;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;

@@ -12,7 +12,9 @@
     </parent>
 
     <artifactId>hitch-core</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
     <name>Hitch Core</name>
     <description>Core Hitch</description>
 
