@@ -118,7 +118,13 @@ public class JettyApp {
             next.run(null);
         });
 
-        HttpServer.createJettyServer(app).listen(8888);
+        int port = 8888;
+
+        if (args != null && args.length > 0) {
+            port = Integer.parseInt(args[0]);
+        }
+
+        HttpServer.createJettyServer(app).listen(port);
 
     }
 }
