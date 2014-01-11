@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch.container.netty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -25,7 +26,8 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
     private boolean committed;
 
 
-    public HttpResponseNettyAdapter(ChannelHandlerContext ctx, boolean keepAlive) {
+    public HttpResponseNettyAdapter(ChannelHandlerContext ctx, boolean keepAlive, ObjectMapper jsonObjectMapper) {
+        super(jsonObjectMapper);
         this.ctx = ctx;
         this.httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         this.keepAlive = keepAlive;

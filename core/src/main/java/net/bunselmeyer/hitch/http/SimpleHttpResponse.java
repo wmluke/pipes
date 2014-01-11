@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch.http;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
 
 import java.nio.charset.Charset;
@@ -19,7 +20,8 @@ public class SimpleHttpResponse extends AbstractHttpResponse {
     private String body; // TODO: change body type to stream or byte array
     private boolean committed;
 
-    public SimpleHttpResponse() {
+    public SimpleHttpResponse(ObjectMapper jsonObjectMapper) {
+        super(jsonObjectMapper);
     }
 
     @Override

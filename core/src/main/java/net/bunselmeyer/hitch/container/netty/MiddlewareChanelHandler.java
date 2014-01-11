@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch.container.netty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
@@ -41,8 +42,10 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
                 ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
             }
 
-            AbstractHttpRequest req = new HttpRequestNettyAdapter(request, app.configuration().jsonObjectMapper(), app.configuration().jsonObjectMapper());
-            HttpResponseNettyAdapter res = new HttpResponseNettyAdapter(ctx, isKeepAlive(request));
+            ObjectMapper jsonMapper = app.configuration().jsonObjectMapper();
+
+            AbstractHttpRequest req = new HttpRequestNettyAdapter(request, jsonMapper, app.configuration().xmlObjectMapper());
+            HttpResponseNettyAdapter res = new HttpResponseNettyAdapter(ctx, isKeepAlive(request), jsonMapper);
 
             app.dispatch(req, res);
 

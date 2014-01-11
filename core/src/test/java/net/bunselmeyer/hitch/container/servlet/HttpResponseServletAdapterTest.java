@@ -1,6 +1,8 @@
 package net.bunselmeyer.hitch.container.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.hitch.http.HttpResponse;
+import net.bunselmeyer.hitch.transport.json.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
@@ -20,7 +22,9 @@ public class HttpResponseServletAdapterTest {
     @Before
     public void setUp() throws Exception {
         servletResponse = mock(HttpServletResponse.class);
-        httpResponse = new HttpResponseServletAdapter(servletResponse);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonUtil.configureJsonObjectMapper(objectMapper);
+        httpResponse = new HttpResponseServletAdapter(servletResponse, objectMapper);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch.container.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
 import net.bunselmeyer.hitch.http.AbstractHttpResponse;
 import net.bunselmeyer.hitch.http.HttpResponse;
@@ -12,7 +13,8 @@ public class HttpResponseServletAdapter extends AbstractHttpResponse {
 
     private final HttpServletResponse httpResponse;
 
-    public HttpResponseServletAdapter(HttpServletResponse httpResponse) {
+    public HttpResponseServletAdapter(HttpServletResponse httpResponse, ObjectMapper jsonObjectMapper) {
+        super(jsonObjectMapper);
         this.httpResponse = httpResponse;
     }
 

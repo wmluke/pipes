@@ -1,5 +1,6 @@
 package net.bunselmeyer.hitch.container.jetty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.container.servlet.HttpRequestServletAdapter;
 import net.bunselmeyer.hitch.container.servlet.HttpResponseServletAdapter;
@@ -23,8 +24,10 @@ public class MiddlewareHandler extends AbstractHandler {
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        HttpRequest req = new HttpRequestServletAdapter(request, app.configuration().jsonObjectMapper(), app.configuration().xmlObjectMapper());
-        HttpResponse res = new HttpResponseServletAdapter(response);
+        ObjectMapper jsonMapper = app.configuration().jsonObjectMapper();
+
+        HttpRequest req = new HttpRequestServletAdapter(request, jsonMapper, app.configuration().xmlObjectMapper());
+        HttpResponse res = new HttpResponseServletAdapter(response, jsonMapper);
 
         app.dispatch(req, res);
 

@@ -7,6 +7,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.StatusManager;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.http.HttpServer;
@@ -97,22 +98,25 @@ public class JettyApp {
         });
 
         app.post("/", (req, res) -> {
-            String s = req.body().asText();
-            res.send(200, "<h1>bye bye world!</h1>\n<p>" + s + "</p>");
+            String aaa = req.body().asFormUrlEncoded().get("aaa").get(0);
+            String bbb = req.body().asFormUrlEncoded().get("bbb").get(0);
+            res.send(200, "<p>" + aaa + ", " + bbb + "</p>");
         });
 
         app.post("/foo", (req, res) -> {
-            String foo = req.body().asJson(String.class);
+            JsonNode jsonNode = req.body().asJson();
+            res.json(200, jsonNode.toString());
         });
 
-        app.post("/abc", BodyTransformers.json(String.class));
-        app.post("/abc", (req, res) -> {
-            String body = req.body().asTransformed();
+        app.post("/user", BodyTransformers.json(User.class));
+        app.post("/user", (req, res) -> {
+            User user = req.body().asTransformed();
+            res.send("<p>" + user.getFirstName() + " " + user.getLastName() + "</p>");
         });
 
         app.use((err, req, res, next) -> {
             if (err != null) {
-                res.send(400, "Hanlded error: " + err.getMessage());
+                res.send(400, "Handled error: " + err.getMessage());
                 return;
             }
             next.run(null);
@@ -126,5 +130,29 @@ public class JettyApp {
 
         HttpServer.createJettyServer(app).listen(port);
 
+    }
+
+    public static class User {
+
+        private String firstName;
+        private String lastName;
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public User setFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public User setLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
     }
 }

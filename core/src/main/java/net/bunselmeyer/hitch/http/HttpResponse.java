@@ -43,7 +43,7 @@ public interface HttpResponse {
 
     HttpResponse json(int status);
 
-    HttpResponse json(int status, String body);
+    HttpResponse json(int status, Object body);
 
     HttpResponse json(String body);
 

@@ -1,11 +1,19 @@
 package net.bunselmeyer.hitch.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultCookie;
 
 import java.util.function.Consumer;
 
 public abstract class AbstractHttpResponse implements HttpResponse {
+
+    private final ObjectMapper jsonObjectMapper;
+
+    protected AbstractHttpResponse(ObjectMapper jsonObjectMapper) {
+        this.jsonObjectMapper = jsonObjectMapper;
+    }
 
     protected abstract void writeResponse();
 
@@ -42,10 +50,20 @@ public abstract class AbstractHttpResponse implements HttpResponse {
     }
 
     @Override
-    public HttpResponse json(int status, String body) {
+    public HttpResponse json(int status, Object body) {
         type("application/json");
         charset("UTF-8");
-        send(status, body);
+
+        if (body instanceof String) {
+            send(status, (String) body);
+        } else {
+            try {
+                send(status, jsonObjectMapper.writeValueAsString(body));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return this;
 
     }
