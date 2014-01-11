@@ -1,5 +1,3 @@
-package net.bunselmeyer.hitch.examples;
-
 import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.http.HttpServer;

@@ -1,5 +1,3 @@
-package net.bunselmeyer.hitch.examples;
-
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.internal.mapper.ObjectMapperType;
 import org.hamcrest.Matchers;

@@ -1,17 +1,17 @@
 
 clean:
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home mvn clean
+	JAVA_HOME=$(JAVA8_HOME) mvn clean
 
 install:
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home mvn install
+	JAVA_HOME=$(JAVA8_HOME) mvn install
 
 test:
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home mvn test
+	JAVA_HOME=$(JAVA8_HOME) mvn test
 
 build:
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home mvn clean install -Dmaven.test.skip=true
+	JAVA_HOME=$(JAVA8_HOME) mvn clean install -Dmaven.test.skip=true
 
 sources:
-	JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home mvn dependency:sources
+	JAVA_HOME=$(JAVA8_HOME) mvn dependency:sources
 
 .PHONY: clean install test build sources

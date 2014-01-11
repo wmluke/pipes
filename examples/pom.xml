@@ -76,6 +76,22 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/java</sourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>src/public</directory>
+            </resource>
+        </resources>
+
+        <testSourceDirectory>test/java</testSourceDirectory>
+
+        <testResources>
+            <testResource>
+                <directory>test/resources</directory>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
