@@ -24,7 +24,7 @@
 
     <modules>
         <module>core</module>
-        <module>hitch-examples</module>
+        <module>examples</module>
     </modules>
     <dependencyManagement>
 
