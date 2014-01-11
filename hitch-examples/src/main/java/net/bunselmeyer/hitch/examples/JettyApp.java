@@ -24,34 +24,6 @@ public class JettyApp {
 
     private static final Logger logger = LoggerFactory.getLogger(JettyApp.class);
 
-
-    public static void configure(LoggerContext loggerContext) {
-        loggerContext.reset();
-
-        StatusManager sm = loggerContext.getStatusManager();
-        if (sm != null) {
-            sm.add(new InfoStatus("Setting up default Hitch configuration.", loggerContext));
-        }
-
-        ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<>();
-        ca.setContext(loggerContext);
-        ca.setWithJansi(true);
-        ca.setName("console");
-
-        PatternLayoutEncoder pl = new PatternLayoutEncoder();
-        pl.setCharset(Charset.forName("UTF-8"));
-        pl.setContext(loggerContext);
-        //pl.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
-        pl.setPattern("%msg%n");
-        pl.start();
-
-        ca.setEncoder(pl);
-        ca.start();
-        ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-        rootLogger.setLevel(Level.INFO);
-        rootLogger.addAppender(ca);
-    }
-
     public static void main(String[] args) throws Exception {
 
         App app = App.create();
@@ -130,6 +102,33 @@ public class JettyApp {
 
         HttpServer.createJettyServer(app).listen(port);
 
+    }
+
+    public static void configure(LoggerContext loggerContext) {
+        loggerContext.reset();
+
+        StatusManager sm = loggerContext.getStatusManager();
+        if (sm != null) {
+            sm.add(new InfoStatus("Setting up default Hitch configuration.", loggerContext));
+        }
+
+        ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<>();
+        ca.setContext(loggerContext);
+        ca.setWithJansi(true);
+        ca.setName("console");
+
+        PatternLayoutEncoder pl = new PatternLayoutEncoder();
+        pl.setCharset(Charset.forName("UTF-8"));
+        pl.setContext(loggerContext);
+        //pl.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
+        pl.setPattern("%msg%n");
+        pl.start();
+
+        ca.setEncoder(pl);
+        ca.start();
+        ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(ca);
     }
 
     public static class User {
