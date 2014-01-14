@@ -9,14 +9,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.http.HttpServer;
-import net.bunselmeyer.hitch.middleware.BodyTransformers;
-import net.bunselmeyer.hitch.middleware.Middleware;
 import net.bunselmeyer.hitch.transport.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 
+import static net.bunselmeyer.hitch.middleware.BodyTransformers.json;
+import static net.bunselmeyer.hitch.middleware.Middleware.logger;
 
 public class JettyApp {
 
@@ -32,7 +32,7 @@ public class JettyApp {
             configure(config.loggerContext());
         });
 
-        app.use(Middleware.requestLogger(logger, true));
+        app.use(logger(logger, (opts) -> opts.logHeaders = true));
 
         app.use((req, res) -> {
             res.charset("UTF-8");
@@ -78,7 +78,7 @@ public class JettyApp {
             res.json(200, jsonNode.toString());
         });
 
-        app.post("/user", BodyTransformers.json(User.class));
+        app.post("/user", json(User.class));
         app.post("/user", (req, res) -> {
             User user = req.body().asTransformed();
             res.send("<p>" + user.getFirstName() + " " + user.getLastName() + "</p>");

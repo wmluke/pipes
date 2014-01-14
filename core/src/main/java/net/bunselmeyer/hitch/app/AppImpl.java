@@ -34,8 +34,9 @@ public class AppImpl implements App {
     }
 
     @Override
-    public App use(MiddlewareFactory middlewareFactory) {
-        return use(middlewareFactory.build());
+    public <T extends Middleware> App use(MiddlewareFactory<T> middlewareFactory) {
+        routes.add(new Route(null, null, middlewareFactory.get()));
+        return this;
     }
 
     @Override

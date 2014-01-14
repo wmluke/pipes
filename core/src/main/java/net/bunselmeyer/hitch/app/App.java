@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public interface App {
 
-    App use(MiddlewareFactory middlewareFactory);
+    <T extends Middleware> App use(MiddlewareFactory<T> middlewareFactory);
 
     App use(Middleware.BasicMiddleware middleware);
 

@@ -1,9 +1,10 @@
 import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
 import net.bunselmeyer.hitch.http.HttpServer;
-import net.bunselmeyer.hitch.middleware.Middleware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static net.bunselmeyer.hitch.middleware.Middleware.logger;
 
 public class NettyApp {
 
@@ -13,7 +14,7 @@ public class NettyApp {
 
         App app = App.create();
 
-        app.use(Middleware.requestLogger(logger, false));
+        app.use(logger(logger, (opts) -> opts.logHeaders = true));
 
         app.use((req, res) -> {
             res.charset("UTF-8");

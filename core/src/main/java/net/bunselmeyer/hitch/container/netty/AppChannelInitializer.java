@@ -23,7 +23,6 @@ public class AppChannelInitializer extends ChannelInitializer<SocketChannel> {
         // Create a default pipeline implementation.
         ChannelPipeline p = ch.pipeline();
 
-
         // Uncomment the following line if you want HTTPS
         //SSLEngine engine = SecureChatSslContextFactory.getServerContext().createSSLEngine();
         //engine.setUseClientMode(false);
