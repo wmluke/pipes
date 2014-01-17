@@ -10,6 +10,7 @@ import net.bunselmeyer.hitch.http.AbstractHttpResponse;
 import net.bunselmeyer.hitch.http.HttpResponse;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +100,11 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
         httpResponse.content().writeBytes(Unpooled.copiedBuffer(body, charset()));
         writeResponse();
         return this;
+    }
+
+    @Override
+    public HttpServletResponse delegate() {
+        return null;
     }
 
     @Override

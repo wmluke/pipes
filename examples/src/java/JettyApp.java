@@ -7,16 +7,18 @@ import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.StatusManager;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Joiner;
-import net.bunselmeyer.hitch.app.App;
+import net.bunselmeyer.hitch.app.Evince;
 import net.bunselmeyer.hitch.http.HttpServer;
 import net.bunselmeyer.hitch.transport.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 
 import static net.bunselmeyer.hitch.middleware.BodyTransformers.json;
 import static net.bunselmeyer.hitch.middleware.Middleware.logger;
+import static net.bunselmeyer.hitch.middleware.StaticMiddleware.Evince.staticFiles;
 
 public class JettyApp {
 
@@ -24,7 +26,8 @@ public class JettyApp {
 
     public static void main(String[] args) throws Exception {
 
-        App app = App.create();
+
+        Evince app = Evince.create();
 
         app.configure((config) -> {
             JsonUtil.configureJsonObjectMapper(config.jsonObjectMapper());
@@ -38,6 +41,11 @@ public class JettyApp {
             res.charset("UTF-8");
             res.type("text/html");
         });
+
+        // todo: unsuck this...
+        app.get("/assets{a:.*}", staticFiles(Paths.get("/assets/"), "/assets/", (opts) -> {
+
+        }));
 
         app.use((req, res) -> {
             if (req.uri().startsWith("/restricted")) {

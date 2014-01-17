@@ -19,13 +19,30 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.compiler.version>1.8</java.compiler.version>
         <jackson.version>2.3.0-rc1</jackson.version>
-        <jettyVersion>9.1.0.v20131115</jettyVersion>
+        <jettyVersion>9.0.7.v20131107</jettyVersion>
+        <!--<jettyVersion>9.1.0.v20131115</jettyVersion>-->
     </properties>
 
     <modules>
         <module>core</module>
         <module>examples</module>
     </modules>
+
+    <repositories>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
     <dependencyManagement>
 
         <dependencies>
@@ -43,6 +60,13 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
                 <version>${jettyVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.codahale.dropwizard</groupId>
+                <artifactId>dropwizard-servlets</artifactId>
+                <version>0.7.0-SNAPSHOT</version>
+                <!--<version>0.6.2</version>-->
             </dependency>
 
             <!--Json-->

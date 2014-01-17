@@ -1,5 +1,8 @@
 import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.app.App;
+import net.bunselmeyer.hitch.app.Evince;
+import net.bunselmeyer.hitch.http.HttpRequest;
+import net.bunselmeyer.hitch.http.HttpResponse;
 import net.bunselmeyer.hitch.http.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +15,7 @@ public class NettyApp {
 
     public static void main(String[] args) throws Exception {
 
-        App app = App.create();
+        App<HttpRequest, HttpResponse> app = Evince.create();
 
         app.use(logger(logger, (opts) -> opts.logHeaders = true));
 

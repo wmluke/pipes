@@ -64,6 +64,11 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
         return body;
     }
 
+    @Override
+    public HttpServletRequest delegate() {
+        return httpRequest;
+    }
+
     private Map<String, String> buildHeaders(HttpServletRequest httpRequest) {
         LinkedHashMap<String, String> headers = new LinkedHashMap<>();
         Enumeration<String> headerNames = httpRequest.getHeaderNames();

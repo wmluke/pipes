@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.handler.codec.http.Cookie;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,8 @@ public interface HttpRequest {
     String queryParam(String name);
 
     Body body();
+
+    HttpServletRequest delegate();
 
     public static interface Body {
 

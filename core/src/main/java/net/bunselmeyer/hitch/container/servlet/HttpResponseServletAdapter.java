@@ -111,4 +111,9 @@ public class HttpResponseServletAdapter extends AbstractHttpResponse {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public HttpServletResponse delegate() {
+        return httpResponse;
+    }
 }

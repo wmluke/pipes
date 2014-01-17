@@ -19,23 +19,23 @@ public interface Middleware {
     }
 
     @FunctionalInterface
-    public static interface BasicMiddleware extends Middleware {
+    public static interface BasicMiddleware<Q, P> extends Middleware {
 
-        void run(HttpRequest req, HttpResponse resp) throws Exception;
-
-    }
-
-    @FunctionalInterface
-    public static interface IntermediateMiddleware extends Middleware {
-
-        void run(HttpRequest req, HttpResponse resp, Next next) throws Exception;
+        void run(Q req, P resp) throws Exception;
 
     }
 
     @FunctionalInterface
-    public static interface AdvancedMiddleware extends Middleware {
+    public static interface IntermediateMiddleware<Q, P> extends Middleware {
 
-        void run(Exception e, HttpRequest req, HttpResponse resp, Next next) throws Exception;
+        void run(Q req, P resp, Next next) throws Exception;
+
+    }
+
+    @FunctionalInterface
+    public static interface AdvancedMiddleware<Q, P> extends Middleware {
+
+        void run(Exception e, Q req, P resp, Next next) throws Exception;
 
     }
 
@@ -46,7 +46,7 @@ public interface Middleware {
 
     }
 
-    public static IntermediateMiddleware logger(Logger logger, Consumer<LoggerMiddleware.Options> block) {
+    public static IntermediateMiddleware<HttpRequest, HttpResponse> logger(Logger logger, Consumer<LoggerMiddleware.Options> block) {
         return LoggerMiddleware.logger(logger, block);
     }
 }

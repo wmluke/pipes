@@ -2,6 +2,7 @@ package net.bunselmeyer.hitch.http;
 
 import io.netty.handler.codec.http.Cookie;
 
+import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
 
@@ -46,6 +47,8 @@ public interface HttpResponse {
     HttpResponse json(int status, Object body);
 
     HttpResponse json(String body);
+
+    HttpServletResponse delegate();
 
 
     public static javax.servlet.http.Cookie servletCookie(Cookie nettyCookie) {

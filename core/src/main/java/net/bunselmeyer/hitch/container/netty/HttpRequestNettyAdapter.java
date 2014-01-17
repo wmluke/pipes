@@ -10,6 +10,7 @@ import net.bunselmeyer.hitch.http.AbstractHttpRequest;
 import net.bunselmeyer.hitch.http.AbstractHttpRequestBody;
 import net.bunselmeyer.hitch.util.HttpUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,6 +53,11 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
     @Override
     public Body body() {
         return new Body();
+    }
+
+    @Override
+    public HttpServletRequest delegate() {
+        return null;
     }
 
     private Map<String, String> buildHeaders(HttpRequest httpRequest) {

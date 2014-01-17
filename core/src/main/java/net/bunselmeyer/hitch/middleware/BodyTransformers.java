@@ -1,22 +1,24 @@
 package net.bunselmeyer.hitch.middleware;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import net.bunselmeyer.hitch.http.HttpRequest;
+import net.bunselmeyer.hitch.http.HttpResponse;
 
 public class BodyTransformers {
 
-    public static Middleware.BasicMiddleware json(Class type) {
+    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> json(Class type) {
         return (req, res) -> {
             req.body().transform(() -> req.body().asJson(type));
         };
     }
 
-    public static Middleware.BasicMiddleware json(TypeReference type) {
+    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> json(TypeReference type) {
         return (req, res) -> {
             req.body().transform(() -> req.body().asJson(type));
         };
     }
 
-    public static Middleware.BasicMiddleware formUrlEncoded() {
+    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> formUrlEncoded() {
         return (req, res) -> {
             req.body().transform(() -> req.body().asFormUrlEncoded());
         };

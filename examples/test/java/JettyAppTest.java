@@ -55,6 +55,19 @@ public class JettyAppTest {
                 .header("Content-type", is("text/html; charset=UTF-8"))
                 .cookie("foo", is("bar"))
                 .body(containsString("Handled error: Fail!"));
+
+        get("/assets").then().contentType(ContentType.HTML).assertThat()
+                .statusCode(200)
+                .header("Content-type", is("text/html; charset=UTF-8"))
+                .body(containsString("<h1>welcome</h1>"));
+
+        get("/assets/main.css").then().assertThat()
+                .statusCode(200)
+                .header("Content-type", is("text/css;charset=UTF-8"))
+                .body(containsString("body {\n" +
+                        "    background-color: cornflowerblue;\n" +
+                        "}"));
+
     }
 
     @Test

@@ -1,5 +1,7 @@
 package net.bunselmeyer.hitch.middleware;
 
+import net.bunselmeyer.hitch.http.HttpRequest;
+import net.bunselmeyer.hitch.http.HttpResponse;
 import org.slf4j.Logger;
 
 import java.util.Date;
@@ -8,7 +10,7 @@ import java.util.function.Consumer;
 
 public class LoggerMiddleware {
 
-    public static Middleware.IntermediateMiddleware logger(Logger logger, Consumer<Options> block) {
+    public static Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> logger(Logger logger, Consumer<Options> block) {
         Options options = new Options();
         block.accept(options);
         return (res, resp, next) -> {

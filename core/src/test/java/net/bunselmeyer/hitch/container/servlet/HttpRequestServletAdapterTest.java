@@ -8,7 +8,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -102,21 +101,6 @@ public class HttpRequestServletAdapterTest {
 
 
         when(servletRequest.getInputStream()).thenReturn(new ServletInputStream() {
-
-            @Override
-            public boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            public boolean isReady() {
-                return true;
-            }
-
-            @Override
-            public void setReadListener(ReadListener readListener) {
-
-            }
 
             @Override
             public int read() throws IOException {
