@@ -38,13 +38,13 @@ public class Main {
 
 The [example app](https://github.com/wmluke/hitch/blob/master/examples/src/java/JettyApp.java) illustrates some of Hitch's features.
 
-1. Install [Java 8](https://jdk8.java.net) and create a `JAVA8_HOME` environment variable referencing the JDK 8 home.
+1) Install [Java 8](https://jdk8.java.net) and create a `JAVA8_HOME` environment variable referencing the JDK 8 home.
 
 ```bash
 export JAVA8_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home
 ```
 
-2. Run `make install` then `make run` from the command line.
+2) Run `make install` then `make run` from the command line.
 
 ```bash
 $ make install  # build & test
