@@ -2,6 +2,8 @@
 
 > Middleware for Java 1.8
 
+[![Build Status](https://travis-ci.org/wmluke/hitch.png?branch=master)](https://travis-ci.org/wmluke/hitch)
+
 A naive port of [Connect](http://www.senchalabs.org/connect)/[Express](http://expressjs.com) to Java 1.8 to try out Java's fancy new Lambda support!
 
 Under the hood, Hitch uses [Jetty](http://www.eclipse.org/jetty) with brittle support for [Netty](http://netty.io).
