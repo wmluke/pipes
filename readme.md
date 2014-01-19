@@ -1,4 +1,4 @@
-# Hitch
+# Hitch/Evince
 
 > Middleware for Java 1.8
 
@@ -6,7 +6,7 @@
 
 A naive port of [Connect](http://www.senchalabs.org/connect)/[Express](http://expressjs.com) to Java 1.8 to try out Java's fancy new Lambda support!
 
-Under the hood, Hitch uses [Jetty](http://www.eclipse.org/jetty) with brittle support for [Netty](http://netty.io).
+Under the hood, Hitch & Evince use [Jetty](http://www.eclipse.org/jetty).
 
 ## Example
 
@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        App app = App.create();
+        Evince app = Evince.create();
 
         app.use((req, resp) -> {
             resp.charset("UTF-8");
@@ -30,7 +30,7 @@ public class Main {
             resp.send(200, "<h1>hello world!</h1>");
         });
 
-        HttpServer.createJettyHttpServer(app).listen(8888);
+        HttpServer.createJettyServer(app).listen(8888);
 
     }
 }
