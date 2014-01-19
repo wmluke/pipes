@@ -8,8 +8,6 @@ import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
 import net.bunselmeyer.hitch.http.HttpRequest;
 import net.bunselmeyer.hitch.http.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -26,9 +24,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * Thank you dropwizard for serving static assets!
  * Pulled from com.codahale.dropwizard.servlets.assets.AssetServlet
  */
-public class StaticMiddleware implements Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> {
-
-    private static final Logger logger = LoggerFactory.getLogger(StaticMiddleware.class);
+public class MountResourceMiddleware implements Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> {
 
     private static final CharMatcher SLASHES = CharMatcher.is('/');
     private static final MediaType DEFAULT_MEDIA_TYPE = MediaType.HTML_UTF_8;
@@ -40,7 +36,7 @@ public class StaticMiddleware implements Middleware.BasicMiddleware<HttpServletR
     private final boolean handleNotFound;
 
 
-    public StaticMiddleware(Options options) {
+    public MountResourceMiddleware(Options options) {
         final String trimmedPath = SLASHES.trimFrom(options.resourcePath);
         this.resourcePath = trimmedPath.isEmpty() ? trimmedPath : trimmedPath + '/';
         final String trimmedUri = SLASHES.trimTrailingFrom(options.uriPath);
@@ -97,8 +93,7 @@ public class StaticMiddleware implements Middleware.BasicMiddleware<HttpServletR
                 output.write(cachedAsset.getResource());
             }
         } catch (RuntimeException e) {
-            // ignored
-            logger.warn("!!!!! " + e.getMessage());
+            // ignored b/c we want to give the next middle a whack at the request
         }
     }
 
@@ -168,14 +163,14 @@ public class StaticMiddleware implements Middleware.BasicMiddleware<HttpServletR
             options.resourcePath = resourcePath;
             options.uriPath = uriPath;
             block.accept(options);
-            return new StaticMiddleware(options)::run;
+            return new MountResourceMiddleware(options)::run;
         }
 
         public static Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> mountResourceDir(String resourcePath, String uriPath) {
             Options options = new Options();
             options.resourcePath = resourcePath;
             options.uriPath = uriPath;
-            return new StaticMiddleware(options)::run;
+            return new MountResourceMiddleware(options)::run;
         }
 
     }

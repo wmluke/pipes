@@ -17,7 +17,7 @@ import java.nio.charset.Charset;
 
 import static net.bunselmeyer.hitch.middleware.BodyTransformers.json;
 import static net.bunselmeyer.hitch.middleware.Middleware.logger;
-import static net.bunselmeyer.hitch.middleware.StaticMiddleware.Evince.mountResourceDir;
+import static net.bunselmeyer.hitch.middleware.MountResourceMiddleware.Evince.mountResourceDir;
 
 public class JettyApp {
 
