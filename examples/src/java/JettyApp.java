@@ -43,7 +43,7 @@ public class JettyApp {
         });
 
         // todo: unsuck this...
-        app.get("/assets{a:.*}", staticFiles(Paths.get("/assets/"), "/assets/", (opts) -> {
+        app.get("/assets**", staticFiles(Paths.get("/assets/"), "/assets/", (opts) -> {
 
         }));
 

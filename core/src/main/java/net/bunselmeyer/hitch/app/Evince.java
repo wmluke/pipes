@@ -2,11 +2,9 @@ package net.bunselmeyer.hitch.app;
 
 import net.bunselmeyer.hitch.http.HttpRequest;
 import net.bunselmeyer.hitch.http.HttpResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -51,16 +49,7 @@ public class Evince extends AbstractApp<HttpRequest, HttpResponse> {
 
     @Override
     public Stream<Route> routes(HttpRequest req, String contextPath) {
-        String method = req.method();
-        return routes.stream().filter((r) -> {
-            // match method
-            if (StringUtils.stripToNull(r.method()) != null && !StringUtils.equalsIgnoreCase(r.method(), method)) {
-                return false;
-            }
-            // thank you jersey-common for the uri pattern matching!
-            String uri = Paths.get(contextPath, req.uri()).toString();
-            return r.uriPattern() == null || r.uriPattern().match(uri, req.routeParams());
-        });
+        return routes.stream().filter((r) -> r.matches(req.method(), req.uri(), req.routeParams(), contextPath));
     }
 
 }

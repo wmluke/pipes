@@ -28,31 +28,31 @@ public abstract class AbstractApp<Q, P> implements App<Q, P> {
 
     @Override
     public App<Q, P> use(App<Q, P> app) {
-        routes.add(new Route(null, null, (Middleware.BasicMiddleware<Q, P>) app::dispatch));
+        routes.add(new Route(null, "/**", (Middleware.BasicMiddleware<Q, P>) app::dispatch));
         return this;
     }
 
     @Override
     public <T extends Middleware> App<Q, P> use(MiddlewareFactory<T> middlewareFactory) {
-        routes.add(new Route(null, null, middlewareFactory.get()));
+        routes.add(new Route(null, "/**", middlewareFactory.get()));
         return this;
     }
 
     @Override
     public App<Q, P> use(Middleware.BasicMiddleware<Q, P> middleware) {
-        routes.add(new Route(null, null, middleware));
+        routes.add(new Route(null, "/**", middleware));
         return this;
     }
 
     @Override
     public App<Q, P> use(Middleware.IntermediateMiddleware<Q, P> middleware) {
-        routes.add(new Route(null, null, middleware));
+        routes.add(new Route(null, "/**", middleware));
         return this;
     }
 
     @Override
     public App<Q, P> use(Middleware.AdvancedMiddleware<Q, P> middleware) {
-        routes.add(new Route(null, null, middleware));
+        routes.add(new Route(null, "/**", middleware));
         return this;
     }
 

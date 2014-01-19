@@ -13,10 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpRequestServletAdapter extends AbstractHttpRequest {
+
+    public static final String PATH_PARAMS = "pathParams";
 
     private final HttpServletRequest httpRequest;
     private final HttpRequest.Body body;
@@ -67,6 +70,20 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
     @Override
     public HttpServletRequest delegate() {
         return httpRequest;
+    }
+
+    @Override
+    public String routeParam(String name) {
+        return routeParams().get(name);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<String, String> routeParams() {
+        if (httpRequest.getAttribute(PATH_PARAMS) == null) {
+            httpRequest.setAttribute(PATH_PARAMS, new HashMap<String, String>());
+        }
+        return (Map<String, String>) httpRequest.getAttribute(PATH_PARAMS);
     }
 
     private Map<String, String> buildHeaders(HttpServletRequest httpRequest) {

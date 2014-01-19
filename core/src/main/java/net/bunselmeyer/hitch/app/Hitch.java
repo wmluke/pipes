@@ -1,16 +1,17 @@
 package net.bunselmeyer.hitch.app;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Stream;
+
+import static net.bunselmeyer.hitch.container.servlet.HttpRequestServletAdapter.PATH_PARAMS;
 
 public class Hitch extends AbstractApp<HttpServletRequest, HttpServletResponse> {
 
@@ -56,17 +57,12 @@ public class Hitch extends AbstractApp<HttpServletRequest, HttpServletResponse> 
         };
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Stream<Route> routes(HttpServletRequest req, String contextPath) {
-        String method = req.getMethod();
-        return routes.stream().filter((r) -> {
-            // match method
-            if (StringUtils.stripToNull(r.method()) != null && !StringUtils.equalsIgnoreCase(r.method(), method)) {
-                return false;
-            }
-            // thank you jersey-common for the uri pattern matching!
-            String uri = Paths.get(contextPath, req.getRequestURI()).toString();
-            return r.uriPattern() == null || r.uriPattern().match(uri, new HashMap<>());
-        });
+        if (req.getAttribute(PATH_PARAMS) == null) {
+            req.setAttribute(PATH_PARAMS, new HashMap<String, String>());
+        }
+        return routes.stream().filter((r) -> r.matches(req.getMethod(), req.getRequestURI(), (Map<String, String>) req.getAttribute(PATH_PARAMS), contextPath));
     }
 }
