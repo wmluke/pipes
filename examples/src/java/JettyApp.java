@@ -14,11 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
-import java.nio.file.Paths;
 
 import static net.bunselmeyer.hitch.middleware.BodyTransformers.json;
 import static net.bunselmeyer.hitch.middleware.Middleware.logger;
-import static net.bunselmeyer.hitch.middleware.StaticMiddleware.Evince.staticFiles;
+import static net.bunselmeyer.hitch.middleware.StaticMiddleware.Evince.mountResourceDir;
 
 public class JettyApp {
 
@@ -42,10 +41,16 @@ public class JettyApp {
             res.type("text/html");
         });
 
-        // todo: unsuck this...
-        app.get("/assets**", staticFiles(Paths.get("/assets/"), "/assets/", (opts) -> {
+        /**
+         * Mount multiple resource folders (/assets1, /assets2) to a single URI path (/assets)
+         */
 
+        app.use(mountResourceDir("/assets1", "/assets", (options) -> {
+            options.handleNotFound = false; // allow missing files to be handled by the next middleware
         }));
+
+        app.use(mountResourceDir("/assets2", "/assets"));
+
 
         app.use((req, res) -> {
             if (req.uri().startsWith("/restricted")) {

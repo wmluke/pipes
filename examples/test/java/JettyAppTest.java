@@ -68,6 +68,13 @@ public class JettyAppTest {
                         "    background-color: cornflowerblue;\n" +
                         "}"));
 
+        get("/assets/styles.css").then().assertThat()
+                .statusCode(200)
+                .header("Content-type", is("text/css;charset=UTF-8"))
+                .body(containsString("body {\n" +
+                        "    color: yellow;\n" +
+                        "}"));
+
     }
 
     @Test
