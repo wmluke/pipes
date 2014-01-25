@@ -16,7 +16,31 @@
     <packaging>jar</packaging>
 
     <name>Hitch Core</name>
-    <description>Core Hitch</description>
+    <description>Hitch Core: Middleware for Java 1.8</description>
+
+    <url>https://github.com/wmluke/hitch</url>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>http://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:wmluke/hitch.git</connection>
+        <developerConnection>scm:git:git@github.com:wmluke/hitch.git</developerConnection>
+        <url>https://github.com/wmluke/hitch.git</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>wmluke</id>
+            <name>William Bunselmeyer</name>
+            <url>http://bunselmeyer.net</url>
+        </developer>
+    </developers>
 
     <dependencies>
 
