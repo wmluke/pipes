@@ -1,7 +1,7 @@
 package net.bunselmeyer.hitch.middleware;
 
-import net.bunselmeyer.hitch.http.HttpRequest;
-import net.bunselmeyer.hitch.http.HttpResponse;
+import net.bunselmeyer.evince.http.HttpRequest;
+import net.bunselmeyer.evince.http.HttpResponse;
 import org.slf4j.Logger;
 
 import java.util.Date;

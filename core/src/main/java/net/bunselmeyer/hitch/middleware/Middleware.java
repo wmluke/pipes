@@ -1,22 +1,6 @@
 package net.bunselmeyer.hitch.middleware;
 
-import net.bunselmeyer.hitch.http.HttpRequest;
-import net.bunselmeyer.hitch.http.HttpResponse;
-import org.slf4j.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.function.Consumer;
-
-
 public interface Middleware {
-
-
-    @FunctionalInterface
-    public static interface ServletMiddleware extends Middleware {
-
-        void run(HttpServletRequest req, HttpServletResponse res) throws Exception;
-    }
 
     @FunctionalInterface
     public static interface BasicMiddleware<Q, P> extends Middleware {
@@ -46,7 +30,4 @@ public interface Middleware {
 
     }
 
-    public static IntermediateMiddleware<HttpRequest, HttpResponse> logger(Logger logger, Consumer<LoggerMiddleware.Options> block) {
-        return LoggerMiddleware.logger(logger, block);
-    }
 }

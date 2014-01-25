@@ -1,8 +1,8 @@
 package net.bunselmeyer.hitch.middleware;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import net.bunselmeyer.hitch.http.HttpRequest;
-import net.bunselmeyer.hitch.http.HttpResponse;
+import net.bunselmeyer.evince.http.HttpRequest;
+import net.bunselmeyer.evince.http.HttpResponse;
 
 public class BodyTransformers {
 

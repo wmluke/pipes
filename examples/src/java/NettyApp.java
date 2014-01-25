@@ -1,13 +1,11 @@
 import com.google.common.base.Joiner;
-import net.bunselmeyer.hitch.app.App;
-import net.bunselmeyer.hitch.app.Evince;
-import net.bunselmeyer.hitch.http.HttpRequest;
-import net.bunselmeyer.hitch.http.HttpResponse;
-import net.bunselmeyer.hitch.http.HttpServer;
+import net.bunselmeyer.evince.Evince;
+import net.bunselmeyer.hitch.middleware.LoggerMiddleware;
+import net.bunselmeyer.server.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static net.bunselmeyer.hitch.middleware.Middleware.logger;
+import java.util.function.Consumer;
 
 public class NettyApp {
 
@@ -15,9 +13,10 @@ public class NettyApp {
 
     public static void main(String[] args) throws Exception {
 
-        App<HttpRequest, HttpResponse> app = Evince.create();
+        Evince app = Evince.create();
 
-        app.use(logger(logger, (opts) -> opts.logHeaders = true));
+        Consumer<LoggerMiddleware.Options> block = (opts) -> opts.logHeaders = true;
+        app.use(LoggerMiddleware.logger(logger, block));
 
         app.use((req, res) -> {
             res.charset("UTF-8");

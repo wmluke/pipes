@@ -7,17 +7,17 @@ import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.StatusManager;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Joiner;
-import net.bunselmeyer.hitch.app.Evince;
-import net.bunselmeyer.hitch.http.HttpServer;
-import net.bunselmeyer.hitch.transport.json.JsonUtil;
+import net.bunselmeyer.evince.Evince;
+import net.bunselmeyer.server.HttpServer;
+import net.bunselmeyer.util.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 
+import static net.bunselmeyer.evince.middleware.MountResourceMiddleware.Evince.mountResourceDir;
 import static net.bunselmeyer.hitch.middleware.BodyTransformers.json;
-import static net.bunselmeyer.hitch.middleware.Middleware.logger;
-import static net.bunselmeyer.hitch.middleware.MountResourceMiddleware.Evince.mountResourceDir;
+import static net.bunselmeyer.hitch.middleware.LoggerMiddleware.logger;
 
 public class JettyApp {
 
