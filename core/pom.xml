@@ -34,6 +34,11 @@
         <url>https://github.com/wmluke/hitch.git</url>
     </scm>
 
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/wmluke/hitch/issues</url>
+    </issueManagement>
+
     <developers>
         <developer>
             <id>wmluke</id>

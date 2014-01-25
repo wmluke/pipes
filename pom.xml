@@ -23,8 +23,13 @@
     <scm>
         <connection>scm:git:git@github.com:wmluke/hitch.git</connection>
         <developerConnection>scm:git:git@github.com:wmluke/hitch.git</developerConnection>
-        <url>https://github.com/wmluke/hitch.git</url>
+        <url>https://github.com/wmluke/hitch</url>
     </scm>
+
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/wmluke/hitch/issues</url>
+    </issueManagement>
 
     <developers>
         <developer>
