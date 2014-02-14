@@ -3,7 +3,6 @@ package net.bunselmeyer.evince.http.servlet;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import net.bunselmeyer.util.json.JsonUtil;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +41,7 @@ public class HttpRequestServletAdapterTest {
         headers.put("Accept-Language", "en-US,en;q=0.8");
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonUtil.configureJsonObjectMapper(objectMapper);
+        //JsonUtil.configureJsonObjectMapper(objectMapper);
 
         formUrlEncodedHttpRequest = new HttpRequestServletAdapter(createMockHttpServletRequest(headers, "a=1&b=3&a=2", "aa=11&bb=22"), objectMapper, null);
         jsonHttpRequest = new HttpRequestServletAdapter(createMockHttpServletRequest(headers, "a=1&b=3&a=2", "{\"aa\": 11, \"bb\": 22}"), objectMapper, null);

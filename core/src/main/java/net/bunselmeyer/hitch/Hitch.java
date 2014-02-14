@@ -1,45 +1,90 @@
 package net.bunselmeyer.hitch;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.middleware.Middleware;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class Hitch implements App<HttpServletRequest, HttpServletResponse> {
 
     private static final Logger logger = LoggerFactory.getLogger(Hitch.class);
 
-    private final Configuration configuration = new AppConfiguration();
+    public static final String XML_MAPPER_NAME = "xml-mapper";
+
     private final List<Middleware> middlewares = new ArrayList<>();
+    private final Map<String, Object> configs = new HashMap<>();
 
     public static Hitch create() {
         return new Hitch();
     }
 
     public static Hitch create(Hitch app) {
-        Hitch hitch = new Hitch();
+        Hitch hitch = create();
         hitch.use(app);
         return hitch;
     }
 
     protected Hitch() {
+        configs.put(getKey(ObjectMapper.class, null), new ObjectMapper());
+        configs.put(getKey(ObjectMapper.class, XML_MAPPER_NAME), new ObjectMapper());
+    }
+
+    private <S> String getKey(Class<S> type, String name) {
+        List<String> names = new ArrayList<>();
+        names.add(type.getName());
+        if (StringUtils.isNotBlank(name)) {
+            names.add(StringUtils.stripToNull(name));
+        }
+        return Joiner.on(":").skipNulls().join(names);
     }
 
     @Override
-    public Configuration configuration() {
-        return configuration;
+    public <S> S configuration(Class<S> type) {
+        return configuration(type, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <S> S configuration(Class<S> type, String name) {
+        return (S) configs.get(getKey(type, name));
     }
 
     @Override
-    public Hitch configure(Consumer<Configuration> consumer) {
+    public <S> Hitch configure(S configuration, Consumer<S> consumer) {
+        configure(configuration, null, consumer);
+        return this;
+    }
+
+    @Override
+    public <S> App<HttpServletRequest, HttpServletResponse> configure(S configuration, String name, Consumer<S> consumer) {
+        configs.put(getKey(configuration.getClass(), name), configuration);
         consumer.accept(configuration);
+        return this;
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <S> Hitch configure(Class<S> type, String name, Consumer<S> consumer) throws IllegalAccessException, InstantiationException {
+        String key = getKey(type, name);
+        if (configs.get(key) == null) {
+            configs.put(key, type.newInstance());
+        }
+        consumer.accept((S) configs.get(key));
+        return this;
+    }
+
+    @Override
+    public <S> Hitch configure(Class<S> type, Consumer<S> consumer) throws IllegalAccessException, InstantiationException {
+        configure(type, null, consumer);
         return this;
     }
 

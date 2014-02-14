@@ -1,7 +1,5 @@
 package net.bunselmeyer.hitch;
 
-import ch.qos.logback.classic.LoggerContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.hitch.middleware.Middleware;
 
 import java.io.IOException;
@@ -9,11 +7,17 @@ import java.util.function.Consumer;
 
 public interface App<Q, P> {
 
-    App<Q, P> configure(Consumer<Configuration> consumer);
+    <C> App<Q, P> configure(Class<C> type, Consumer<C> consumer) throws IllegalAccessException, InstantiationException;
 
-    Configuration configuration();
+    <C> App<Q, P> configure(Class<C> type, String name, Consumer<C> consumer) throws IllegalAccessException, InstantiationException;
 
-//    <T extends Middleware> HitchApp<Q, P> use(MiddlewareFactory<T> middlewareFactory);
+    <C> App<Q, P> configure(C configuration, Consumer<C> consumer);
+
+    <C> App<Q, P> configure(C configuration, String name, Consumer<C> consumer);
+
+    <C> C configuration(Class<C> type);
+
+    <C> C configuration(Class<C> type, String name);
 
     App<Q, P> use(App<Q, P> app);
 
@@ -24,15 +28,6 @@ public interface App<Q, P> {
     App<Q, P> use(Middleware.IntermediateMiddleware<Q, P> middleware);
 
     void dispatch(Q req, P res) throws IOException;
-
-    public static interface Configuration {
-
-        ObjectMapper jsonObjectMapper();
-
-        ObjectMapper xmlObjectMapper();
-
-        LoggerContext loggerContext();
-    }
 
     @SuppressWarnings("unchecked")
     public static <Q, P> void runner(Middleware middleware, Exception err, Q req, P res, Middleware.Next next) {

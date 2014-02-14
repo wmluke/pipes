@@ -1,5 +1,6 @@
 package net.bunselmeyer.evince;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.evince.http.HttpRequest;
 import net.bunselmeyer.evince.http.HttpResponse;
 import net.bunselmeyer.evince.http.servlet.HttpRequestServletAdapter;
@@ -39,14 +40,37 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     @Override
-    public Configuration configuration() {
-        return hitch.configuration();
+    public <C> Evince configure(Class<C> type, Consumer<C> consumer) throws IllegalAccessException, InstantiationException {
+        hitch.configure(type, consumer);
+        return this;
     }
 
     @Override
-    public Evince configure(Consumer<Configuration> consumer) {
-        hitch.configure(consumer);
+    public <C> Evince configure(Class<C> type, String name, Consumer<C> consumer) throws IllegalAccessException, InstantiationException {
+        hitch.configure(type, name, consumer);
         return this;
+    }
+
+    @Override
+    public <C> Evince configure(C configuration, Consumer<C> consumer) {
+        hitch.configure(configuration, consumer);
+        return this;
+    }
+
+    @Override
+    public <C> Evince configure(C configuration, String name, Consumer<C> consumer) {
+        hitch.configure(configuration, name, consumer);
+        return this;
+    }
+
+    @Override
+    public <C> C configuration(Class<C> type) {
+        return hitch.configuration(type);
+    }
+
+    @Override
+    public <C> C configuration(Class<C> type, String name) {
+        return hitch.configuration(type, name);
     }
 
     @Override
@@ -111,11 +135,11 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     private HttpResponseServletAdapter buildResponse(HttpServletResponse response) {
-        return new HttpResponseServletAdapter(response, configuration().jsonObjectMapper());
+        return new HttpResponseServletAdapter(response, configuration(ObjectMapper.class));
     }
 
     private HttpRequestServletAdapter buildRequest(HttpServletRequest request) {
-        return new HttpRequestServletAdapter(request, configuration().jsonObjectMapper(), configuration().xmlObjectMapper());
+        return new HttpRequestServletAdapter(request, configuration(ObjectMapper.class), configuration(ObjectMapper.class, Hitch.XML_MAPPER_NAME));
     }
 
 }

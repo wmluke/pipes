@@ -1,19 +1,16 @@
-import ch.qos.logback.classic.Level;
+package app;
+
+import app.configure.JacksonJson;
+import app.configure.Logback;
+import app.models.User;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.status.InfoStatus;
-import ch.qos.logback.core.status.StatusManager;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import net.bunselmeyer.evince.Evince;
 import net.bunselmeyer.server.HttpServer;
-import net.bunselmeyer.util.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.charset.Charset;
 
 import static net.bunselmeyer.evince.middleware.MountResourceMiddleware.Evince.mountResourceDir;
 import static net.bunselmeyer.hitch.middleware.BodyTransformers.json;
@@ -25,14 +22,10 @@ public class JettyApp {
 
     public static void main(String[] args) throws Exception {
 
-
         Evince app = Evince.create();
 
-        app.configure((config) -> {
-            JsonUtil.configureJsonObjectMapper(config.jsonObjectMapper());
-
-            configure(config.loggerContext());
-        });
+        app.configure(ObjectMapper.class, JacksonJson::configure);
+        app.configure((LoggerContext) LoggerFactory.getILoggerFactory(), Logback::configure);
 
         app.use(logger(logger, (opts) -> opts.logHeaders = true));
 
@@ -115,54 +108,4 @@ public class JettyApp {
 
     }
 
-    public static void configure(LoggerContext loggerContext) {
-        loggerContext.reset();
-
-        StatusManager sm = loggerContext.getStatusManager();
-        if (sm != null) {
-            sm.add(new InfoStatus("Setting up default Hitch configuration.", loggerContext));
-        }
-
-        ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<>();
-        ca.setContext(loggerContext);
-        ca.setWithJansi(true);
-        ca.setName("console");
-
-        PatternLayoutEncoder pl = new PatternLayoutEncoder();
-        pl.setCharset(Charset.forName("UTF-8"));
-        pl.setContext(loggerContext);
-        //pl.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
-        pl.setPattern("%msg%n");
-        pl.start();
-
-        ca.setEncoder(pl);
-        ca.start();
-        ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-        rootLogger.setLevel(Level.INFO);
-        rootLogger.addAppender(ca);
-    }
-
-    public static class User {
-
-        private String firstName;
-        private String lastName;
-
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public User setFirstName(String firstName) {
-            this.firstName = firstName;
-            return this;
-        }
-
-        public String getLastName() {
-            return lastName;
-        }
-
-        public User setLastName(String lastName) {
-            this.lastName = lastName;
-            return this;
-        }
-    }
 }

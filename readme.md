@@ -38,7 +38,7 @@ public class Main {
 
 ## Run the Example App
 
-The [example app](https://github.com/wmluke/hitch/blob/master/examples/src/java/JettyApp.java) illustrates some of Hitch's features.
+The [example app](https://github.com/wmluke/hitch/blob/master/examples/src/java/app/JettyApp.java) illustrates some of Hitch's features.
 
 1) Install [Java 8](https://jdk8.java.net) and create a `JAVA8_HOME` environment variable referencing the JDK 8 home.
 

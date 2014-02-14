@@ -10,6 +10,7 @@ import net.bunselmeyer.evince.http.AbstractHttpRequest;
 import net.bunselmeyer.evince.http.netty.HttpRequestNettyAdapter;
 import net.bunselmeyer.evince.http.netty.HttpResponseNettyAdapter;
 import net.bunselmeyer.hitch.App;
+import net.bunselmeyer.hitch.Hitch;
 
 import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
@@ -44,9 +45,10 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
                 ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
             }
 
-            ObjectMapper jsonMapper = app.configuration().jsonObjectMapper();
+            ObjectMapper jsonMapper = (ObjectMapper) app.configuration(ObjectMapper.class);
+            ObjectMapper xmlMapper = (ObjectMapper) app.configuration(ObjectMapper.class, Hitch.XML_MAPPER_NAME);
 
-            AbstractHttpRequest req = new HttpRequestNettyAdapter(request, jsonMapper, app.configuration().xmlObjectMapper());
+            AbstractHttpRequest req = new HttpRequestNettyAdapter(request, jsonMapper, xmlMapper);
             HttpResponseNettyAdapter res = new HttpResponseNettyAdapter(ctx, isKeepAlive(request), jsonMapper);
 
             app.dispatch(req, res);

@@ -1,3 +1,6 @@
+package app;
+
+import app.models.User;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.internal.mapper.ObjectMapperType;
 import org.hamcrest.Matchers;
@@ -97,7 +100,7 @@ public class JettyAppTest {
                 .statusCode(200)
                 .body(Matchers.containsString("{\"aaa\":\"111\",\"bbb\":\"222\"}"));
 
-        given().body(new JettyApp.User().setFirstName("Jon").setLastName("Doe"), ObjectMapperType.JACKSON_2)
+        given().body(new User().setFirstName("Jon").setLastName("Doe"), ObjectMapperType.JACKSON_2)
                 .post("/user")
                 .then()
                 .statusCode(200)

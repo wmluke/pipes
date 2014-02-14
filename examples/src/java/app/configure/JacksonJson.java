@@ -1,19 +1,15 @@
-package net.bunselmeyer.util.json;
+package app.configure;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 
-public class JsonUtil {
+public class JacksonJson {
 
     private static final SimpleModule BIG_DECIMAL_MODULE = new SimpleModule("BigDecimalModule");
 
@@ -21,26 +17,7 @@ public class JsonUtil {
         BIG_DECIMAL_MODULE.addSerializer(BigDecimal.class, new BigDecimalJsonSerializer());
     }
 
-    private static final ObjectMapper OBJECT_MAPPER =
-            configureJsonObjectMapper(new ObjectMapper()).enable(SerializationFeature.INDENT_OUTPUT);
-
-    public static String toJson(Object object) throws IOException {
-        return OBJECT_MAPPER.writeValueAsString(object);
-    }
-
-    public static <T> T fromJson(String json, Class<T> klass) throws IOException {
-        return OBJECT_MAPPER.readValue(json, klass);
-    }
-
-    public static <T> T fromJson(String json, TypeReference typeReference) throws IOException {
-        return OBJECT_MAPPER.readValue(json, typeReference);
-    }
-
-    public static <T> T fromJson(InputStream json, Class<T> klass) throws IOException {
-        return OBJECT_MAPPER.readValue(json, klass);
-    }
-
-    public static ObjectMapper configureJsonObjectMapper(ObjectMapper objectMapper) {
+    public static ObjectMapper configure(ObjectMapper objectMapper) {
         // need to prevent hibernate lazy initialization errors during serialization
         objectMapper.registerModule(new Hibernate4Module());
 
@@ -71,4 +48,11 @@ public class JsonUtil {
         return objectMapper;
     }
 
+    public static class BigDecimalJsonSerializer extends JsonSerializer<BigDecimal> {
+
+        @Override
+        public void serialize(BigDecimal value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.toPlainString());
+        }
+    }
 }

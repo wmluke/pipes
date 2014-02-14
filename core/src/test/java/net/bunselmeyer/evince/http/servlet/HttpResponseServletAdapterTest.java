@@ -2,7 +2,6 @@ package net.bunselmeyer.evince.http.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.evince.http.HttpResponse;
-import net.bunselmeyer.util.json.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
@@ -23,7 +22,7 @@ public class HttpResponseServletAdapterTest {
     public void setUp() throws Exception {
         servletResponse = mock(HttpServletResponse.class);
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonUtil.configureJsonObjectMapper(objectMapper);
+        //JsonUtil.configureJsonObjectMapper(objectMapper);
         httpResponse = new HttpResponseServletAdapter(servletResponse, objectMapper);
     }
 
