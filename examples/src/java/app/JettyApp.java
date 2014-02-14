@@ -1,5 +1,6 @@
 package app;
 
+import app.configure.HibernateOrm;
 import app.configure.JacksonJson;
 import app.configure.Logback;
 import app.models.User;
@@ -8,9 +9,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import net.bunselmeyer.evince.Evince;
+import net.bunselmeyer.evince.persistence.Persistence;
+import net.bunselmeyer.evince.persistence.Repository;
 import net.bunselmeyer.server.HttpServer;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 import static net.bunselmeyer.evince.middleware.MountResourceMiddleware.Evince.mountResourceDir;
 import static net.bunselmeyer.hitch.middleware.BodyTransformers.json;
@@ -26,6 +32,10 @@ public class JettyApp {
 
         app.configure(ObjectMapper.class, JacksonJson::configure);
         app.configure((LoggerContext) LoggerFactory.getILoggerFactory(), Logback::configure);
+        app.configure(org.hibernate.cfg.Configuration.class, HibernateOrm::configure);
+
+        Persistence persistence = Persistence.create(app.configuration(Configuration.class));
+        Repository<User> userRepository = persistence.build(User.class);
 
         app.use(logger(logger, (opts) -> opts.logHeaders = true));
 
@@ -84,11 +94,22 @@ public class JettyApp {
             res.json(200, jsonNode.toString());
         });
 
-        app.post("/user", json(User.class));
-        app.post("/user", (req, res) -> {
+        app.post("/users", json(User.class));
+        app.post("/users", persistence.transactional(false, (req, res) -> {
             User user = req.body().asTransformed();
-            res.send("<p>" + user.getFirstName() + " " + user.getLastName() + "</p>");
-        });
+            userRepository.create(user);
+            res.json(201, user);
+        }));
+
+        app.get("/users", persistence.transactional(true, (req, res) -> {
+            List<User> users = userRepository.find().list();
+            res.json(200, users);
+        }));
+
+        app.get("/users/{id}", persistence.transactional(true, (req, res) -> {
+            User user = userRepository.read(Integer.parseInt(req.routeParam("id")));
+            res.json(200, user);
+        }));
 
         app.use((err, req, res, next) -> {
             if (err != null) {

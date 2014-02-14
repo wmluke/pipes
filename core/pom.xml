@@ -74,6 +74,13 @@
             <artifactId>dropwizard-servlets</artifactId>
         </dependency>
 
+        <!--Persistence-->
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+
         <!--Json-->
 
         <dependency>

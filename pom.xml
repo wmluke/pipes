@@ -47,6 +47,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.compiler.version>1.8</java.compiler.version>
         <jackson.version>2.3.0-rc1</jackson.version>
+        <hibernate.version>4.2.6.Final</hibernate.version>
         <jettyVersion>9.0.7.v20131107</jettyVersion>
         <!--<jettyVersion>9.1.0.v20131115</jettyVersion>-->
     </properties>
@@ -101,6 +102,28 @@
                 <artifactId>dropwizard-servlets</artifactId>
                 <version>0.7.0-SNAPSHOT</version>
                 <!--<version>0.6.2</version>-->
+            </dependency>
+
+            <!--Persistence-->
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+
+            <!--Validation-->
+
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>1.1.0.Final</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>5.0.1.Final</version>
             </dependency>
 
             <!--Json-->
