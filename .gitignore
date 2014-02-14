@@ -1,3 +1,5 @@
 target
 .idea
 *.iml
+*.h2.db
+scratch
