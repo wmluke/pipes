@@ -90,7 +90,11 @@ public class Hitch implements App<HttpServletRequest, HttpServletResponse> {
 
     @Override
     public Hitch use(App<HttpServletRequest, HttpServletResponse> app) {
-        return use(app::dispatch);
+        app.use((req1, res1) -> {
+            use((req2, res2, next) -> next.run(null));
+        });
+        use(app::dispatch);
+        return this;
     }
 
     @Override
@@ -130,7 +134,6 @@ public class Hitch implements App<HttpServletRequest, HttpServletResponse> {
             @Override
             protected void handleNotFound() {
                 sendError(404, "404 Not found");
-
             }
 
             @Override

@@ -75,6 +75,9 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
 
     @Override
     public Evince use(App<HttpRequest, HttpResponse> app) {
+        app.use((req1, res1) -> {
+            use((req2, res2, next) -> next.run(null));
+        });
         use(app::dispatch);
         return this;
     }

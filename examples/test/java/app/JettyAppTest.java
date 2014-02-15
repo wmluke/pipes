@@ -10,8 +10,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.jayway.restassured.RestAssured.get;
-import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.StringContains.containsString;
@@ -135,6 +134,23 @@ public class JettyAppTest {
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
                 .body(containsString("[{\"id\":1,\"firstName\":\"Jon\",\"lastName\":\"Doe\"},{\"id\":2,\"firstName\":\"Jane\",\"lastName\":\"Doe\"}]"));
+
+        given().body(new User().setId(2).setFirstName("Mindy").setLastName("Doe"), ObjectMapperType.JACKSON_2)
+                .put("/users/2")
+                .then()
+                .statusCode(200)
+                .header("Content-type", is("application/json;charset=UTF-8"));
+
+        get("/users/2").then()
+                .statusCode(200)
+                .header("Content-type", is("application/json;charset=UTF-8"))
+                .body(containsString("{\"id\":2,\"firstName\":\"Mindy\",\"lastName\":\"Doe\"}"));
+
+        delete("/users/1").then()
+                .statusCode(200);
+
+        get("/users/1").then()
+                .statusCode(404);
 
 
     }

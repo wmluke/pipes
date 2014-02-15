@@ -60,6 +60,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
     @Override
     public void update(T entity) {
         getCurrentSession().merge(entity);
+        getCurrentSession().flush();
     }
 
     @SuppressWarnings("unchecked")
