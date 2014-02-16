@@ -2,6 +2,7 @@ package net.bunselmeyer.hitch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
+import net.bunselmeyer.hitch.middleware.ExceptionMapperMiddleware;
 import net.bunselmeyer.hitch.middleware.Middleware;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -104,14 +105,20 @@ public class Hitch implements App<HttpServletRequest, HttpServletResponse> {
     }
 
     @Override
-    public Hitch use(Middleware.AdvancedMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
+    public Hitch use(Middleware.IntermediateMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
         middlewares.add(middleware);
         return this;
     }
 
     @Override
-    public Hitch use(Middleware.IntermediateMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
+    public Hitch use(Middleware.ExceptionMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
         middlewares.add(middleware);
+        return this;
+    }
+
+    @Override
+    public <E extends Throwable> App<HttpServletRequest, HttpServletResponse> use(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<HttpServletRequest, HttpServletResponse, E> middleware) {
+        use(ExceptionMapperMiddleware.handleException(exceptionType, middleware));
         return this;
     }
 

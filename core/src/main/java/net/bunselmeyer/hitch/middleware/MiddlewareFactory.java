@@ -13,7 +13,7 @@ public interface MiddlewareFactory<T extends Middleware> extends Supplier<T> {
 
     }
 
-    public interface Advanced extends MiddlewareFactory<Middleware.AdvancedMiddleware> {
+    public interface Advanced extends MiddlewareFactory<Middleware.ExceptionMiddleware> {
 
     }
 

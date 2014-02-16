@@ -1,65 +1,99 @@
 package app.controllers;
 
+import app.api.ApiResponse;
+import app.exceptions.ApiErrorException;
+import app.exceptions.RecordNotFoundException;
 import app.models.User;
 import net.bunselmeyer.evince.Evince;
+import net.bunselmeyer.evince.http.HttpRequest;
+import net.bunselmeyer.evince.http.HttpResponse;
 import net.bunselmeyer.evince.persistence.Persistence;
 import net.bunselmeyer.evince.persistence.Repository;
-
-import java.util.List;
+import net.bunselmeyer.hitch.middleware.Middleware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.bunselmeyer.hitch.middleware.BodyTransformers.json;
 
 public class UserController {
 
-    public static Evince app(Persistence persistence) {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-        Evince app = Evince.create();
+    public static Evince app(Persistence persistence) {
 
         Repository<User> userRepository = persistence.build(User.class);
 
+        Evince app = Evince.create();
+
+        // CREATE
         app.post("/users", json(User.class));
         app.post("/users", persistence.transactional(false, (req, res) -> {
             User user = req.body().asTransformed();
             userRepository.create(user);
-            res.json(201, user);
         }));
+        app.post("/users", apiResponse(201));
 
+        // INDEX
         app.get("/users", persistence.transactional(true, (req, res) -> {
-            List<User> users = userRepository.find().list();
-            res.json(200, users);
+            req.body().transform(() -> userRepository.find().list());
         }));
+        app.get("/users", apiResponse(200));
 
-        app.get("/users/{id}", persistence.transactional(true, (req, res) -> {
+        // READ
+        app.get("/users/{id}", persistence.transactional(true, (req, res, next) -> {
             User user = userRepository.read(Integer.parseInt(req.routeParam("id")));
             if (user == null) {
-                res.json(404);
-                return;
+                next.run(new RecordNotFoundException());
             }
-            res.json(200, user);
+            req.body().transform(() -> user);
         }));
+        app.get("/users/{id}", apiResponse(200));
 
+        // UPDATE
         app.put("/users/{id}", json(User.class));
         app.put("/users/{id}", persistence.transactional(false, (req, res) -> {
             User user = userRepository.read(Integer.parseInt(req.routeParam("id")));
             if (user == null) {
-                res.json(404);
-                return;
+                throw new RecordNotFoundException();
             }
             User jsonUser = req.body().asTransformed();
             if (jsonUser.getId() != user.getId()) {
-                res.json(400);
-                return;
+                throw new ApiErrorException(400, "Mismatched entity ID");
             }
             userRepository.update(jsonUser);
-            res.json(200);
+            req.body().transform(() -> true);
         }));
+        app.put("/users/{id}", apiResponse(200));
 
-        app.delete("/users/{id}", persistence.transactional(false, (req, res) -> {
+        // DELETE
+        app.delete("/users/{id}", persistence.transactional(false, (req, res, next) -> {
             User user = userRepository.read(Integer.parseInt(req.routeParam("id")));
+            if (user == null) {
+                next.run(new RecordNotFoundException());
+            }
             userRepository.delete(user);
-            res.json(200);
+            req.body().transform(() -> true);
         }));
+        app.delete("/users/{id}", apiResponse(200));
+
+        // ERROR HANDLING
+
+        app.use(ApiErrorException.class, (e, req, res, next) -> {
+            res.json(e.getStatusCode(), ApiResponse.error(e));
+        });
+
+        app.use((e, req, res, next) -> {
+            logger.error(e.getMessage(), e);
+            res.json(500, ApiResponse.error(500, "Unknown Error"));
+        });
 
         return app;
     }
+
+    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> apiResponse(int status) {
+        return (req, res) -> {
+            res.json(status, ApiResponse.body(req.body().asTransformed()));
+        };
+    }
+
 }

@@ -23,9 +23,11 @@ public interface App<Q, P> {
 
     App<Q, P> use(Middleware.BasicMiddleware<Q, P> middleware);
 
-    App<Q, P> use(Middleware.AdvancedMiddleware<Q, P> middleware);
-
     App<Q, P> use(Middleware.IntermediateMiddleware<Q, P> middleware);
+
+    App<Q, P> use(Middleware.ExceptionMiddleware<Q, P> middleware);
+
+    <E extends Throwable> App<Q, P> use(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<Q, P, E> middleware);
 
     void dispatch(Q req, P res) throws IOException;
 
@@ -33,8 +35,8 @@ public interface App<Q, P> {
     public static <Q, P> void runner(Middleware middleware, Exception err, Q req, P res, Middleware.Next next) {
         try {
             if (err != null) {
-                if (middleware instanceof Middleware.AdvancedMiddleware) {
-                    ((Middleware.AdvancedMiddleware<Q, P>) middleware).run(err, req, res, next);
+                if (middleware instanceof Middleware.ExceptionMiddleware) {
+                    ((Middleware.ExceptionMiddleware<Q, P>) middleware).run(err, req, res, next);
                 } else {
                     next.run(err);
                 }

@@ -111,46 +111,68 @@ public class JettyAppTest {
                 .then()
                 .statusCode(201)
                 .header("Content-type", is("application/json;charset=UTF-8"))
-                .body(Matchers.containsString("{\"id\":1,\"firstName\":\"Jon\",\"lastName\":\"Doe\"}"));
+                .body("body.id", is(1))
+                .body("body.firstName", is("Jon"))
+                .body("body.lastName", is("Doe"));
 
         given().body(new User().setFirstName("Jane").setLastName("Doe"), ObjectMapperType.JACKSON_2)
                 .post("/users")
                 .then()
                 .statusCode(201)
                 .header("Content-type", is("application/json;charset=UTF-8"))
-                .body(Matchers.containsString("{\"id\":2,\"firstName\":\"Jane\",\"lastName\":\"Doe\"}"));
+                .body("body.id", is(2))
+                .body("body.firstName", is("Jane"))
+                .body("body.lastName", is("Doe"));
 
         get("/users/1").then()
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
-                .body(containsString("{\"id\":1,\"firstName\":\"Jon\",\"lastName\":\"Doe\"}"));
+                .body("body.id", is(1))
+                .body("body.firstName", is("Jon"))
+                .body("body.lastName", is("Doe"));
+
 
         get("/users/2").then()
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
-                .body(containsString("{\"id\":2,\"firstName\":\"Jane\",\"lastName\":\"Doe\"}"));
+                .body("body.id", is(2))
+                .body("body.firstName", is("Jane"))
+                .body("body.lastName", is("Doe"));
 
         get("/users").then()
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
-                .body(containsString("[{\"id\":1,\"firstName\":\"Jon\",\"lastName\":\"Doe\"},{\"id\":2,\"firstName\":\"Jane\",\"lastName\":\"Doe\"}]"));
+                .body("body[0].id", is(1))
+                .body("body[0].firstName", is("Jon"))
+                .body("body[0].lastName", is("Doe"))
+                .body("body[1].id", is(2))
+                .body("body[1].firstName", is("Jane"))
+                .body("body[1].lastName", is("Doe"));
+
 
         given().body(new User().setId(2).setFirstName("Mindy").setLastName("Doe"), ObjectMapperType.JACKSON_2)
                 .put("/users/2")
                 .then()
                 .statusCode(200)
-                .header("Content-type", is("application/json;charset=UTF-8"));
+                .header("Content-type", is("application/json;charset=UTF-8"))
+                .body("body", is(true));
 
         get("/users/2").then()
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
-                .body(containsString("{\"id\":2,\"firstName\":\"Mindy\",\"lastName\":\"Doe\"}"));
+                .body("body.id", is(2))
+                .body("body.firstName", is("Mindy"))
+                .body("body.lastName", is("Doe"));
 
         delete("/users/1").then()
-                .statusCode(200);
+                .statusCode(200)
+                .header("Content-type", is("application/json;charset=UTF-8"))
+                .body("body", is(true));
 
         get("/users/1").then()
-                .statusCode(404);
+                .statusCode(404)
+                .header("Content-type", is("application/json;charset=UTF-8"))
+                .body("error.message", is("Record not found"));
 
 
     }

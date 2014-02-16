@@ -16,4 +16,15 @@ public class RouteMiddleware {
             next.run(null);
         };
     }
+
+    public static Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> route(String method, String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
+        Route route = new Route(method, uriPattern, middleware);
+        return (request, response, next) -> {
+            if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
+                middleware.run(request, response, next);
+            }
+            next.run(null);
+        };
+    }
+
 }

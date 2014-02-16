@@ -17,9 +17,16 @@ public interface Middleware {
     }
 
     @FunctionalInterface
-    public static interface AdvancedMiddleware<Q, P> extends Middleware {
+    public static interface ExceptionMiddleware<Q, P> extends CheckedExceptionMiddleware<Q, P, Exception> {
 
         void run(Exception e, Q req, P resp, Next next) throws Exception;
+
+    }
+
+    @FunctionalInterface
+    interface CheckedExceptionMiddleware<Q, P, E extends Throwable> extends Middleware {
+
+        void run(E e, Q req, P resp, Next next) throws Exception;
 
     }
 

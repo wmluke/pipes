@@ -5,8 +5,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.function.Supplier;
-
 public class PersistenceImpl implements Persistence {
 
     private final SessionFactory sessionFactory;
@@ -31,15 +29,15 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
-    public <T> T transaction(boolean readOnly, Supplier<T> unitOfWork) {
+    public <T> T transaction(boolean readOnly, UnitOfWorkWithResult<T> unitOfWork) throws Exception {
         Session session = sessionFactory.getCurrentSession();
         if (session.getTransaction().isActive()) {
-            return unitOfWork.get();
+            return unitOfWork.run();
         } else {
             Transaction transaction = session.beginTransaction();
             session.setDefaultReadOnly(readOnly);
             try {
-                T result = unitOfWork.get();
+                T result = unitOfWork.run();
                 transaction.commit();
                 return result;
             } finally {
@@ -51,7 +49,7 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
-    public void transaction(boolean readOnly, Runnable unitOfWork) {
+    public void transaction(boolean readOnly, UnitOfWork unitOfWork) throws Exception {
         transaction(readOnly, () -> {
             unitOfWork.run();
             return null;
@@ -61,11 +59,17 @@ public class PersistenceImpl implements Persistence {
     @Override
     public <Q, P> Middleware.BasicMiddleware<Q, P> transactional(boolean readOnly, Middleware.BasicMiddleware<Q, P> middleware) {
         return (req, res) -> transaction(readOnly, () -> {
-            try {
-                middleware.run(req, res);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            middleware.run(req, res);
+            return;
         });
     }
+
+    @Override
+    public <Q, P> Middleware.IntermediateMiddleware<Q, P> transactional(boolean readOnly, Middleware.IntermediateMiddleware<Q, P> middleware) {
+        return (req, res, next) -> transaction(readOnly, () -> {
+            middleware.run(req, res, next);
+            return;
+        });
+    }
+
 }

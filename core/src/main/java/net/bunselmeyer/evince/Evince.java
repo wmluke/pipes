@@ -8,6 +8,7 @@ import net.bunselmeyer.evince.http.servlet.HttpResponseServletAdapter;
 import net.bunselmeyer.evince.middleware.RouteMiddleware;
 import net.bunselmeyer.hitch.App;
 import net.bunselmeyer.hitch.Hitch;
+import net.bunselmeyer.hitch.middleware.ExceptionMapperMiddleware;
 import net.bunselmeyer.hitch.middleware.Middleware;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,7 +84,15 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     @Override
-    public Evince use(Middleware.AdvancedMiddleware<HttpRequest, HttpResponse> middleware) {
+    public Evince use(Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
+        hitch.use((request, response, next) -> {
+            middleware.run(buildRequest(request), buildResponse(response), next);
+        });
+        return this;
+    }
+
+    @Override
+    public Evince use(Middleware.ExceptionMiddleware<HttpRequest, HttpResponse> middleware) {
         hitch.use((e, request, response, next) -> {
             middleware.run(e, buildRequest(request), buildResponse(response), next);
         });
@@ -91,10 +100,8 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     @Override
-    public Evince use(Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
-        hitch.use((request, response, next) -> {
-            middleware.run(buildRequest(request), buildResponse(response), next);
-        });
+    public <E extends Throwable> Evince use(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<HttpRequest, HttpResponse, E> middleware) {
+        use(ExceptionMapperMiddleware.handleException(exceptionType, middleware));
         return this;
     }
 
@@ -112,7 +119,17 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     @Override
+    public EvinceApp get(String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
+        return use(RouteMiddleware.route("GET", uriPattern, middleware));
+    }
+
+    @Override
     public Evince post(String uriPattern, Middleware.BasicMiddleware<HttpRequest, HttpResponse> middleware) {
+        return use(RouteMiddleware.route("POST", uriPattern, middleware));
+    }
+
+    @Override
+    public EvinceApp post(String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
         return use(RouteMiddleware.route("POST", uriPattern, middleware));
     }
 
@@ -122,7 +139,17 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     @Override
+    public EvinceApp delete(String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
+        return use(RouteMiddleware.route("DELETE", uriPattern, middleware));
+    }
+
+    @Override
     public Evince put(String uriPattern, Middleware.BasicMiddleware<HttpRequest, HttpResponse> middleware) {
+        return use(RouteMiddleware.route("PUT", uriPattern, middleware));
+    }
+
+    @Override
+    public EvinceApp put(String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
         return use(RouteMiddleware.route("PUT", uriPattern, middleware));
     }
 
