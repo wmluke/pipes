@@ -5,7 +5,6 @@ import net.bunselmeyer.evince.http.HttpRequest;
 import net.bunselmeyer.evince.http.HttpResponse;
 import net.bunselmeyer.evince.http.servlet.HttpRequestServletAdapter;
 import net.bunselmeyer.evince.http.servlet.HttpResponseServletAdapter;
-import net.bunselmeyer.evince.middleware.RouteMiddleware;
 import net.bunselmeyer.hitch.App;
 import net.bunselmeyer.hitch.Hitch;
 import net.bunselmeyer.hitch.middleware.ExceptionMapperMiddleware;
@@ -114,43 +113,23 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     @Override
-    public Evince get(String uriPattern, Middleware.BasicMiddleware<HttpRequest, HttpResponse> middleware) {
-        return use(RouteMiddleware.route("GET", uriPattern, middleware));
+    public MiddlewarePipeline<HttpRequest, HttpResponse> get(String uriPattern) {
+        return new RestMiddlewarePipeline(this, "get", uriPattern);
     }
 
     @Override
-    public EvinceApp get(String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
-        return use(RouteMiddleware.route("GET", uriPattern, middleware));
+    public MiddlewarePipeline<HttpRequest, HttpResponse> post(String uriPattern) {
+        return new RestMiddlewarePipeline(this, "post", uriPattern);
     }
 
     @Override
-    public Evince post(String uriPattern, Middleware.BasicMiddleware<HttpRequest, HttpResponse> middleware) {
-        return use(RouteMiddleware.route("POST", uriPattern, middleware));
+    public MiddlewarePipeline<HttpRequest, HttpResponse> delete(String uriPattern) {
+        return new RestMiddlewarePipeline(this, "delete", uriPattern);
     }
 
     @Override
-    public EvinceApp post(String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
-        return use(RouteMiddleware.route("POST", uriPattern, middleware));
-    }
-
-    @Override
-    public Evince delete(String uriPattern, Middleware.BasicMiddleware<HttpRequest, HttpResponse> middleware) {
-        return use(RouteMiddleware.route("DELETE", uriPattern, middleware));
-    }
-
-    @Override
-    public EvinceApp delete(String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
-        return use(RouteMiddleware.route("DELETE", uriPattern, middleware));
-    }
-
-    @Override
-    public Evince put(String uriPattern, Middleware.BasicMiddleware<HttpRequest, HttpResponse> middleware) {
-        return use(RouteMiddleware.route("PUT", uriPattern, middleware));
-    }
-
-    @Override
-    public EvinceApp put(String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
-        return use(RouteMiddleware.route("PUT", uriPattern, middleware));
+    public MiddlewarePipeline<HttpRequest, HttpResponse> put(String uriPattern) {
+        return new RestMiddlewarePipeline(this, "put", uriPattern);
     }
 
     @Override

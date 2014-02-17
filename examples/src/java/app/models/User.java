@@ -1,5 +1,8 @@
 package app.models;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,6 +10,7 @@ import javax.persistence.*;
 public class User {
 
     private int id;
+    private String email;
     private String firstName;
     private String lastName;
 
@@ -21,6 +25,17 @@ public class User {
         return this;
     }
 
+    @Email
+    public String getEmail() {
+        return email;
+    }
+
+    public User setEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    @NotBlank
     public String getFirstName() {
         return firstName;
     }
@@ -30,6 +45,7 @@ public class User {
         return this;
     }
 
+    @NotBlank
     public String getLastName() {
         return lastName;
     }

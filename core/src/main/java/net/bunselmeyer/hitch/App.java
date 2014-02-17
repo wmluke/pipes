@@ -31,6 +31,17 @@ public interface App<Q, P> {
 
     void dispatch(Q req, P res) throws IOException;
 
+    public static interface MiddlewarePipeline<Q, P> {
+
+        MiddlewarePipeline<Q, P> pipe(Middleware.BasicMiddleware<Q, P> middleware);
+
+        MiddlewarePipeline<Q, P> pipe(Middleware.IntermediateMiddleware<Q, P> middleware);
+
+        MiddlewarePipeline<Q, P> pipe(Middleware.ExceptionMiddleware<Q, P> middleware);
+
+    }
+
+
     @SuppressWarnings("unchecked")
     public static <Q, P> void runner(Middleware middleware, Exception err, Q req, P res, Middleware.Next next) {
         try {

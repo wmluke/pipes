@@ -6,19 +6,19 @@ import net.bunselmeyer.evince.http.HttpResponse;
 
 public class BodyTransformers {
 
-    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> json(Class type) {
+    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> fromJson(Class type) {
         return (req, res) -> {
             req.body().transform(() -> req.body().asJson(type));
         };
     }
 
-    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> json(TypeReference type) {
+    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> fromJson(TypeReference type) {
         return (req, res) -> {
             req.body().transform(() -> req.body().asJson(type));
         };
     }
 
-    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> formUrlEncoded() {
+    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> fromFormUrlEncoded() {
         return (req, res) -> {
             req.body().transform(() -> req.body().asFormUrlEncoded());
         };

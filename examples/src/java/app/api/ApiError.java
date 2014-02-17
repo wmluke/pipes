@@ -2,16 +2,16 @@ package app.api;
 
 public class ApiError {
 
-    private final int statusCode;
+    private final ApiErrorCode code;
     private final String message;
 
-    public ApiError(int statusCode, String message) {
-        this.statusCode = statusCode;
+    public ApiError(ApiErrorCode statusCode, String message) {
+        this.code = statusCode;
         this.message = message;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public ApiErrorCode getCode() {
+        return code;
     }
 
     public String getMessage() {

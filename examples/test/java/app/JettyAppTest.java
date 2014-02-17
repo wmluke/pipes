@@ -106,21 +106,35 @@ public class JettyAppTest {
     @Test
     public void testUsers() throws Exception {
 
-        given().body(new User().setFirstName("Jon").setLastName("Doe"), ObjectMapperType.JACKSON_2)
+        given().body(new User().setFirstName("Jon").setLastName("").setEmail("jon.doe"), ObjectMapperType.JACKSON_2)
+                .post("/users")
+                .then()
+                .statusCode(422)
+                .header("Content-type", is("application/json;charset=UTF-8"))
+                .body("error.code", is("INVALID_FORMAT"))
+                .body("error.message", is("may not be empty, not a well-formed email address"))
+                .body("error.inputViolations[0].property", is("lastName"))
+                .body("error.inputViolations[0].message", is("may not be empty"))
+                .body("error.inputViolations[1].property", is("email"))
+                .body("error.inputViolations[1].message", is("not a well-formed email address"));
+
+        given().body(new User().setFirstName("Jon").setLastName("Doe").setEmail("jon.doe@gmail.com"), ObjectMapperType.JACKSON_2)
                 .post("/users")
                 .then()
                 .statusCode(201)
                 .header("Content-type", is("application/json;charset=UTF-8"))
                 .body("body.id", is(1))
+                .body("body.email", is("jon.doe@gmail.com"))
                 .body("body.firstName", is("Jon"))
                 .body("body.lastName", is("Doe"));
 
-        given().body(new User().setFirstName("Jane").setLastName("Doe"), ObjectMapperType.JACKSON_2)
+        given().body(new User().setFirstName("Jane").setLastName("Doe").setEmail("jane.doe@gmail.com"), ObjectMapperType.JACKSON_2)
                 .post("/users")
                 .then()
                 .statusCode(201)
                 .header("Content-type", is("application/json;charset=UTF-8"))
                 .body("body.id", is(2))
+                .body("body.email", is("jane.doe@gmail.com"))
                 .body("body.firstName", is("Jane"))
                 .body("body.lastName", is("Doe"));
 
@@ -128,6 +142,7 @@ public class JettyAppTest {
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
                 .body("body.id", is(1))
+                .body("body.email", is("jon.doe@gmail.com"))
                 .body("body.firstName", is("Jon"))
                 .body("body.lastName", is("Doe"));
 
@@ -136,6 +151,7 @@ public class JettyAppTest {
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
                 .body("body.id", is(2))
+                .body("body.email", is("jane.doe@gmail.com"))
                 .body("body.firstName", is("Jane"))
                 .body("body.lastName", is("Doe"));
 
@@ -143,14 +159,16 @@ public class JettyAppTest {
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
                 .body("body[0].id", is(1))
+                .body("body[0].email", is("jon.doe@gmail.com"))
                 .body("body[0].firstName", is("Jon"))
                 .body("body[0].lastName", is("Doe"))
                 .body("body[1].id", is(2))
+                .body("body[1].email", is("jane.doe@gmail.com"))
                 .body("body[1].firstName", is("Jane"))
                 .body("body[1].lastName", is("Doe"));
 
 
-        given().body(new User().setId(2).setFirstName("Mindy").setLastName("Doe"), ObjectMapperType.JACKSON_2)
+        given().body(new User().setId(2).setFirstName("Mindy").setLastName("Doe").setEmail("jane.doe@gmail.com"), ObjectMapperType.JACKSON_2)
                 .put("/users/2")
                 .then()
                 .statusCode(200)
@@ -161,6 +179,7 @@ public class JettyAppTest {
                 .statusCode(200)
                 .header("Content-type", is("application/json;charset=UTF-8"))
                 .body("body.id", is(2))
+                .body("body.email", is("jane.doe@gmail.com"))
                 .body("body.firstName", is("Mindy"))
                 .body("body.lastName", is("Doe"));
 

@@ -27,4 +27,14 @@ public class RouteMiddleware {
         };
     }
 
+    public static Middleware.ExceptionMiddleware<HttpRequest, HttpResponse> route(String method, String uriPattern, Middleware.ExceptionMiddleware<HttpRequest, HttpResponse> middleware) {
+        Route route = new Route(method, uriPattern, middleware);
+        return (e, request, response, next) -> {
+            if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
+                middleware.run(e, request, response, next);
+            }
+            next.run(null);
+        };
+    }
+
 }

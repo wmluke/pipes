@@ -1,27 +1,18 @@
 package net.bunselmeyer.evince;
 
 import net.bunselmeyer.hitch.App;
-import net.bunselmeyer.hitch.middleware.Middleware;
 
 import java.io.IOException;
 
 public interface EvinceApp<Q, P> extends App<Q, P> {
 
-    EvinceApp get(String uriPattern, Middleware.BasicMiddleware<Q, P> middleware);
+    MiddlewarePipeline<Q, P> get(String uriPattern);
 
-    EvinceApp get(String uriPattern, Middleware.IntermediateMiddleware<Q, P> middleware);
+    MiddlewarePipeline<Q, P> post(String uriPattern);
 
-    EvinceApp post(String uriPattern, Middleware.BasicMiddleware<Q, P> middleware);
+    MiddlewarePipeline<Q, P> put(String uriPattern);
 
-    EvinceApp post(String uriPattern, Middleware.IntermediateMiddleware<Q, P> middleware);
-
-    EvinceApp put(String uriPattern, Middleware.BasicMiddleware<Q, P> middleware);
-
-    EvinceApp put(String uriPattern, Middleware.IntermediateMiddleware<Q, P> middleware);
-
-    EvinceApp delete(String uriPattern, Middleware.BasicMiddleware<Q, P> middleware);
-
-    EvinceApp delete(String uriPattern, Middleware.IntermediateMiddleware<Q, P> middleware);
+    MiddlewarePipeline<Q, P> delete(String uriPattern);
 
     void dispatch(Q req, P res, String contextPath) throws IOException;
 }

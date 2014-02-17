@@ -63,33 +63,33 @@ public class JettyApp {
             });
         });
 
-        app.get("/", (req, res) -> {
+        app.get("/").pipe((req, res) -> {
             res.send(200, "<h1>hello world!</h1>");
         });
 
-        app.get("/locations/{country}/{state}/{city}", (req, res) -> {
+        app.get("/locations/{country}/{state}/{city}").pipe((req, res) -> {
             String country = req.routeParam("country");
             String state = req.routeParam("state");
             String city = req.routeParam("city");
             res.send(200, "<h1>" + Joiner.on(", ").join(country, state, city) + "</h1>");
         });
 
-        app.get("/error", (req, res) -> {
+        app.get("/error").pipe((req, res) -> {
             throw new RuntimeException("Fail!");
         });
 
-        app.post("/", (req, res) -> {
+        app.post("/").pipe((req, res) -> {
             String aaa = req.body().asFormUrlEncoded().get("aaa").get(0);
             String bbb = req.body().asFormUrlEncoded().get("bbb").get(0);
             res.send(200, "<p>" + aaa + ", " + bbb + "</p>");
         });
 
-        app.post("/foo", (req, res) -> {
+        app.post("/foo").pipe((req, res) -> {
             JsonNode jsonNode = req.body().asJson();
             res.json(200, jsonNode.toString());
         });
 
-        app.use(UserController.app(persistence));
+        app.use(UserController.create(persistence));
 
         app.use((err, req, res, next) -> {
             if (err != null) {

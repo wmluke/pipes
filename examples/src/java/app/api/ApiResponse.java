@@ -25,11 +25,15 @@ public class ApiResponse<M> {
     }
 
     public static <M> ApiResponse<M> error(ApiErrorException e) {
-        return new ApiResponse<>(null, new ApiError(e.getStatusCode(), e.getMessage()));
+        return new ApiResponse<>(null, new ApiError(ApiErrorCode.valueOfStatusCode(e.getStatusCode()), e.getMessage()));
+    }
+
+    public static <M> ApiResponse<M> error(ApiError error) {
+        return new ApiResponse<>(null, error);
     }
 
     public static <M> ApiResponse<M> error(int statusCode, String message) {
-        return new ApiResponse<>(null, new ApiError(statusCode, message));
+        return new ApiResponse<>(null, new ApiError(ApiErrorCode.valueOfStatusCode(statusCode), message));
     }
 
 }
