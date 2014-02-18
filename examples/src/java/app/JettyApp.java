@@ -3,7 +3,7 @@ package app;
 import app.configure.HibernateOrm;
 import app.configure.JacksonJson;
 import app.configure.Logback;
-import app.controllers.UserController;
+import app.models.User;
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +15,7 @@ import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static app.middleware.SimpleControllerMiddleware.simpleController;
 import static net.bunselmeyer.evince.middleware.MountResourceMiddleware.Evince.mountResourceDir;
 import static net.bunselmeyer.hitch.middleware.LoggerMiddleware.logger;
 
@@ -89,7 +90,7 @@ public class JettyApp {
             res.json(200, jsonNode.toString());
         });
 
-        app.use(UserController.create(persistence));
+        app.use(simpleController(User.class, persistence));
 
         app.use((err, req, res, next) -> {
             if (err != null) {

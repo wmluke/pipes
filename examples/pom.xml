@@ -77,6 +77,14 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
+        <!--Misc-->
+
+        <dependency>
+            <groupId>org.atteo</groupId>
+            <artifactId>evo-inflector</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
         <!--Logging-->
 
         <dependency>

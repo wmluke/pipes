@@ -3,7 +3,6 @@ package app;
 import app.models.User;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.internal.mapper.ObjectMapperType;
-import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -11,9 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.StringContains.containsString;
+import static org.hamcrest.Matchers.*;
 
 public class JettyAppTest {
 
@@ -90,7 +87,7 @@ public class JettyAppTest {
                 .post("/")
                 .then()
                 .statusCode(200)
-                .body(Matchers.containsString("<p>111, 222</p>"));
+                .body(containsString("<p>111, 222</p>"));
 
         Map<String, Object> body = new HashMap<>();
         body.put("aaa", "111");
@@ -100,7 +97,7 @@ public class JettyAppTest {
                 .post("/foo")
                 .then()
                 .statusCode(200)
-                .body(Matchers.containsString("{\"aaa\":\"111\",\"bbb\":\"222\"}"));
+                .body(containsString("{\"aaa\":\"111\",\"bbb\":\"222\"}"));
     }
 
     @Test
@@ -112,11 +109,9 @@ public class JettyAppTest {
                 .statusCode(422)
                 .header("Content-type", is("application/json;charset=UTF-8"))
                 .body("error.code", is("INVALID_FORMAT"))
-                .body("error.message", is("may not be empty, not a well-formed email address"))
-                .body("error.inputViolations[0].property", is("lastName"))
-                .body("error.inputViolations[0].message", is("may not be empty"))
-                .body("error.inputViolations[1].property", is("email"))
-                .body("error.inputViolations[1].message", is("not a well-formed email address"));
+                .body("error.message", both(containsString("may not be empty")).and(containsString("not a well-formed email address")))
+                .body("error.inputViolations.property", containsInAnyOrder("lastName", "email"))
+                .body("error.inputViolations.message", containsInAnyOrder("may not be empty", "not a well-formed email address"));
 
         given().body(new User().setFirstName("Jon").setLastName("Doe").setEmail("jon.doe@gmail.com"), ObjectMapperType.JACKSON_2)
                 .post("/users")
@@ -167,6 +162,19 @@ public class JettyAppTest {
                 .body("body[1].firstName", is("Jane"))
                 .body("body[1].lastName", is("Doe"));
 
+        given().body(new User().setId(2).setFirstName("Mindy").setLastName("Doe").setEmail("jane.doe@gmail.com"), ObjectMapperType.JACKSON_2)
+                .put("/users/22")
+                .then()
+                .statusCode(404)
+                .header("Content-type", is("application/json;charset=UTF-8"))
+                .body("error.message", is("Record not found"));
+
+        given().body(new User().setId(22).setFirstName("Mindy").setLastName("Doe").setEmail("jane.doe@gmail.com"), ObjectMapperType.JACKSON_2)
+                .put("/users/2")
+                .then()
+                .statusCode(400)
+                .header("Content-type", is("application/json;charset=UTF-8"))
+                .body("error.message", is("Mismatched entity ID"));
 
         given().body(new User().setId(2).setFirstName("Mindy").setLastName("Doe").setEmail("jane.doe@gmail.com"), ObjectMapperType.JACKSON_2)
                 .put("/users/2")
