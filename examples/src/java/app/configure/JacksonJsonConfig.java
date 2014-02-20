@@ -9,7 +9,7 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-public class JacksonJson {
+public class JacksonJsonConfig {
 
     private static final SimpleModule BIG_DECIMAL_MODULE = new SimpleModule("BigDecimalModule");
 

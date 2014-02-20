@@ -10,7 +10,7 @@ import ch.qos.logback.core.status.StatusManager;
 
 import java.nio.charset.Charset;
 
-public class Logback {
+public class LogbackConfig {
 
     public static void configure(LoggerContext loggerContext) {
         loggerContext.reset();

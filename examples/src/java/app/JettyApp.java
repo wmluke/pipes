@@ -1,8 +1,9 @@
 package app;
 
-import app.configure.HibernateOrm;
-import app.configure.JacksonJson;
-import app.configure.Logback;
+import app.configure.HibernateConfig;
+import app.configure.JacksonJsonConfig;
+import app.configure.LogbackConfig;
+import app.configure.SessionManagerConfig;
 import app.models.User;
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,6 +12,7 @@ import com.google.common.base.Joiner;
 import net.bunselmeyer.evince.Evince;
 import net.bunselmeyer.evince.persistence.Persistence;
 import net.bunselmeyer.server.HttpServer;
+import org.eclipse.jetty.server.session.HashSessionManager;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +29,19 @@ public class JettyApp {
 
         Evince app = Evince.create();
 
-        app.configure(ObjectMapper.class, JacksonJson::configure);
-        app.configure((LoggerContext) LoggerFactory.getILoggerFactory(), Logback::configure);
-        app.configure(org.hibernate.cfg.Configuration.class, HibernateOrm::configure);
+        app.configure(HashSessionManager.class, SessionManagerConfig::configure);
+        app.configure(ObjectMapper.class, JacksonJsonConfig::configure);
+        app.configure((LoggerContext) LoggerFactory.getILoggerFactory(), LogbackConfig::configure);
+        app.configure(org.hibernate.cfg.Configuration.class, HibernateConfig::configure);
 
         Persistence persistence = Persistence.create(app.configuration(Configuration.class));
 
         app.use(logger(logger, (opts) -> opts.logHeaders = true));
+
+        // Start a session
+        app.use((req, res) -> {
+            req.delegate().getSession();
+        });
 
         app.use((req, res) -> {
             res.charset("UTF-8");

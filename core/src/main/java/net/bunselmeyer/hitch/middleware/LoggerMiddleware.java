@@ -17,7 +17,15 @@ public class LoggerMiddleware {
             Date start = new Date();
             next.run(null);
             long duration = new Date().getTime() - start.getTime();
-            logger.info(res.method() + " " + res.uri() + "?" + res.query() + " " + resp.status() + " " + duration + "msec");
+            logger.info("\n\nREQUEST " + res.method() + " " + res.uri() + "?" + res.query() + " " + resp.status() + " " + duration + "msec");
+            if (options.logHeaders) {
+                logger.info("  HEADERS:");
+                for (Map.Entry<String, String> entry : res.headers().entrySet()) {
+                    logger.info("    " + entry.getKey() + ": " + entry.getValue());
+                }
+            }
+
+            logger.info("RESPONSE");
             if (options.logHeaders) {
                 logger.info("  HEADERS:");
                 for (Map.Entry<String, String> entry : res.headers().entrySet()) {

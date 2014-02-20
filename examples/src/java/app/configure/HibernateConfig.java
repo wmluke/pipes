@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 import static org.hibernate.cfg.AvailableSettings.*;
 
-public class HibernateOrm {
+public class HibernateConfig {
 
     public static void configure(org.hibernate.cfg.Configuration configuration) {
         configuration.setProperty(Environment.CONNECTION_PROVIDER, AppConnectionProvider.class.getName());

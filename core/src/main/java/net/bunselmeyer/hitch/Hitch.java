@@ -5,6 +5,7 @@ import com.google.common.base.Joiner;
 import net.bunselmeyer.hitch.middleware.ExceptionMapperMiddleware;
 import net.bunselmeyer.hitch.middleware.Middleware;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jetty.server.session.HashSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ public class Hitch implements App<HttpServletRequest, HttpServletResponse> {
     }
 
     protected Hitch() {
+        configs.put(getKey(HashSessionManager.class, null), new HashSessionManager());
         configs.put(getKey(ObjectMapper.class, null), new ObjectMapper());
         configs.put(getKey(ObjectMapper.class, XML_MAPPER_NAME), new ObjectMapper());
     }

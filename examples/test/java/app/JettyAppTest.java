@@ -34,38 +34,46 @@ public class JettyAppTest {
 
     @Test
     public void testGET() throws Exception {
+
         get("/").then().contentType(ContentType.HTML).assertThat()
                 .statusCode(200)
                 .header("Content-type", is("text/html; charset=UTF-8"))
                 .cookie("foo", is("bar"))
+                .cookie("foo", is("bar"))
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("<h1>hello world!</h1>"));
 
         get("/restricted/foo").then()
                 .statusCode(401)
                 .header("Content-type", is("text/html; charset=UTF-8"))
                 .header("Cookie", nullValue())
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("Restricted Area"));
 
         get("/locations/usa/ca/san-francisco").then()
                 .statusCode(200)
                 .header("Content-type", is("text/html; charset=UTF-8"))
                 .cookie("foo", is("bar"))
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("<h1>usa, ca, san-francisco</h1>"));
 
         get("/error").then()
                 .statusCode(400)
                 .header("Content-type", is("text/html; charset=UTF-8"))
                 .cookie("foo", is("bar"))
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("Handled error: Fail!"));
 
         get("/assets").then().contentType(ContentType.HTML).assertThat()
                 .statusCode(200)
                 .header("Content-type", is("text/html; charset=UTF-8"))
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("<h1>welcome</h1>"));
 
         get("/assets/main.css").then().assertThat()
                 .statusCode(200)
                 .header("Content-type", is("text/css;charset=UTF-8"))
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("body {\n" +
                         "    background-color: cornflowerblue;\n" +
                         "}"));
@@ -73,6 +81,7 @@ public class JettyAppTest {
         get("/assets/styles.css").then().assertThat()
                 .statusCode(200)
                 .header("Content-type", is("text/css;charset=UTF-8"))
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("body {\n" +
                         "    color: yellow;\n" +
                         "}"));
@@ -87,6 +96,7 @@ public class JettyAppTest {
                 .post("/")
                 .then()
                 .statusCode(200)
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("<p>111, 222</p>"));
 
         Map<String, Object> body = new HashMap<>();
@@ -97,6 +107,7 @@ public class JettyAppTest {
                 .post("/foo")
                 .then()
                 .statusCode(200)
+                .cookie("APPSESSIONID", not(isEmptyOrNullString()))
                 .body(containsString("{\"aaa\":\"111\",\"bbb\":\"222\"}"));
     }
 
