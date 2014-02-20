@@ -14,7 +14,10 @@ build:
 run:
 	cd examples; JAVA_HOME=$(JAVA8_HOME) mvn exec:java -Dexec.mainClass="JettyApp" -Dexec.args="8888"
 
+deploy:
+	JAVA_HOME=$(JAVA8_HOME) mvn clean deploy
+
 sources:
 	JAVA_HOME=$(JAVA8_HOME) mvn dependency:sources
 
-.PHONY: clean install test build run sources
+.PHONY: clean install test build run deploy sources

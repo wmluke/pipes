@@ -13,7 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
@@ -59,6 +61,15 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
     @Override
     public String header(String name) {
         return httpResponse.headers().get(name);
+    }
+
+    @Override
+    public Map<String, String> headers() {
+        Map<String, String> headers = new HashMap<>();
+        for (String name : httpResponse.headers().names()) {
+            headers.put(name, httpResponse.headers().get(name));
+        }
+        return headers;
     }
 
     @Override

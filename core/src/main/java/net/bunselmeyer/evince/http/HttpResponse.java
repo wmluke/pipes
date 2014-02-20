@@ -4,6 +4,7 @@ import io.netty.handler.codec.http.Cookie;
 
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public interface HttpResponse {
@@ -17,6 +18,8 @@ public interface HttpResponse {
     HttpResponse header(String name, String value);
 
     String header(String name);
+
+    Map<String, String> headers();
 
     HttpResponse cookie(String name, Cookie value);
 

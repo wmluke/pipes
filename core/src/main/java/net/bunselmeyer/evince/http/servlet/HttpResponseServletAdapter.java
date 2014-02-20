@@ -8,6 +8,8 @@ import net.bunselmeyer.evince.http.HttpResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpResponseServletAdapter extends AbstractHttpResponse {
 
@@ -43,6 +45,15 @@ public class HttpResponseServletAdapter extends AbstractHttpResponse {
     @Override
     public String header(String name) {
         return httpResponse.getHeader(name);
+    }
+
+    @Override
+    public Map<String, String> headers() {
+        Map<String, String> headers = new HashMap<>();
+        for (String name : httpResponse.getHeaderNames()) {
+            headers.put(name, httpResponse.getHeader(name));
+        }
+        return headers;
     }
 
     @Override

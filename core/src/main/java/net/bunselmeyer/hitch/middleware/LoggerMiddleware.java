@@ -13,14 +13,14 @@ public class LoggerMiddleware {
     public static Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> logger(Logger logger, Consumer<Options> block) {
         Options options = new Options();
         block.accept(options);
-        return (res, resp, next) -> {
+        return (req, res, next) -> {
             Date start = new Date();
             next.run(null);
             long duration = new Date().getTime() - start.getTime();
-            logger.info("\n\nREQUEST " + res.method() + " " + res.uri() + "?" + res.query() + " " + resp.status() + " " + duration + "msec");
+            logger.info("\n\nREQUEST " + req.method() + " " + req.uri() + "?" + req.query() + " " + res.status() + " " + duration + "msec");
             if (options.logHeaders) {
                 logger.info("  HEADERS:");
-                for (Map.Entry<String, String> entry : res.headers().entrySet()) {
+                for (Map.Entry<String, String> entry : req.headers().entrySet()) {
                     logger.info("    " + entry.getKey() + ": " + entry.getValue());
                 }
             }
