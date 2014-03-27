@@ -8,6 +8,34 @@ A naive port of [Connect](http://www.senchalabs.org/connect)/[Express](http://ex
 
 Under the hood, Hitch & Evince use [Jetty](http://www.eclipse.org/jetty).
 
+## Install
+
+Add to `hitch-core` to your project's pom.xml file:
+
+```xml
+<repositories>
+    <repository>
+        <id>sonatype-nexus-snapshots</id>
+        <name>Sonatype Nexus Snapshots</name>
+        <url>https://oss.sonatype.org/content/groups/public</url>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>net.bunselmeyer</groupId>
+        <artifactId>hitch-core</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
+
 ## Example
 
 ```java
