@@ -20,4 +20,7 @@ deploy:
 sources:
 	JAVA_HOME=$(JAVA8_HOME) mvn dependency:sources
 
-.PHONY: clean install test build run deploy sources
+jdkinfo:
+	JAVA_HOME=$(JAVA8_HOME) mvn --version
+
+.PHONY: clean install test build run deploy sources jdkinfo

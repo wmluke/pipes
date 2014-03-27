@@ -36,10 +36,12 @@ Add to `hitch-core` to your project's pom.xml file:
 </dependencies>
 ```
 
-## Example
+## Hello World Example
+
+Create a main method and setup either a `Hitch` or `Evince` app within the main method...
 
 ```java
-public class Main {
+public class App {
 
     public static void main(String[] args) throws Exception {
 
@@ -64,9 +66,15 @@ public class Main {
 }
 ```
 
+Run it...
+
+```bash
+$ mvn exec:java -Dexec.mainClass="App"
+```
+
 ## Run the Example App
 
-The [example app](https://github.com/wmluke/hitch/blob/master/examples/src/java/app/JettyApp.java) illustrates some of Hitch's features.
+The [example app](https://github.com/wmluke/hitch/blob/master/examples/src/java/app/JettyApp.java) illustrates more of Hitch's features beyond a simple hello world app.
 
 1) Install [Java 8](https://jdk8.java.net) and create a `JAVA8_HOME` environment variable referencing the JDK 8 home.
 
