@@ -4,9 +4,9 @@
 
 [![Build Status](https://travis-ci.org/wmluke/hitch.png?branch=master)](https://travis-ci.org/wmluke/hitch)
 
-A naive port of [Connect](http://www.senchalabs.org/connect)/[Express](http://expressjs.com) to Java 1.8 to try out Java's fancy new Lambda support!
+Hitch & Evince are a middleware frameworks for Java 1.8.
 
-Under the hood, Hitch & Evince use [Jetty](http://www.eclipse.org/jetty).
+Hitch & Evince are heavily inspired by [Connect](http://www.senchalabs.org/connect) and [Express](http://expressjs.com) for node.  Specifically, these node middleware frameworks allow developers to create robust web applications by composing simple and lightweight middleware.  Hopefully, Hitch & Evince can leverage Java's fancy new Lambda support to bring this same spirit to Java. Under the hood, Hitch & Evince use [Jetty](http://www.eclipse.org/jetty).
 
 ## Install
 
