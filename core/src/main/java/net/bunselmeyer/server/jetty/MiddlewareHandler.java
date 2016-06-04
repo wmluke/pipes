@@ -19,7 +19,7 @@ public class MiddlewareHandler extends AbstractHandler {
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        app.dispatch(request, response);
+        app.dispatch(request, response, null);
         baseRequest.setHandled(true);
     }
 }

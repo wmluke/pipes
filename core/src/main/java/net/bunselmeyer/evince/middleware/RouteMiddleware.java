@@ -7,23 +7,58 @@ import net.bunselmeyer.hitch.middleware.Middleware;
 
 public class RouteMiddleware {
 
-    public static Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> route(String method, String uriPattern, Middleware.BasicMiddleware<HttpRequest, HttpResponse> middleware) {
+    public static <M> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware1<HttpRequest, HttpResponse> middleware) {
         Route route = new Route(method, uriPattern, middleware);
-        return (request, response, next) -> {
+        return (memo, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 middleware.run(request, response);
             }
-            next.run(null);
+            next.run(memo);
         };
     }
 
-    public static Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> route(String method, String uriPattern, Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
+    public static <M> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware2<HttpRequest, HttpResponse, M> middleware) {
         Route route = new Route(method, uriPattern, middleware);
-        return (request, response, next) -> {
+        return (memo, request, response, next) -> {
+            if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
+                next.run(middleware.run(request, response));
+                return;
+            }
+            next.run(memo);
+        };
+    }
+
+
+    public static <M, N> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware3<HttpRequest, HttpResponse, M, N> middleware) {
+        Route route = new Route(method, uriPattern, middleware);
+        return (memo, request, response, next) -> {
+            if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
+                next.run(middleware.run(memo, request, response));
+                return;
+            }
+            next.run(memo);
+        };
+    }
+
+    public static <M> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware4<HttpRequest, HttpResponse> middleware) {
+        Route route = new Route(method, uriPattern, middleware);
+        return (memo, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 middleware.run(request, response, next);
+                return;
             }
-            next.run(null);
+            next.run(memo);
+        };
+    }
+
+    public static <M> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> middleware) {
+        Route route = new Route(method, uriPattern, middleware);
+        return (memo, request, response, next) -> {
+            if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
+                middleware.run(memo, request, response, next);
+                return;
+            }
+            next.run(memo);
         };
     }
 
@@ -32,8 +67,9 @@ public class RouteMiddleware {
         return (e, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 middleware.run(e, request, response, next);
+                return;
             }
-            next.run(null);
+            next.run(e);
         };
     }
 

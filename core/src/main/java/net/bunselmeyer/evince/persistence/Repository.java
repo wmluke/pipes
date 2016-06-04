@@ -15,7 +15,7 @@ public interface Repository<T> {
 
     RepositoryResult<T> find(Criteria criteria);
 
-    void create(T entity);
+    T create(T entity);
 
     void delete(T entity);
 

@@ -1,6 +1,7 @@
 package net.bunselmeyer.hitch;
 
 import net.bunselmeyer.hitch.middleware.Middleware;
+import net.bunselmeyer.hitch.middleware.Next;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -21,29 +22,46 @@ public interface App<Q, P> {
 
     App<Q, P> use(App<Q, P> app);
 
-    App<Q, P> use(Middleware.BasicMiddleware<Q, P> middleware);
+    App<Q, P> use(Middleware.StandardMiddleware1<Q, P> middleware);
 
-    App<Q, P> use(Middleware.IntermediateMiddleware<Q, P> middleware);
+    <M> App<Q, P> use(Middleware.StandardMiddleware2<Q, P, M> middleware);
 
-    App<Q, P> use(Middleware.ExceptionMiddleware<Q, P> middleware);
+    <M, N> App<Q, P> use(Middleware.StandardMiddleware3<Q, P, M, N> middleware);
 
-    <E extends Throwable> App<Q, P> use(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<Q, P, E> middleware);
+    App<Q, P> use(Middleware.StandardMiddleware4<Q, P> middleware);
 
-    void dispatch(Q req, P res) throws IOException;
+    <M> App<Q, P> use(Middleware.StandardMiddleware5<Q, P, M> middleware);
 
-    public static interface MiddlewarePipeline<Q, P> {
+    App<Q, P> onError(Middleware.ExceptionMiddleware<Q, P> middleware);
 
-        MiddlewarePipeline<Q, P> pipe(Middleware.BasicMiddleware<Q, P> middleware);
+    <E extends Throwable> App<Q, P> onError(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<Q, P, E> middleware);
 
-        MiddlewarePipeline<Q, P> pipe(Middleware.IntermediateMiddleware<Q, P> middleware);
+    void dispatch(Q req, P res, Next next) throws IOException;
+
+    interface MiddlewarePipeline<Q, P> {
+
+        MiddlewarePipeline<Q, P> pipe(Middleware.StandardMiddleware1<Q, P> middleware);
+
+        <M> MemoMiddlewarePipeline<Q, P, M> pipe(Middleware.StandardMiddleware2<Q, P, M> middleware);
+
+        MiddlewarePipeline<Q, P> pipe(Middleware.StandardMiddleware4<Q, P> middleware);
 
         MiddlewarePipeline<Q, P> pipe(Middleware.ExceptionMiddleware<Q, P> middleware);
 
     }
 
+    interface MemoMiddlewarePipeline<Q, P, M> {
+
+        <N> MemoMiddlewarePipeline<Q, P, N> pipe(Middleware.StandardMiddleware3<Q, P, M, N> middleware);
+
+        MiddlewarePipeline<Q, P> pipe(Middleware.StandardMiddleware4<Q, P> middleware);
+
+        MemoMiddlewarePipeline<Q, P, M> pipe(Middleware.StandardMiddleware5<Q, P, M> middleware);
+    }
+
 
     @SuppressWarnings("unchecked")
-    public static <Q, P> void runner(Middleware middleware, Exception err, Q req, P res, Middleware.Next next) {
+    static <Q, P> void runner(Middleware middleware, Exception err, Q req, P res, Next next) {
         try {
             if (err != null) {
                 if (middleware instanceof Middleware.ExceptionMiddleware) {
@@ -52,11 +70,11 @@ public interface App<Q, P> {
                     next.run(err);
                 }
 
-            } else if (middleware instanceof Middleware.IntermediateMiddleware) {
-                ((Middleware.IntermediateMiddleware<Q, P>) middleware).run(req, res, next);
+            } else if (middleware instanceof Middleware.StandardMiddleware4) {
+                ((Middleware.StandardMiddleware4<Q, P>) middleware).run(req, res, next);
 
-            } else if (middleware instanceof Middleware.BasicMiddleware) {
-                ((Middleware.BasicMiddleware<Q, P>) middleware).run(req, res);
+            } else if (middleware instanceof Middleware.StandardMiddleware1) {
+                ((Middleware.StandardMiddleware1<Q, P>) middleware).run(req, res);
                 next.run(null);
 
             } else {

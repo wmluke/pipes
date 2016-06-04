@@ -17,6 +17,8 @@ import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.stream.Stream;
+
 import static app.middleware.SimpleControllerMiddleware.simpleController;
 import static net.bunselmeyer.evince.middleware.MountResourceMiddleware.Evince.mountResourceDir;
 import static net.bunselmeyer.hitch.middleware.LoggerMiddleware.logger;
@@ -76,6 +78,15 @@ public class JettyApp {
             res.send(200, "<h1>hello world!</h1>");
         });
 
+
+        app.get("/stream")
+            .pipe((req1, res1) -> {
+                return Stream.of("one", "two", "three");
+            })
+            .pipe((memo, req, res) -> {
+                return memo.map(String::length);
+            });
+
         app.get("/locations/{country}/{state}/{city}").pipe((req, res) -> {
             String country = req.routeParam("country");
             String state = req.routeParam("state");
@@ -84,7 +95,9 @@ public class JettyApp {
         });
 
         app.get("/error").pipe((req, res) -> {
-            throw new RuntimeException("Fail!");
+            return new RuntimeException("Fail!");
+//            if (true) throw new RuntimeException("Fail!");
+//            return;
         });
 
         app.post("/").pipe((req, res) -> {
@@ -95,18 +108,19 @@ public class JettyApp {
 
         app.post("/foo").pipe((req, res) -> {
             JsonNode jsonNode = req.body().asJson();
-            res.json(200, jsonNode.toString());
+            res.toJson(200, jsonNode.toString());
         });
 
-        app.use(simpleController(User.class, persistence));
-
-        app.use((err, req, res, next) -> {
+        app.onError((err, req, res, next) -> {
             if (err != null) {
                 res.send(400, "Handled error: " + err.getMessage());
                 return;
             }
             next.run(null);
         });
+
+        app.use(simpleController(User.class, persistence));
+
 
         int port = 8888;
 

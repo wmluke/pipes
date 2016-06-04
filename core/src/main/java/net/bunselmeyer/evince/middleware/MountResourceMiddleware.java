@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * Thank you dropwizard for serving static assets!
  * Pulled from com.codahale.dropwizard.servlets.assets.AssetServlet
  */
-public class MountResourceMiddleware implements Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> {
+public class MountResourceMiddleware implements Middleware.StandardMiddleware1<HttpServletRequest, HttpServletResponse> {
 
     private static final CharMatcher SLASHES = CharMatcher.is('/');
     private static final MediaType DEFAULT_MEDIA_TYPE = MediaType.HTML_UTF_8;
@@ -159,7 +159,7 @@ public class MountResourceMiddleware implements Middleware.BasicMiddleware<HttpS
         private Hitch() {
         }
 
-        public static Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
+        public static StandardMiddleware1<HttpServletRequest, HttpServletResponse> mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
             Options options = new Options();
             options.resourcePath = resourcePath;
             options.uriPath = uriPath;
@@ -167,7 +167,7 @@ public class MountResourceMiddleware implements Middleware.BasicMiddleware<HttpS
             return new MountResourceMiddleware(options)::run;
         }
 
-        public static Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> mountResourceDir(String resourcePath, String uriPath) {
+        public static StandardMiddleware1<HttpServletRequest, HttpServletResponse> mountResourceDir(String resourcePath, String uriPath) {
             Options options = new Options();
             options.resourcePath = resourcePath;
             options.uriPath = uriPath;
@@ -182,11 +182,11 @@ public class MountResourceMiddleware implements Middleware.BasicMiddleware<HttpS
         private Evince() {
         }
 
-        public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
+        public static StandardMiddleware1<HttpRequest, HttpResponse> mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
             return (request, response) -> Hitch.mountResourceDir(resourcePath, uriPath, block).run(request.delegate(), response.delegate());
         }
 
-        public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> mountResourceDir(String resourcePath, String uriPath) {
+        public static StandardMiddleware1<HttpRequest, HttpResponse> mountResourceDir(String resourcePath, String uriPath) {
             return (request, response) -> Hitch.mountResourceDir(resourcePath, uriPath).run(request.delegate(), response.delegate());
         }
     }

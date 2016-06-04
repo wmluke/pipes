@@ -72,13 +72,13 @@ public interface RestfulControllerMiddleware<Q, P> {
 
             @Override
             public RestfulControllerMiddleware<Q, P> error(Middleware.ExceptionMiddleware<Q, P> middleware) {
-                app.use(middleware);
+                app.onError(middleware);
                 return this;
             }
 
             @Override
             public <E extends Throwable> RestfulControllerMiddleware<Q, P> error(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<Q, P, E> middleware) {
-                app.use(exceptionType, middleware);
+                app.onError(exceptionType, middleware);
                 return this;
             }
         };

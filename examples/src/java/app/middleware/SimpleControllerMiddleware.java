@@ -33,23 +33,23 @@ public class SimpleControllerMiddleware {
         return RestfulControllerMiddleware.restfulController(modelType, persistence, (controller, repository) -> {
 
             controller.create(rootUrl, (pipeline) -> {
-                pipeline.pipe(BodyTransformers.fromJson(modelType))
-                        .pipe(ValidationMiddleware.validateTransformedBody())
-                        .pipe(persistence.transactional(false, (req, res) -> {
-                            M model = req.body().asTransformed();
-                            repository.create(model);
-                        }))
-                        .pipe(apiResponse(201));
+                pipeline
+                    .pipe(BodyTransformers.fromJson(modelType))
+                    .pipe(ValidationMiddleware.validateTransformedBody())
+                    .pipe(persistence.transactional(false, (model, req, res) -> {
+                        return repository.create(model);
+                    }))
+                    .pipe(apiResponse(201));
 
             });
 
             controller.read(rootUrl + "/{id}", (pipeline) -> {
-                pipeline.pipe(persistence.transactional(true, (req, res, next) -> {
+                pipeline.pipe(persistence.transactional(true, (req, res) -> {
                     M model = repository.read(Integer.parseInt(req.routeParam("id")));
                     if (model == null) {
-                        next.run(new RecordNotFoundException());
+                        return new RecordNotFoundException();
                     }
-                    req.body().transform(() -> model);
+                    return model;
                 }));
                 pipeline.pipe(apiResponse(200));
 
@@ -57,45 +57,44 @@ public class SimpleControllerMiddleware {
 
             controller.index(rootUrl, (pipeline) -> {
                 pipeline.pipe(persistence.transactional(true, (req, res) -> {
-                    req.body().transform(() -> repository.find().list());
+                    return repository.find().list().stream();
                 }));
                 pipeline.pipe(apiResponse(200));
             });
 
             controller.update(rootUrl + "/{id}", (pipeline) -> {
                 pipeline.pipe(BodyTransformers.fromJson(modelType))
-                        .pipe(ValidationMiddleware.validateTransformedBody())
-                        .pipe(persistence.transactional(false, (req, res) -> {
-                            M model = repository.read(Integer.parseInt(req.routeParam("id")));
-                            if (model == null) {
-                                throw new RecordNotFoundException();
-                            }
-                            M jsonModel = req.body().asTransformed();
-                            if (jsonModel.getId() != model.getId()) {
-                                throw new ApiErrorException(400, "Mismatched entity ID");
-                            }
-                            repository.update(jsonModel);
-                            req.body().transform(() -> true);
-                        }))
-                        .pipe(apiResponse(200));
+                    .pipe(ValidationMiddleware.validateTransformedBody())
+                    .pipe(persistence.transactional(false, (body, req, res) -> {
+                        M model = repository.read(Integer.parseInt(req.routeParam("id")));
+                        if (model == null) {
+                            return new RecordNotFoundException();
+                        }
+                        if (body.getId() != model.getId()) {
+                            return new ApiErrorException(400, "Mismatched entity ID");
+                        }
+                        repository.update(body);
+                        return true;
+                    }))
+                    .pipe(apiResponse(200));
 
             });
 
             controller.delete(rootUrl + "/{id}", (pipeline) -> {
-                pipeline.pipe(persistence.transactional(false, (req, res, next) -> {
+                pipeline.pipe(persistence.transactional(false, (req, res) -> {
                     M model = repository.read(Integer.parseInt(req.routeParam("id")));
                     if (model == null) {
-                        next.run(new RecordNotFoundException());
+                        return new RecordNotFoundException();
                     }
                     repository.delete(model);
-                    req.body().transform(() -> true);
+                    return true;
                 }));
                 pipeline.pipe(apiResponse(200));
 
             });
 
             controller.error(ApiErrorException.class, (e, req, res, next) -> {
-                res.json(e.getStatusCode(), ApiResponse.error(e));
+                res.toJson(e.getStatusCode(), ApiResponse.error(e));
             });
 
             controller.error(ConstraintViolationException.class, (e, req, res, next) -> {
@@ -106,20 +105,20 @@ public class SimpleControllerMiddleware {
                         error.addConstraintViolation(violation);
                     }
                 }
-                res.json(error.getCode().httpStatus(), ApiResponse.error(error));
+                res.toJson(error.getCode().httpStatus(), ApiResponse.error(error));
             });
 
 
             controller.error((e, req, res, next) -> {
                 logger.error(e.getMessage(), e);
-                res.json(500, ApiResponse.error(500, "Unknown Error"));
+                res.toJson(500, ApiResponse.error(500, "Unknown Error"));
             });
         });
     }
 
-    public static Middleware.BasicMiddleware<HttpRequest, HttpResponse> apiResponse(int status) {
-        return (req, res) -> {
-            res.json(status, ApiResponse.body(req.body().asTransformed()));
+    public static Middleware.StandardMiddleware4<HttpRequest, HttpResponse> apiResponse(int status) {
+        return (req, res, next) -> {
+            res.toJson(status, ApiResponse.body(next.memo()));
         };
     }
 }

@@ -8,12 +8,15 @@ import javax.validation.*;
 import java.util.Set;
 
 public class ValidationMiddleware {
-    public static <T> Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> validateTransformedBody() {
+    public static <M> Middleware.StandardMiddleware3<HttpRequest, HttpResponse, M, M> validateTransformedBody() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        return (req, res, next) -> {
-            Set<ConstraintViolation<T>> constraintViolations = validator.validate(req.body().asTransformed());
-            next.run(constraintViolations.isEmpty() ? null : new ConstraintViolationException(constraintViolations));
+        return (memo, req, res) -> {
+            Set<ConstraintViolation<M>> constraintViolations = validator.validate(memo);
+            if (!constraintViolations.isEmpty()) {
+                throw new ConstraintViolationException(constraintViolations);
+            }
+            return memo;
         };
     }
 }

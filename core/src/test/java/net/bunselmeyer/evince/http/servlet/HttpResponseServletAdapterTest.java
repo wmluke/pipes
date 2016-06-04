@@ -2,6 +2,7 @@ package net.bunselmeyer.evince.http.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.evince.http.HttpResponse;
+import net.bunselmeyer.json.StreamModule;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
@@ -9,7 +10,9 @@ import org.mockito.ArgumentMatcher;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
@@ -36,9 +39,9 @@ public class HttpResponseServletAdapterTest {
 
         verify(servletResponse).addCookie(arg((c) -> {
             return c.getName().equals("foo") &&
-                    c.getValue().equals("bar") &&
-                    c.getPath().equals("/aaa") &&
-                    c.getSecure();
+                c.getValue().equals("bar") &&
+                c.getPath().equals("/aaa") &&
+                c.getSecure();
         }));
     }
 
@@ -48,8 +51,8 @@ public class HttpResponseServletAdapterTest {
 
         verify(servletResponse).addCookie(arg((c) -> {
             return c.getName().equals("foo") &&
-                    c.getValue().equals("") &&
-                    c.getMaxAge() == 0;
+                c.getValue().equals("") &&
+                c.getMaxAge() == 0;
         }));
     }
 
@@ -119,7 +122,7 @@ public class HttpResponseServletAdapterTest {
         when(servletResponse.getStatus()).thenReturn(401);
         when(servletResponse.getWriter()).thenReturn(writer);
 
-        httpResponse.json(401, "foo");
+        httpResponse.toJson(401, "foo");
 
         verify(servletResponse, times(1)).setStatus(401);
         verify(servletResponse).setContentType("application/json");
@@ -141,6 +144,21 @@ public class HttpResponseServletAdapterTest {
         verify(servletResponse).setCharacterEncoding("UTF-8");
         verify(servletResponse, never()).getWriter();
         verify(servletResponse).flushBuffer();
+    }
+
+    @Test
+    public void foo() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.registerModule(new StreamModule());
+
+
+        Stream<String> stream = Stream.of("aa", "bb", "cc");
+
+        String json = objectMapper.writeValueAsString(stream);
+
+        assertNotNull(json);
+
     }
 
     public static <T> T arg(Predicate<T> predicate) {

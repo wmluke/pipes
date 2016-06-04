@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 public interface MiddlewareFactory<T extends Middleware> extends Supplier<T> {
 
 
-    public interface Basic extends MiddlewareFactory<Middleware.BasicMiddleware> {
+    interface Basic extends MiddlewareFactory<Middleware.StandardMiddleware1> {
 
     }
 
-    public interface Intermediate extends MiddlewareFactory<Middleware.IntermediateMiddleware> {
+    interface Intermediate extends MiddlewareFactory<Middleware.StandardMiddleware4> {
 
     }
 

@@ -13,7 +13,7 @@ public class RouteMiddleware {
 
 
     @SuppressWarnings("unchecked")
-    public static Middleware.IntermediateMiddleware<HttpServletRequest, HttpServletResponse> route(String method, String uriPattern, Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
+    public static Middleware.StandardMiddleware4<HttpServletRequest, HttpServletResponse> route(String method, String uriPattern, Middleware.StandardMiddleware1<HttpServletRequest, HttpServletResponse> middleware) {
         Route route = new Route(method, uriPattern, middleware);
         return (request, response, next) -> {
             if (request.getAttribute(PATH_PARAMS) == null) {

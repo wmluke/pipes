@@ -2,7 +2,11 @@ package net.bunselmeyer.evince.http;
 
 import io.netty.handler.codec.http.Cookie;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -45,16 +49,29 @@ public interface HttpResponse {
 
     HttpResponse send(String body);
 
+    HttpResponse sendWriter(ThrowingConsumer<PrintWriter, IOException> consumer);
+
+    HttpResponse sendOutput(ThrowingConsumer<OutputStream, IOException> consumer);
+
     HttpResponse json(int status);
 
-    HttpResponse json(int status, Object body);
+    HttpResponse toJson(int status, Object body);
+
+    HttpResponse toJson(Object body);
 
     HttpResponse json(String body);
 
+    PrintWriter writer() throws IOException;
+
+    ServletOutputStream outputStream() throws IOException;
+
     HttpServletResponse delegate();
 
+    interface ThrowingConsumer<T, E extends Throwable> {
+        void accept(T t) throws E;
+    }
 
-    public static javax.servlet.http.Cookie servletCookie(Cookie nettyCookie) {
+    static javax.servlet.http.Cookie servletCookie(Cookie nettyCookie) {
         javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(nettyCookie.getName(), nettyCookie.getValue());
         servletCookie.setHttpOnly(nettyCookie.isHttpOnly());
         servletCookie.setComment(nettyCookie.getComment());

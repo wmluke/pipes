@@ -46,7 +46,7 @@ public interface HttpRequest {
 
     HttpServletRequest delegate();
 
-    public static interface Body {
+    interface Body {
 
         InputStream asInputStream();
 

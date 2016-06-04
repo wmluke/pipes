@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 public class LoggerMiddleware {
 
-    public static Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> logger(Logger logger, Consumer<Options> block) {
+    public static Middleware.StandardMiddleware4<HttpRequest, HttpResponse> logger(Logger logger, Consumer<Options> block) {
         Options options = new Options();
         block.accept(options);
         return (req, res, next) -> {

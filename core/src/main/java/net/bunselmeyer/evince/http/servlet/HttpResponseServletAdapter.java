@@ -5,8 +5,11 @@ import io.netty.handler.codec.http.Cookie;
 import net.bunselmeyer.evince.http.AbstractHttpResponse;
 import net.bunselmeyer.evince.http.HttpResponse;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,16 +105,45 @@ public class HttpResponseServletAdapter extends AbstractHttpResponse {
 
     @Override
     public HttpResponse send(String body) {
+        return sendWriter((writer) -> writer.append(body));
+    }
+
+    @Override
+    public HttpResponse sendWriter(ThrowingConsumer<PrintWriter, IOException> consumer) {
         try {
             if (status() < 200) {
                 status(200);
             }
-            httpResponse.getWriter().append(body);
+            consumer.accept(writer());
             writeResponse();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return this;
+    }
+
+    @Override
+    public HttpResponse sendOutput(ThrowingConsumer<OutputStream, IOException> consumer) {
+        try {
+            if (status() < 200) {
+                status(200);
+            }
+            consumer.accept(outputStream());
+            writeResponse();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return this;
+    }
+
+    @Override
+    public PrintWriter writer() throws IOException {
+        return httpResponse.getWriter();
+    }
+
+    @Override
+    public ServletOutputStream outputStream() throws IOException {
+        return httpResponse.getOutputStream();
     }
 
     @Override
@@ -127,4 +159,5 @@ public class HttpResponseServletAdapter extends AbstractHttpResponse {
     public HttpServletResponse delegate() {
         return httpResponse;
     }
+
 }

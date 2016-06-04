@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AppMiddleware {
 
-    public static Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> app(App<HttpRequest, HttpResponse> app) {
-        return (request, response) -> {
+    public static Middleware.StandardMiddleware4<HttpServletRequest, HttpServletResponse> app(App<HttpRequest, HttpResponse> app) {
+        return (request, response, next) -> {
             ObjectMapper jsonMapper = app.configuration(ObjectMapper.class);
             ObjectMapper xmlMapper = app.configuration(ObjectMapper.class, Hitch.XML_MAPPER_NAME);
-            app.dispatch(new HttpRequestServletAdapter(request, jsonMapper, xmlMapper), new HttpResponseServletAdapter(response, jsonMapper));
+            app.dispatch(new HttpRequestServletAdapter(request, jsonMapper, xmlMapper), new HttpResponseServletAdapter(response, jsonMapper), next);
         };
     }
 }

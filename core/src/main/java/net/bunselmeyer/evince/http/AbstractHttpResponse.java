@@ -1,6 +1,5 @@
 package net.bunselmeyer.evince.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultCookie;
@@ -50,22 +49,23 @@ public abstract class AbstractHttpResponse implements HttpResponse {
     }
 
     @Override
-    public HttpResponse json(int status, Object body) {
+    public HttpResponse toJson(int status, Object body) {
+        status(status);
+        toJson(body);
+        return this;
+    }
+
+    @Override
+    public HttpResponse toJson(Object body) {
         type("application/json");
         charset("UTF-8");
 
         if (body instanceof String) {
-            send(status, (String) body);
+            send((String) body);
         } else {
-            try {
-                send(status, jsonObjectMapper.writeValueAsString(body));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+            sendWriter((writer -> jsonObjectMapper.writeValue(writer, body)));
         }
-
         return this;
-
     }
 
     @Override

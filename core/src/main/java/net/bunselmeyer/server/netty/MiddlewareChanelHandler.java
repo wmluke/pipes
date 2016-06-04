@@ -51,7 +51,7 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
             AbstractHttpRequest req = new HttpRequestNettyAdapter(request, jsonMapper, xmlMapper);
             HttpResponseNettyAdapter res = new HttpResponseNettyAdapter(ctx, isKeepAlive(request), jsonMapper);
 
-            app.dispatch(req, res);
+            app.dispatch(req, res, null);
 
         }
     }

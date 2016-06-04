@@ -2,8 +2,10 @@ package net.bunselmeyer.hitch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
+import net.bunselmeyer.hitch.middleware.AbstractNext;
 import net.bunselmeyer.hitch.middleware.ExceptionMapperMiddleware;
 import net.bunselmeyer.hitch.middleware.Middleware;
+import net.bunselmeyer.hitch.middleware.Next;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.slf4j.Logger;
@@ -21,7 +23,7 @@ public class Hitch implements App<HttpServletRequest, HttpServletResponse> {
 
     public static final String XML_MAPPER_NAME = "xml-mapper";
 
-    private final List<Middleware> middlewares = new ArrayList<>();
+    private final List<Middleware<HttpServletRequest, HttpServletResponse>> middlewares = new ArrayList<>();
     private final Map<String, Object> configs = new HashMap<>();
 
     public static Hitch create() {
@@ -94,48 +96,70 @@ public class Hitch implements App<HttpServletRequest, HttpServletResponse> {
     @Override
     public Hitch use(App<HttpServletRequest, HttpServletResponse> app) {
         app.use((req1, res1) -> {
-            use((req2, res2, next) -> next.run(null));
+            use((req2, res2, next) -> {
+                next.run(null);
+            });
         });
         use(app::dispatch);
         return this;
     }
 
     @Override
-    public Hitch use(Middleware.BasicMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
+    public Hitch use(Middleware.StandardMiddleware1<HttpServletRequest, HttpServletResponse> middleware) {
         middlewares.add(middleware);
         return this;
     }
 
     @Override
-    public Hitch use(Middleware.IntermediateMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
+    public <M> App<HttpServletRequest, HttpServletResponse> use(Middleware.StandardMiddleware2<HttpServletRequest, HttpServletResponse, M> middleware) {
         middlewares.add(middleware);
         return this;
     }
 
     @Override
-    public Hitch use(Middleware.ExceptionMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
+    public <M, N> App<HttpServletRequest, HttpServletResponse> use(Middleware.StandardMiddleware3<HttpServletRequest, HttpServletResponse, M, N> middleware) {
         middlewares.add(middleware);
         return this;
     }
 
     @Override
-    public <E extends Throwable> App<HttpServletRequest, HttpServletResponse> use(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<HttpServletRequest, HttpServletResponse, E> middleware) {
-        use(ExceptionMapperMiddleware.handleException(exceptionType, middleware));
+    public Hitch use(Middleware.StandardMiddleware4<HttpServletRequest, HttpServletResponse> middleware) {
+        middlewares.add(middleware);
         return this;
     }
 
     @Override
-    public void dispatch(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        Iterator<Middleware> stack = middlewares.iterator();
-        AbstractNext<HttpServletRequest, HttpServletResponse> next = buildNext(stack, req, res);
-        next.run(null);
+    public <M> App<HttpServletRequest, HttpServletResponse> use(Middleware.StandardMiddleware5<HttpServletRequest, HttpServletResponse, M> middleware) {
+        middlewares.add(middleware);
+        return this;
     }
 
-    protected AbstractNext<HttpServletRequest, HttpServletResponse> buildNext(Iterator<Middleware> stack, HttpServletRequest req, HttpServletResponse res) {
+
+    @Override
+    public Hitch onError(Middleware.ExceptionMiddleware<HttpServletRequest, HttpServletResponse> middleware) {
+        middlewares.add(middleware);
+        return this;
+    }
+
+    @Override
+    public <E extends Throwable> App<HttpServletRequest, HttpServletResponse> onError(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<HttpServletRequest, HttpServletResponse, E> middleware) {
+        onError(ExceptionMapperMiddleware.handleException(exceptionType, middleware));
+        return this;
+    }
+
+    @Override
+    public void dispatch(HttpServletRequest req, HttpServletResponse res, Next next) throws IOException {
+        Iterator<Middleware<HttpServletRequest, HttpServletResponse>> stack = middlewares.iterator();
+        AbstractNext<HttpServletRequest, HttpServletResponse> n = buildNext(stack, req, res);
+        n.run(next != null ? next.memo() : null);
+    }
+
+    private AbstractNext<HttpServletRequest, HttpServletResponse> buildNext(Iterator<Middleware<HttpServletRequest, HttpServletResponse>> stack, HttpServletRequest req, HttpServletResponse res) {
         return new AbstractNext<HttpServletRequest, HttpServletResponse>(stack, req, res) {
             @Override
-            protected void handleException(Exception err) {
+            protected void handleException(Throwable err) {
                 sendError(500, "Internal server error");
+                err.printStackTrace();
                 logger.error(err.getMessage());
                 throw new RuntimeException(err);
             }
@@ -162,42 +186,4 @@ public class Hitch implements App<HttpServletRequest, HttpServletResponse> {
         };
     }
 
-    public static abstract class AbstractNext<Q, P> implements Middleware.Next {
-
-        private final Iterator<Middleware> stack;
-        private final Q req;
-        private final P res;
-
-        public AbstractNext(Iterator<Middleware> stack, Q req, P res) {
-            this.stack = stack;
-            this.req = req;
-            this.res = res;
-        }
-
-        protected abstract void handleException(Exception err);
-
-        protected abstract void handleNotFound();
-
-        protected abstract boolean isCommitted();
-
-        @Override
-        public final void run(Exception err) {
-
-            if (isCommitted()) {
-                return;
-            }
-
-            if (!stack.hasNext()) {
-                if (err != null) {
-                    handleException(err);
-
-                } else {
-                    handleNotFound();
-                }
-            }
-
-            Middleware middleware = stack.next();
-            App.runner(middleware, err, req, res, this);
-        }
-    }
 }

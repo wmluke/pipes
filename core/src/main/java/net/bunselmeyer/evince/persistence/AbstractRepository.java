@@ -48,8 +48,9 @@ public abstract class AbstractRepository<T> implements Repository<T> {
     }
 
     @Override
-    public void create(T entity) {
+    public T create(T entity) {
         getCurrentSession().saveOrUpdate(entity);
+        return entity;
     }
 
     @Override

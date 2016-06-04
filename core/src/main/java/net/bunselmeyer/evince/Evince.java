@@ -9,6 +9,8 @@ import net.bunselmeyer.hitch.App;
 import net.bunselmeyer.hitch.Hitch;
 import net.bunselmeyer.hitch.middleware.ExceptionMapperMiddleware;
 import net.bunselmeyer.hitch.middleware.Middleware;
+import net.bunselmeyer.hitch.middleware.Next;
+import net.bunselmeyer.json.StreamModule;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,8 +33,18 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
         return new Evince(Hitch.create());
     }
 
+    public static ObjectMapper configureObjectMapper(ObjectMapper objectMapper) {
+        objectMapper.registerModule(new StreamModule());
+        return objectMapper;
+    }
+
     private Evince(Hitch hitch) {
         this.hitch = hitch;
+        try {
+            configure(ObjectMapper.class, Evince::configureObjectMapper);
+        } catch (IllegalAccessException | InstantiationException e) {
+            // ignore
+        }
     }
 
     public Hitch hitch() {
@@ -75,15 +87,37 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
 
     @Override
     public Evince use(App<HttpRequest, HttpResponse> app) {
-        app.use((req1, res1) -> {
-            use((req2, res2, next) -> next.run(null));
-        });
         use(app::dispatch);
         return this;
     }
 
     @Override
-    public Evince use(Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> middleware) {
+    public Evince use(Middleware.StandardMiddleware1<HttpRequest, HttpResponse> middleware) {
+        hitch.use((request, response) -> {
+            middleware.run(buildRequest(request), buildResponse(response));
+        });
+        return this;
+    }
+
+    @Override
+    public <M> App<HttpRequest, HttpResponse> use(Middleware.StandardMiddleware2<HttpRequest, HttpResponse, M> middleware) {
+        hitch.<M>use((request, response) -> {
+            return middleware.run(buildRequest(request), buildResponse(response));
+        });
+        return this;
+
+    }
+
+    @Override
+    public <M, N> App<HttpRequest, HttpResponse> use(Middleware.StandardMiddleware3<HttpRequest, HttpResponse, M, N> middleware) {
+        hitch.<M, N>use((memo, request, response) -> {
+            return middleware.run(memo, buildRequest(request), buildResponse(response));
+        });
+        return this;
+    }
+
+    @Override
+    public Evince use(Middleware.StandardMiddleware4<HttpRequest, HttpResponse> middleware) {
         hitch.use((request, response, next) -> {
             middleware.run(buildRequest(request), buildResponse(response), next);
         });
@@ -91,24 +125,24 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     @Override
-    public Evince use(Middleware.ExceptionMiddleware<HttpRequest, HttpResponse> middleware) {
-        hitch.use((e, request, response, next) -> {
+    public <M> App<HttpRequest, HttpResponse> use(Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> middleware) {
+        hitch.<M>use((memo, request, response, next) -> {
+            middleware.run(memo, buildRequest(request), buildResponse(response), next);
+        });
+        return this;
+    }
+
+    @Override
+    public Evince onError(Middleware.ExceptionMiddleware<HttpRequest, HttpResponse> middleware) {
+        hitch.onError((e, request, response, next) -> {
             middleware.run(e, buildRequest(request), buildResponse(response), next);
         });
         return this;
     }
 
     @Override
-    public <E extends Throwable> Evince use(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<HttpRequest, HttpResponse, E> middleware) {
-        use(ExceptionMapperMiddleware.handleException(exceptionType, middleware));
-        return this;
-    }
-
-    @Override
-    public Evince use(Middleware.BasicMiddleware<HttpRequest, HttpResponse> middleware) {
-        hitch.use((request, response) -> {
-            middleware.run(buildRequest(request), buildResponse(response));
-        });
+    public <E extends Throwable> Evince onError(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<HttpRequest, HttpResponse, E> middleware) {
+        onError(ExceptionMapperMiddleware.handleException(exceptionType, middleware));
         return this;
     }
 
@@ -133,8 +167,19 @@ public class Evince implements EvinceApp<HttpRequest, HttpResponse> {
     }
 
     @Override
-    public void dispatch(HttpRequest req, HttpResponse res) throws IOException {
-        hitch.dispatch(req.delegate(), res.delegate());
+    public void dispatch(HttpRequest req, HttpResponse res, Next n) throws IOException {
+        use((req1, res1, next) -> {
+            Object memo = next.memo();
+            if (memo != null) {
+                if (memo instanceof String) {
+                    res1.json((String) memo);
+                } else {
+                    res1.toJson(memo);
+                }
+            }
+        });
+
+        hitch.dispatch(req.delegate(), res.delegate(), n);
     }
 
 

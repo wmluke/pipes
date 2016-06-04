@@ -13,9 +13,16 @@ public interface Persistence {
 
     void transaction(boolean readOnly, UnitOfWork unitOfWork) throws Exception;
 
-    <Q, P> Middleware.BasicMiddleware<Q, P> transactional(boolean readOnly, Middleware.BasicMiddleware<Q, P> middleware);
+    <Q, P> Middleware.StandardMiddleware1<Q, P> transactional(boolean readOnly, Middleware.StandardMiddleware1<Q, P> middleware);
 
-    <Q, P> Middleware.IntermediateMiddleware<Q, P> transactional(boolean readOnly, Middleware.IntermediateMiddleware<Q, P> middleware);
+    <Q, P, M> Middleware.StandardMiddleware2<Q, P, M> transactional(boolean readOnly, Middleware.StandardMiddleware2<Q, P, M> middleware);
+
+    <Q, P, M, N> Middleware.StandardMiddleware3<Q, P, M, N> transactional(boolean readOnly, Middleware.StandardMiddleware3<Q, P, M, N> middleware);
+
+    <Q, P> Middleware.StandardMiddleware4<Q, P> transactional(boolean readOnly, Middleware.StandardMiddleware4<Q, P> middleware);
+
+    <Q, P, M> Middleware.StandardMiddleware5<Q, P, M> transactional(boolean readOnly, Middleware.StandardMiddleware5<Q, P, M> middleware);
+
 
     @FunctionalInterface
     public static interface UnitOfWork {
@@ -28,7 +35,8 @@ public interface Persistence {
     }
 
     public static Persistence create(Configuration configuration) {
-        ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
+        ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties())
+            .buildServiceRegistry();
         return new PersistenceImpl(configuration.buildSessionFactory(serviceRegistry));
     }
 }

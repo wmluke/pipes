@@ -10,7 +10,11 @@ import net.bunselmeyer.evince.http.AbstractHttpResponse;
 import net.bunselmeyer.evince.http.HttpResponse;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +38,26 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
         this.ctx = ctx;
         this.httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         this.keepAlive = keepAlive;
+    }
+
+    @Override
+    public HttpResponse sendWriter(ThrowingConsumer<PrintWriter, IOException> consumer) {
+        return null;
+    }
+
+    @Override
+    public HttpResponse sendOutput(ThrowingConsumer<OutputStream, IOException> consumer) {
+        throw new RuntimeException("not implemented yet");
+    }
+
+    @Override
+    public PrintWriter writer() throws IOException {
+        throw new RuntimeException("not implemented yet");
+    }
+
+    @Override
+    public ServletOutputStream outputStream() throws IOException {
+        throw new RuntimeException("not implemented yet");
     }
 
     @Override

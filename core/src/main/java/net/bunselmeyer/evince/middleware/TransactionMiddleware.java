@@ -10,7 +10,7 @@ import org.hibernate.Transaction;
 public class TransactionMiddleware {
 
 
-    public static Middleware.IntermediateMiddleware<HttpRequest, HttpResponse> unitOfWork(Session session, boolean readOnly) {
+    public static Middleware.StandardMiddleware4<HttpRequest, HttpResponse> unitOfWork(Session session, boolean readOnly) {
 
 
         return (req, res, next) -> {
