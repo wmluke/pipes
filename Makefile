@@ -1,32 +1,32 @@
 
 clean:
-	JAVA_HOME=$(JAVA8_HOME) mvn clean
+	mvn clean
 
 install:
-	JAVA_HOME=$(JAVA8_HOME) mvn install
+	mvn install
 
 test:
-	JAVA_HOME=$(JAVA8_HOME) mvn test
+	mvn test
 
 site:
-	JAVA_HOME=$(JAVA8_HOME) mvn site
+	mvn site
 
 build:
-	JAVA_HOME=$(JAVA8_HOME) mvn clean install -Dmaven.test.skip=true
+	mvn clean install -Dmaven.test.skip=true
 
 run:
-	cd examples; JAVA_HOME=$(JAVA8_HOME) mvn exec:java -Dexec.mainClass="JettyApp" -Dexec.args="8888"
+	cd examples; mvn exec:java -Dexec.mainClass="JettyApp" -Dexec.args="8888"
 
 start:
-	JAVA_HOME=$(JAVA8_HOME) java -jar examples/target/hitch-examples-0.1.0-SNAPSHOT.jar
+	java -jar examples/target/pipes-examples-0.1.0-SNAPSHOT.jar
 
 deploy:
-	JAVA_HOME=$(JAVA8_HOME) mvn clean deploy
+	mvn clean deploy
 
 sources:
-	JAVA_HOME=$(JAVA8_HOME) mvn dependency:sources
+	mvn dependency:sources
 
 jdkinfo:
-	JAVA_HOME=$(JAVA8_HOME) mvn --version
+	mvn --version
 
 .PHONY: clean install test site build run start deploy sources jdkinfo
