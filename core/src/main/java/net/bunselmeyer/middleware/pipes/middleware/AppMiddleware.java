@@ -18,7 +18,7 @@ public class AppMiddleware {
         return (request, response, next) -> {
             ObjectMapper jsonMapper = app.configuration(ObjectMapper.class);
             ObjectMapper xmlMapper = app.configuration(ObjectMapper.class, ServletApp.XML_MAPPER_NAME);
-            app.dispatch(new HttpRequestServletAdapter(request, jsonMapper, xmlMapper), new HttpResponseServletAdapter(response, jsonMapper), next);
+            app.run(new HttpRequestServletAdapter(request, jsonMapper, xmlMapper), new HttpResponseServletAdapter(response, jsonMapper), next);
         };
     }
 }

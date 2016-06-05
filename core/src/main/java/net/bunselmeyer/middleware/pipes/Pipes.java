@@ -3,7 +3,7 @@ package net.bunselmeyer.middleware.pipes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.middleware.core.App;
 import net.bunselmeyer.middleware.core.Next;
-import net.bunselmeyer.middleware.core.PipesApp;
+import net.bunselmeyer.middleware.core.RoutableApp;
 import net.bunselmeyer.middleware.core.middleware.ExceptionMapperMiddleware;
 import net.bunselmeyer.middleware.core.middleware.Middleware;
 import net.bunselmeyer.middleware.json.StreamModule;
@@ -15,10 +15,9 @@ import net.bunselmeyer.middleware.pipes.http.servlet.ServletApp;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.function.Consumer;
 
-public class Pipes implements PipesApp<HttpRequest, HttpResponse, Pipes> {
+public class Pipes implements App<HttpRequest, HttpResponse, Pipes>, RoutableApp<HttpRequest, HttpResponse> {
 
 
     public static Pipes create(ServletApp app) {
@@ -85,12 +84,6 @@ public class Pipes implements PipesApp<HttpRequest, HttpResponse, Pipes> {
     @Override
     public <C> C configuration(Class<C> type, String name) {
         return app.configuration(type, name);
-    }
-
-    @Override
-    public Pipes use(App<HttpRequest, HttpResponse, ?> app) {
-        use(app::dispatch);
-        return this;
     }
 
     @Override
@@ -169,9 +162,9 @@ public class Pipes implements PipesApp<HttpRequest, HttpResponse, Pipes> {
     }
 
     @Override
-    public void dispatch(HttpRequest req, HttpResponse res, Next n) throws IOException {
-        use((req1, res1, next) -> {
-            Object memo = next.memo();
+    public void run(HttpRequest req, HttpResponse res, Next next) throws Exception {
+        use((req1, res1, next1) -> {
+            Object memo = next1.memo();
             if (memo != null) {
                 if (memo instanceof String) {
                     res1.json((String) memo);
@@ -180,14 +173,7 @@ public class Pipes implements PipesApp<HttpRequest, HttpResponse, Pipes> {
                 }
             }
         });
-
-        app.dispatch(req.delegate(), res.delegate(), n);
-    }
-
-
-    @Override
-    public void dispatch(HttpRequest req, HttpResponse res, String contextPath) throws IOException {
-
+        app.run(req.delegate(), res.delegate(), next);
     }
 
     private HttpResponseServletAdapter buildResponse(HttpServletResponse response) {

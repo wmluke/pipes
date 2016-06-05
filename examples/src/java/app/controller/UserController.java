@@ -6,7 +6,7 @@ import app.api.ApiResponse;
 import app.exceptions.ApiErrorException;
 import app.exceptions.RecordNotFoundException;
 import app.models.User;
-import net.bunselmeyer.middleware.core.PipesApp;
+import net.bunselmeyer.middleware.core.RoutableApp;
 import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
@@ -25,7 +25,7 @@ import static app.api.ApiResponse.toJson;
 import static net.bunselmeyer.middleware.pipes.middleware.BodyTransformers.fromJson;
 import static net.bunselmeyer.middleware.pipes.middleware.ValidationMiddleware.validateMemo;
 
-//@Path("/users")
+@Path("/users")
 public class UserController extends RestfullController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -39,9 +39,9 @@ public class UserController extends RestfullController {
         userRepository = persistence.build(User.class);
     }
 
-    @Path("/users")
+    @Path("/")
     @Override
-    public void create(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+    public void create(RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
         pipeline
             .pipe(fromJson(modelType))
             .pipe(validateMemo())
@@ -51,9 +51,9 @@ public class UserController extends RestfullController {
             .pipe(toJson(201));
     }
 
-    @Path("/users/{id}")
+    @Path("/{id}")
     @Override
-    public void read(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+    public void read(RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
         pipeline
             .pipe(persistence.transactional(true, (req, res) -> {
                 User model = userRepository.read(Integer.parseInt(req.routeParam("id")));
@@ -65,9 +65,9 @@ public class UserController extends RestfullController {
             .pipe(toJson(200));
     }
 
-    @Path("/users")
+    @Path("/")
     @Override
-    public void index(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+    public void index(RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
         pipeline
             .pipe(persistence.transactional(true, (req, res) -> {
                 return userRepository.find().list().stream();
@@ -75,9 +75,9 @@ public class UserController extends RestfullController {
             .pipe(toJson(200));
     }
 
-    @Path("/users/{id}")
+    @Path("/{id}")
     @Override
-    public void update(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+    public void update(RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
         pipeline
             .pipe(fromJson(modelType))
             .pipe(validateMemo())
@@ -95,9 +95,9 @@ public class UserController extends RestfullController {
             .pipe(toJson(200));
     }
 
-    @Path("/users/{id}")
+    @Path("/{id}")
     @Override
-    public void delete(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+    public void delete(RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
         pipeline
             .pipe(persistence.transactional(false, (req, res) -> {
                 User model = userRepository.read(Integer.parseInt(req.routeParam("id")));

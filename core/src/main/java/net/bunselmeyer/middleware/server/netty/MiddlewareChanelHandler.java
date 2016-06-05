@@ -6,10 +6,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpMessage;
+import net.bunselmeyer.middleware.core.App;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import net.bunselmeyer.middleware.pipes.http.netty.HttpRequestNettyAdapter;
 import net.bunselmeyer.middleware.pipes.http.netty.HttpResponseNettyAdapter;
-import net.bunselmeyer.middleware.core.App;
 import net.bunselmeyer.middleware.pipes.http.servlet.ServletApp;
 
 import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
@@ -19,9 +21,9 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMessage> {
 
-    private final App app;
+    private final App<HttpRequest, HttpResponse, ?> app;
 
-    public MiddlewareChanelHandler(App app) {
+    public MiddlewareChanelHandler(App<HttpRequest, HttpResponse, ?> app) {
         this.app = app;
     }
 
@@ -51,7 +53,7 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
             AbstractHttpRequest req = new HttpRequestNettyAdapter(request, jsonMapper, xmlMapper);
             HttpResponseNettyAdapter res = new HttpResponseNettyAdapter(ctx, isKeepAlive(request), jsonMapper);
 
-            app.dispatch(req, res, null);
+            app.run(req, res, null);
 
         }
     }

@@ -89,6 +89,15 @@ public abstract class AbstractNext<Q, P> implements Next {
     }
 
     @Override
+    public void visit(RunnableApp middleware, Object memo) {
+        try {
+            middleware.run(req, res, this);
+        } catch (Throwable e) {
+            this.run(e);
+        }
+    }
+
+    @Override
     public void visit(Middleware.StandardMiddleware5 middleware, Object memo) {
         if (memo instanceof Throwable) {
             this.run(memo);

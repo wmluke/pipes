@@ -18,8 +18,10 @@ public interface Next {
 
     void visit(Middleware.StandardMiddleware4 middleware, Object memo);
 
+    void visit(RunnableApp middleware, Object memo);
+
     void visit(Middleware.StandardMiddleware5 middleware, Object memo);
-    
+
     void visit(Middleware.ExceptionMiddleware middleware, Object memo);
 
     <Q, P, E extends Throwable> void visit(Middleware.CheckedExceptionMiddleware<Q, P, E> middleware, Object memo);

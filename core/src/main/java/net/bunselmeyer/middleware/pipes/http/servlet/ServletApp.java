@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -93,17 +92,6 @@ public class ServletApp implements App<HttpServletRequest, HttpServletResponse, 
     }
 
     @Override
-    public ServletApp use(App<HttpServletRequest, HttpServletResponse, ?> app) {
-        app.use((req1, res1) -> {
-            use((req2, res2, next) -> {
-                next.run(null);
-            });
-        });
-        use(app::dispatch);
-        return this;
-    }
-
-    @Override
     public ServletApp use(Middleware.StandardMiddleware1<HttpServletRequest, HttpServletResponse> middleware) {
         middlewares.add(middleware);
         return this;
@@ -147,14 +135,10 @@ public class ServletApp implements App<HttpServletRequest, HttpServletResponse, 
     }
 
     @Override
-    public void dispatch(HttpServletRequest req, HttpServletResponse res, Next next) throws IOException {
+    public void run(HttpServletRequest req, HttpServletResponse res, Next next) throws Exception {
         Iterator<Middleware<HttpServletRequest, HttpServletResponse>> stack = middlewares.iterator();
-        AbstractNext<HttpServletRequest, HttpServletResponse> n = buildNext(stack, req, res);
+        AbstractNext<HttpServletRequest, HttpServletResponse> n = new ServletNext(stack, req, res);
         n.run(next != null ? next.memo() : null);
-    }
-
-    private AbstractNext<HttpServletRequest, HttpServletResponse> buildNext(Iterator<Middleware<HttpServletRequest, HttpServletResponse>> stack, HttpServletRequest req, HttpServletResponse res) {
-        return new ServletNext(stack, req, res);
     }
 
 }

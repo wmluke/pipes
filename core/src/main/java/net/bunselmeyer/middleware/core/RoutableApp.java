@@ -1,14 +1,8 @@
 package net.bunselmeyer.middleware.core;
 
 import net.bunselmeyer.middleware.core.middleware.Middleware;
-import net.bunselmeyer.middleware.pipes.Pipes;
-import net.bunselmeyer.middleware.pipes.http.HttpRequest;
-import net.bunselmeyer.middleware.pipes.http.HttpResponse;
-import net.bunselmeyer.middleware.pipes.http.servlet.ServletApp;
 
-import java.io.IOException;
-
-public interface PipesApp<Q, P, A extends App> extends App<Q, P, A> {
+public interface RoutableApp<Q, P> {
 
     MiddlewarePipeline<Q, P> get(String uriPattern);
 
@@ -17,8 +11,6 @@ public interface PipesApp<Q, P, A extends App> extends App<Q, P, A> {
     MiddlewarePipeline<Q, P> put(String uriPattern);
 
     MiddlewarePipeline<Q, P> delete(String uriPattern);
-
-    void dispatch(Q req, P res, String contextPath) throws IOException;
 
     interface MiddlewarePipeline<Q, P> {
 

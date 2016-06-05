@@ -44,7 +44,7 @@ public interface Middleware<Q, P> {
     @FunctionalInterface
     interface StandardMiddleware4<Q, P> extends Middleware<Q, P> {
 
-        void run(Q req, P resp, Next next) throws Exception;
+        void run(Q req, P res, Next next) throws Exception;
 
         default void accept(Next next, Object memo) {
             next.visit(this, memo);
