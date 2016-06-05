@@ -6,10 +6,11 @@ import app.api.ApiResponse;
 import app.exceptions.ApiErrorException;
 import app.exceptions.RecordNotFoundException;
 import app.models.User;
-import net.bunselmeyer.middleware.core.middleware.Middleware;
+import net.bunselmeyer.middleware.core.PipesApp;
 import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
+import net.bunselmeyer.middleware.pipes.middleware.RestfullController;
 import net.bunselmeyer.middleware.pipes.persistence.Persistence;
 import net.bunselmeyer.middleware.pipes.persistence.Repository;
 import org.slf4j.Logger;
@@ -17,32 +18,43 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.ws.rs.Path;
 import java.util.Set;
 
+import static app.api.ApiResponse.toJson;
 import static net.bunselmeyer.middleware.pipes.middleware.BodyTransformers.fromJson;
 import static net.bunselmeyer.middleware.pipes.middleware.ValidationMiddleware.validateMemo;
 
-public class UserController {
+//@Path("/users")
+public class UserController extends RestfullController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public static Pipes create(Persistence persistence) {
+    private final Repository<User> userRepository;
+    private final Persistence persistence;
+    private Class<User> modelType = User.class;
 
-        Class<User> modelType = User.class;
-        Repository<User> userRepository = persistence.build(modelType);
+    public UserController(Persistence persistence) {
+        this.persistence = persistence;
+        userRepository = persistence.build(User.class);
+    }
 
-        Pipes app = Pipes.create();
-
-        app.post("/users")
+    @Path("/users")
+    @Override
+    public void create(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+        pipeline
             .pipe(fromJson(modelType))
             .pipe(validateMemo())
             .pipe(persistence.transactional(false, (model, req, res) -> {
                 return userRepository.create(model);
             }))
-            .pipe(apiResponse(201));
+            .pipe(toJson(201));
+    }
 
-
-        app.get("/users/{id}")
+    @Path("/users/{id}")
+    @Override
+    public void read(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+        pipeline
             .pipe(persistence.transactional(true, (req, res) -> {
                 User model = userRepository.read(Integer.parseInt(req.routeParam("id")));
                 if (model == null) {
@@ -50,17 +62,23 @@ public class UserController {
                 }
                 return model;
             }))
-            .pipe(apiResponse(200));
+            .pipe(toJson(200));
+    }
 
-
-        app.get("/users")
+    @Path("/users")
+    @Override
+    public void index(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+        pipeline
             .pipe(persistence.transactional(true, (req, res) -> {
                 return userRepository.find().list().stream();
             }))
-            .pipe(apiResponse(200));
+            .pipe(toJson(200));
+    }
 
-
-        app.put("/users/{id}")
+    @Path("/users/{id}")
+    @Override
+    public void update(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+        pipeline
             .pipe(fromJson(modelType))
             .pipe(validateMemo())
             .pipe(persistence.transactional(false, (body, req, res) -> {
@@ -74,10 +92,13 @@ public class UserController {
                 userRepository.update(body);
                 return true;
             }))
-            .pipe(apiResponse(200));
+            .pipe(toJson(200));
+    }
 
-
-        app.delete("/users/{id}")
+    @Path("/users/{id}")
+    @Override
+    public void delete(PipesApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
+        pipeline
             .pipe(persistence.transactional(false, (req, res) -> {
                 User model = userRepository.read(Integer.parseInt(req.routeParam("id")));
                 if (model == null) {
@@ -86,9 +107,11 @@ public class UserController {
                 userRepository.delete(model);
                 return true;
             }))
-            .pipe(apiResponse(200));
+            .pipe(toJson(200));
+    }
 
-
+    @Override
+    protected void onError(Pipes app) {
         app.onError(ApiErrorException.class, (e, req, res, next) -> {
             res.toJson(e.getStatusCode(), ApiResponse.error(e));
         });
@@ -108,15 +131,6 @@ public class UserController {
             logger.error(e.getMessage(), e);
             res.toJson(500, ApiResponse.error(500, "Unknown Error"));
         });
-
-        return app;
-
     }
 
-
-    public static Middleware.StandardMiddleware4<HttpRequest, HttpResponse> apiResponse(int status) {
-        return (req, res, next) -> {
-            res.toJson(status, ApiResponse.body(next.memo()));
-        };
-    }
 }

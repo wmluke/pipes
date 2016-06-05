@@ -1,6 +1,9 @@
 package app.api;
 
 import app.exceptions.ApiErrorException;
+import net.bunselmeyer.middleware.core.middleware.Middleware;
+import net.bunselmeyer.middleware.pipes.http.HttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 
 public class ApiResponse<M> {
 
@@ -34,6 +37,13 @@ public class ApiResponse<M> {
 
     public static <M> ApiResponse<M> error(int statusCode, String message) {
         return new ApiResponse<>(null, new ApiError(ApiErrorCode.valueOfStatusCode(statusCode), message));
+    }
+
+
+    public static Middleware.StandardMiddleware4<HttpRequest, HttpResponse> toJson(int status) {
+        return (req, res, next) -> {
+            res.toJson(status, ApiResponse.body(next.memo()));
+        };
     }
 
 }
