@@ -4,7 +4,7 @@ import app.configure.HibernateConfig;
 import app.configure.JacksonJsonConfig;
 import app.configure.LogbackConfig;
 import app.configure.SessionManagerConfig;
-import app.models.User;
+import app.controller.UserController;
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.stream.Stream;
 
-import static app.middleware.SimpleControllerMiddleware.simpleController;
 import static net.bunselmeyer.middleware.pipes.middleware.LoggerMiddleware.logger;
 import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.PipesApp.mountResourceDir;
 
@@ -96,8 +95,6 @@ public class JettyApp {
 
         app.get("/error").pipe((req, res) -> {
             return new RuntimeException("Fail!");
-//            if (true) throw new RuntimeException("Fail!");
-//            return;
         });
 
         app.post("/").pipe((req, res) -> {
@@ -119,8 +116,7 @@ public class JettyApp {
             next.run(null);
         });
 
-        app.use(simpleController(User.class, persistence));
-
+        app.use(UserController.create(persistence));
 
         int port = 8888;
 
