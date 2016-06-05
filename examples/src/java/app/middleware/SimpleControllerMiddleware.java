@@ -5,14 +5,14 @@ import app.api.ApiResponse;
 import app.exceptions.ApiErrorException;
 import app.exceptions.RecordNotFoundException;
 import app.models.Model;
-import net.bunselmeyer.evince.Evince;
-import net.bunselmeyer.evince.http.HttpRequest;
-import net.bunselmeyer.evince.http.HttpResponse;
-import net.bunselmeyer.evince.middleware.RestfulControllerMiddleware;
-import net.bunselmeyer.evince.middleware.ValidationMiddleware;
-import net.bunselmeyer.evince.persistence.Persistence;
-import net.bunselmeyer.hitch.middleware.BodyTransformers;
-import net.bunselmeyer.hitch.middleware.Middleware;
+import net.bunselmeyer.middleware.pipes.Pipes;
+import net.bunselmeyer.middleware.pipes.http.HttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpResponse;
+import net.bunselmeyer.middleware.pipes.middleware.RestfulControllerMiddleware;
+import net.bunselmeyer.middleware.pipes.middleware.ValidationMiddleware;
+import net.bunselmeyer.middleware.pipes.persistence.Persistence;
+import net.bunselmeyer.middleware.pipes.middleware.BodyTransformers;
+import net.bunselmeyer.middleware.core.middleware.Middleware;
 import org.atteo.evo.inflector.English;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class SimpleControllerMiddleware {
 
-    public static <M extends Model> Evince simpleController(Class<M> modelType, Persistence persistence) {
+    public static <M extends Model> Pipes simpleController(Class<M> modelType, Persistence persistence) {
 
         String modelName = modelType.getSimpleName();
         String rootUrl = "/" + English.plural(modelName).toLowerCase();

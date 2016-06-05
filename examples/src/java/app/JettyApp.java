@@ -9,9 +9,9 @@ import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
-import net.bunselmeyer.evince.Evince;
-import net.bunselmeyer.evince.persistence.Persistence;
-import net.bunselmeyer.server.HttpServer;
+import net.bunselmeyer.middleware.pipes.Pipes;
+import net.bunselmeyer.middleware.pipes.persistence.Persistence;
+import net.bunselmeyer.middleware.server.HttpServer;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 import java.util.stream.Stream;
 
 import static app.middleware.SimpleControllerMiddleware.simpleController;
-import static net.bunselmeyer.evince.middleware.MountResourceMiddleware.Evince.mountResourceDir;
-import static net.bunselmeyer.hitch.middleware.LoggerMiddleware.logger;
+import static net.bunselmeyer.middleware.pipes.middleware.LoggerMiddleware.logger;
+import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.Evince.mountResourceDir;
 
 public class JettyApp {
 
@@ -29,7 +29,7 @@ public class JettyApp {
 
     public static void main(String[] args) throws Exception {
 
-        Evince app = Evince.create();
+        Pipes app = Pipes.create();
 
         app.configure(HashSessionManager.class, SessionManagerConfig::configure);
         app.configure(ObjectMapper.class, JacksonJsonConfig::configure);
