@@ -1,9 +1,10 @@
 package net.bunselmeyer.middleware.pipes.middleware;
 
 import net.bunselmeyer.middleware.core.ConfigurableApp;
-import net.bunselmeyer.middleware.core.Next;
+import net.bunselmeyer.middleware.core.MiddlewareApp;
 import net.bunselmeyer.middleware.core.RoutableApp;
-import net.bunselmeyer.middleware.core.RunnableApp;
+import net.bunselmeyer.middleware.pipes.AbstractController;
+import net.bunselmeyer.middleware.pipes.Controller;
 import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
@@ -15,9 +16,15 @@ import java.nio.file.Paths;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class RestfullController implements RunnableApp<HttpRequest, HttpResponse> {
+public abstract class RestfullController extends AbstractController implements Controller<Pipes> {
 
-    protected void configure(ConfigurableApp app) {
+    @Override
+    public void configure(ConfigurableApp<Pipes> app) throws InstantiationException, IllegalAccessException {
+
+    }
+
+    @Override
+    public void middleware(MiddlewareApp<HttpRequest, HttpResponse, Pipes> app) {
 
     }
 
@@ -41,24 +48,20 @@ public abstract class RestfullController implements RunnableApp<HttpRequest, Htt
 
     }
 
-    protected void onError(Pipes app) {
+    public void onError(Pipes app) {
 
     }
 
     @Override
-    public final void run(HttpRequest req, HttpResponse res, Next next) throws Exception {
-        Pipes app = Pipes.create();
-        configure(app);
+    public void route(RoutableApp<HttpRequest, HttpResponse> app) {
         bind(app::post, "create", this::create);
         bind(app::get, "read", this::read);
         bind(app::get, "index", this::index);
         bind(app::put, "update", this::update);
         bind(app::delete, "delete", this::delete);
-        onError(app);
-        app.run(req, res, next);
     }
 
-    private void bind(Function<String, RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse>> pipelineFunction, String method, Consumer<RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse>> consumer) {
+    protected void bind(Function<String, RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse>> pipelineFunction, String method, Consumer<RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse>> consumer) {
         String path = getPath(method);
         if (StringUtils.isNotBlank(path)) {
             consumer.accept(pipelineFunction.apply(path));

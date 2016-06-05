@@ -116,7 +116,6 @@ public class JettyApp {
             next.run(null);
         });
 
-        //app.use(UserController.create(persistence));
         app.use(new UserController(persistence));
 
         int port = 8888;

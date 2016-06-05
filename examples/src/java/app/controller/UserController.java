@@ -34,9 +34,10 @@ public class UserController extends RestfullController {
     private final Persistence persistence;
     private Class<User> modelType = User.class;
 
-    public UserController(Persistence persistence) {
+    public UserController(Persistence persistence) throws InstantiationException, IllegalAccessException {
         this.persistence = persistence;
         userRepository = persistence.build(User.class);
+        this.initialize();
     }
 
     @Path("/")
@@ -111,7 +112,7 @@ public class UserController extends RestfullController {
     }
 
     @Override
-    protected void onError(Pipes app) {
+    public void onError(Pipes app) {
         app.onError(ApiErrorException.class, (e, req, res, next) -> {
             res.toJson(e.getStatusCode(), ApiResponse.error(e));
         });
