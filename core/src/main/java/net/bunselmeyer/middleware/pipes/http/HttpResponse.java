@@ -63,7 +63,7 @@ public interface HttpResponse {
 
     PrintWriter writer() throws IOException;
 
-    ServletOutputStream outputStream() throws IOException;
+    OutputStream outputStream() throws IOException;
 
     HttpServletResponse delegate();
 

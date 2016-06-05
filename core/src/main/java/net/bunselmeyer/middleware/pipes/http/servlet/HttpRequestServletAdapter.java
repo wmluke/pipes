@@ -107,11 +107,11 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
         return cookies;
     }
 
-    public static class Body extends AbstractHttpRequestBody {
+    private static class Body extends AbstractHttpRequestBody {
 
         private final HttpServletRequest httpRequest;
 
-        protected Body(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
+        Body(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
             super(httpRequest, jsonMapper, xmlMapper);
             this.httpRequest = httpRequest;
         }

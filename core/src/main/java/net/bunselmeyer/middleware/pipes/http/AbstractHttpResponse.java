@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultCookie;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.function.Consumer;
 
 public abstract class AbstractHttpResponse implements HttpResponse {
@@ -85,9 +88,42 @@ public abstract class AbstractHttpResponse implements HttpResponse {
     }
 
     @Override
+    public HttpResponse send(String body) {
+        return sendWriter((writer) -> writer.append(body));
+    }
+
+    @Override
     public HttpResponse send(int status, String body) {
         status(status);
         send(body);
+        return this;
+    }
+
+    @Override
+    public HttpResponse sendWriter(ThrowingConsumer<PrintWriter, IOException> consumer) {
+        try {
+            if (status() < 200) {
+                status(200);
+            }
+            consumer.accept(writer());
+            writeResponse();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return this;
+    }
+
+    @Override
+    public HttpResponse sendOutput(ThrowingConsumer<OutputStream, IOException> consumer) {
+        try {
+            if (status() < 200) {
+                status(200);
+            }
+            consumer.accept(outputStream());
+            writeResponse();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return this;
     }
 }

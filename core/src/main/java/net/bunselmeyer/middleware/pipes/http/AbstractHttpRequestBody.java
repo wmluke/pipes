@@ -10,12 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
 
-    public static final String BODY_TEXT = "BODY_TEXT";
-    public static final String BODY_TRANSFORMED = "BODY_TRANSFORMED";
+    private static final String BODY_TEXT = "BODY_TEXT";
 
     private final HttpServletRequest httpRequest;
     private final ObjectMapper jsonMapper;
@@ -89,21 +87,4 @@ public abstract class AbstractHttpRequestBody implements HttpRequest.Body {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <B> B asTransformed() {
-        return (B) httpRequest.getAttribute(BODY_TRANSFORMED);
-    }
-
-    @Override
-    public <B> B asTransformed(Class<B> hint) {
-        return asTransformed();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <B> void transform(Supplier<B> transformer) {
-        B body = transformer.get();
-        httpRequest.setAttribute(BODY_TRANSFORMED, body);
-    }
 }

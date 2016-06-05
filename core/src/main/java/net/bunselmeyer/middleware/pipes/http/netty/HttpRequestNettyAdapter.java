@@ -20,6 +20,7 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
     private final DefaultFullHttpRequest httpRequest;
     private final ObjectMapper jsonMapper;
     private final ObjectMapper xmlMapper;
+    private final Map<String, String> routeParams = new LinkedHashMap<>();
 
     public HttpRequestNettyAdapter(DefaultFullHttpRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
         super(httpRequest.getUri());
@@ -60,6 +61,16 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
         return null;
     }
 
+    @Override
+    public Map<String, String> routeParams() {
+        return routeParams;
+    }
+
+    @Override
+    public String routeParam(String name) {
+        return routeParams.get(name);
+    }
+
     private Map<String, String> buildHeaders(HttpRequest httpRequest) {
         LinkedHashMap<String, String> headers = new LinkedHashMap<>();
         for (Map.Entry<String, String> entry : httpRequest.headers()) {
@@ -72,9 +83,9 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
         return HttpUtil.parseCookieHeader(httpRequest.headers().get(HttpHeaders.Names.COOKIE));
     }
 
-    protected class Body extends AbstractHttpRequestBody {
+    private class Body extends AbstractHttpRequestBody {
 
-        protected Body() {
+        Body() {
             super(null, jsonMapper, xmlMapper);
         }
 

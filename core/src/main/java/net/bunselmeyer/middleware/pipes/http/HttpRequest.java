@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public interface HttpRequest {
 
@@ -59,12 +58,6 @@ public interface HttpRequest {
         <B> B asJson(Class<B> type);
 
         <B> B asJson(TypeReference<B> type);
-
-        <B> B asTransformed();
-
-        <B> B asTransformed(Class<B> hint);
-
-        <B> void transform(Supplier<B> transformer);
 
         <B> B asXml(Class<B> type);
 

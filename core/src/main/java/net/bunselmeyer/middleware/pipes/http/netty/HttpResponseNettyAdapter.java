@@ -2,6 +2,7 @@ package net.bunselmeyer.middleware.pipes.http.netty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,10 +11,10 @@ import net.bunselmeyer.middleware.pipes.http.AbstractHttpResponse;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -41,23 +42,13 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
     }
 
     @Override
-    public HttpResponse sendWriter(ThrowingConsumer<PrintWriter, IOException> consumer) {
-        return null;
-    }
-
-    @Override
-    public HttpResponse sendOutput(ThrowingConsumer<OutputStream, IOException> consumer) {
-        throw new RuntimeException("not implemented yet");
-    }
-
-    @Override
     public PrintWriter writer() throws IOException {
-        throw new RuntimeException("not implemented yet");
+        return new PrintWriter(new OutputStreamWriter(outputStream(), charset()));
     }
 
     @Override
-    public ServletOutputStream outputStream() throws IOException {
-        throw new RuntimeException("not implemented yet");
+    public OutputStream outputStream() throws IOException {
+        return new ByteBufOutputStream(httpResponse.content());
     }
 
     @Override
