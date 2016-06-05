@@ -17,7 +17,7 @@ public class LogbackConfig {
 
         StatusManager sm = loggerContext.getStatusManager();
         if (sm != null) {
-            sm.add(new InfoStatus("Setting up default Hitch configuration.", loggerContext));
+            sm.add(new InfoStatus("Setting up default Pipes configuration.", loggerContext));
         }
 
         ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<>();

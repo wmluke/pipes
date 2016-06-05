@@ -6,9 +6,9 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
+import net.bunselmeyer.middleware.core.middleware.Middleware;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
-import net.bunselmeyer.middleware.core.middleware.Middleware;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +71,7 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
             resp.setHeader(HttpHeaders.ETAG, cachedAsset.getETag());
 
             final String mimeTypeOfExtension = req.getServletContext()
-                    .getMimeType(req.getRequestURI());
+                .getMimeType(req.getRequestURI());
             MediaType mediaType = DEFAULT_MEDIA_TYPE;
 
             if (mimeTypeOfExtension != null) {
@@ -126,7 +126,7 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
 
     private boolean isCachedClientSide(HttpServletRequest req, CachedAsset cachedAsset) {
         return cachedAsset.getETag().equals(req.getHeader(HttpHeaders.IF_NONE_MATCH)) ||
-                (req.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE) >= cachedAsset.getLastModifiedTime());
+            (req.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE) >= cachedAsset.getLastModifiedTime());
     }
 
     private static class CachedAsset {
@@ -154,9 +154,9 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
     }
 
 
-    public static class Hitch {
+    public static class ServeletApp {
 
-        private Hitch() {
+        private ServeletApp() {
         }
 
         public static StandardMiddleware1<HttpServletRequest, HttpServletResponse> mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
@@ -177,17 +177,19 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
     }
 
 
-    public static class Evince {
+    public static class PipesApp {
 
-        private Evince() {
+        private PipesApp() {
         }
 
         public static StandardMiddleware1<HttpRequest, HttpResponse> mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
-            return (request, response) -> Hitch.mountResourceDir(resourcePath, uriPath, block).run(request.delegate(), response.delegate());
+            return (request, response) -> ServeletApp.mountResourceDir(resourcePath, uriPath, block)
+                .run(request.delegate(), response.delegate());
         }
 
         public static StandardMiddleware1<HttpRequest, HttpResponse> mountResourceDir(String resourcePath, String uriPath) {
-            return (request, response) -> Hitch.mountResourceDir(resourcePath, uriPath).run(request.delegate(), response.delegate());
+            return (request, response) -> ServeletApp.mountResourceDir(resourcePath, uriPath)
+                .run(request.delegate(), response.delegate());
         }
     }
 

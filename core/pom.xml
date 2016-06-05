@@ -15,10 +15,10 @@
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Hitch Core</name>
-    <description>Hitch Core: Middleware for Java 1.8</description>
+    <name>Pipes Core</name>
+    <description>Pipes Core: Middleware for Java 1.8</description>
 
-    <url>https://github.com/wmluke/hitch</url>
+    <url>https://github.com/wmluke/pipes</url>
 
     <licenses>
         <license>
@@ -29,14 +29,14 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:wmluke/hitch.git</connection>
-        <developerConnection>scm:git:git@github.com:wmluke/hitch.git</developerConnection>
-        <url>https://github.com/wmluke/hitch</url>
+        <connection>scm:git:git@github.com:wmluke/pipes.git</connection>
+        <developerConnection>scm:git:git@github.com:wmluke/pipes.git</developerConnection>
+        <url>https://github.com/wmluke/pipes</url>
     </scm>
 
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/wmluke/hitch/issues</url>
+        <url>https://github.com/wmluke/pipes/issues</url>
     </issueManagement>
 
     <developers>

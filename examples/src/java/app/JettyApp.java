@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static app.middleware.SimpleControllerMiddleware.simpleController;
 import static net.bunselmeyer.middleware.pipes.middleware.LoggerMiddleware.logger;
-import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.Evince.mountResourceDir;
+import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.PipesApp.mountResourceDir;
 
 public class JettyApp {
 
