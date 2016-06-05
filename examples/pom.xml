@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.bunselmeyer</groupId>
-        <artifactId>hitch-parent</artifactId>
+        <artifactId>pipes-parent</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>hitch-examples</artifactId>
+    <artifactId>pipes-examples</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <name>Hitch Examples</name>
 
@@ -49,7 +49,7 @@
     <dependencies>
         <dependency>
             <groupId>net.bunselmeyer</groupId>
-            <artifactId>hitch-core</artifactId>
+            <artifactId>pipes-core</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
 
