@@ -3,3 +3,6 @@ target
 *.iml
 *.h2.db
 scratch
+
+examples/dependency-reduced-pom.xml
+
