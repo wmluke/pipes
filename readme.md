@@ -1,8 +1,8 @@
-# Hitch/Evince
+# Pipes
 
 > Middleware for Java 1.8
 
-[![Build Status](https://travis-ci.org/wmluke/hitch.png?branch=master)](https://travis-ci.org/wmluke/hitch)
+[![Build Status](https://travis-ci.org/wmluke/pipes.png?branch=master)](https://travis-ci.org/wmluke/pipes)
 
 Pipes is a middleware framework for Java 1.8.
 
@@ -12,7 +12,7 @@ Hopefully, Pipes can leverage Java's fancy new Lambda support to bring this same
 
 ## Install
 
-Add to `hitch-core` to your project's pom.xml file:
+Add to `pipes-core` to your project's pom.xml file:
 
 ```xml
 <repositories>
@@ -32,7 +32,7 @@ Add to `hitch-core` to your project's pom.xml file:
 <dependencies>
     <dependency>
         <groupId>net.bunselmeyer</groupId>
-        <artifactId>hitch-core</artifactId>
+        <artifactId>pipes-core</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
@@ -40,7 +40,7 @@ Add to `hitch-core` to your project's pom.xml file:
 
 ## Hello World Example
 
-Create a main method and setup either a `Hitch` or `Evince` app within the main method...
+Create a main method and setup either a `Pipes` app within the main method...
 
 ```java
 public class App {
@@ -91,7 +91,7 @@ $ mvn exec:java -Dexec.mainClass="App"
 
 ## Run the Example App
 
-The [example app](https://github.com/wmluke/hitch/blob/master/examples/src/java/app/JettyApp.java) illustrates more of Pipes's features beyond a simple hello world app.
+The [example app](https://github.com/wmluke/pipes/blob/master/examples/src/java/app/JettyApp.java) illustrates more of Pipes's features beyond a simple hello world app.
 
 Run `make install` then `make run` from the command line.
 
