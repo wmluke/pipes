@@ -16,6 +16,6 @@ public interface Controller<A extends ConfigurableApp & MiddlewareApp> extends R
 
     void route(RoutableApp<HttpRequest, HttpResponse> app);
 
-    void onError(A app);
+    void onError(A app) throws IllegalAccessException, InstantiationException;
 
 }

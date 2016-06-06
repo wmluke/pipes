@@ -12,7 +12,6 @@ import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import net.bunselmeyer.middleware.pipes.http.netty.HttpRequestNettyAdapter;
 import net.bunselmeyer.middleware.pipes.http.netty.HttpResponseNettyAdapter;
-import net.bunselmeyer.middleware.pipes.http.servlet.ServletApp;
 
 import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
@@ -47,8 +46,8 @@ public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMes
                 ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
             }
 
-            ObjectMapper jsonMapper = (ObjectMapper) app.configuration(ObjectMapper.class);
-            ObjectMapper xmlMapper = (ObjectMapper) app.configuration(ObjectMapper.class, ServletApp.XML_MAPPER_NAME);
+            ObjectMapper jsonMapper = app.configuration(ObjectMapper.class);
+            ObjectMapper xmlMapper = app.configuration(ObjectMapper.class, App.XML_MAPPER_NAME);
 
             AbstractHttpRequest req = new HttpRequestNettyAdapter(request, jsonMapper, xmlMapper);
             HttpResponseNettyAdapter res = new HttpResponseNettyAdapter(ctx, isKeepAlive(request), jsonMapper);

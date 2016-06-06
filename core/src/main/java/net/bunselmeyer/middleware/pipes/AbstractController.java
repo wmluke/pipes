@@ -6,7 +6,15 @@ import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 
 public abstract class AbstractController implements Controller<Pipes> {
 
-    private final Pipes app = Pipes.create();
+    private final Pipes app;
+
+    public AbstractController(Pipes app) {
+        this.app = app;
+    }
+
+    public AbstractController() {
+        this.app = Pipes.create();
+    }
 
     public final void initialize() throws InstantiationException, IllegalAccessException {
         configure(app);

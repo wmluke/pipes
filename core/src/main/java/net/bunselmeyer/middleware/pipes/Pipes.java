@@ -1,144 +1,41 @@
 package net.bunselmeyer.middleware.pipes;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import net.bunselmeyer.middleware.core.AbstractApp;
 import net.bunselmeyer.middleware.core.App;
 import net.bunselmeyer.middleware.core.Next;
 import net.bunselmeyer.middleware.core.RoutableApp;
-import net.bunselmeyer.middleware.core.middleware.ExceptionMapperMiddleware;
 import net.bunselmeyer.middleware.core.middleware.Middleware;
-import net.bunselmeyer.middleware.json.StreamModule;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
-import net.bunselmeyer.middleware.pipes.http.servlet.HttpRequestServletAdapter;
-import net.bunselmeyer.middleware.pipes.http.servlet.HttpResponseServletAdapter;
-import net.bunselmeyer.middleware.pipes.http.servlet.ServletApp;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.function.Consumer;
+import java.util.Iterator;
 
-public class Pipes implements App<HttpRequest, HttpResponse, Pipes>, RoutableApp<HttpRequest, HttpResponse> {
-
-
-    public static Pipes create(ServletApp app) {
-        return new Pipes(app);
-    }
+public class Pipes extends AbstractApp<HttpRequest, HttpResponse, Pipes> implements App<HttpRequest, HttpResponse, Pipes>, RoutableApp<HttpRequest, HttpResponse> {
 
     public static Pipes create(Pipes app) {
         return create().use(app);
     }
 
     public static Pipes create() {
-        return new Pipes(ServletApp.create());
+        return new Pipes();
     }
 
-    private final ServletApp app;
+    private Pipes() {
 
-    private static ObjectMapper configureObjectMapper(ObjectMapper objectMapper) {
-        objectMapper.registerModule(new StreamModule());
-        return objectMapper;
     }
 
-    private Pipes(ServletApp app) {
-        this.app = app;
-        try {
-            configure(ObjectMapper.class, Pipes::configureObjectMapper);
-        } catch (IllegalAccessException | InstantiationException e) {
-            // ignore
+    @Override
+    protected Next buildStack(HttpRequest req, HttpResponse res, Iterator<Middleware<HttpRequest, HttpResponse>> stack) {
+        return new PipesNext(stack, req, res);
+    }
+
+    @Override
+    protected void toJson(HttpResponse res, Object memo) {
+        if (memo instanceof String) {
+            res.json((String) memo);
+        } else {
+            res.toJson(memo);
         }
-    }
-
-    public ServletApp servlet() {
-        return app;
-    }
-
-    @Override
-    public <C> Pipes configure(Class<C> type, Consumer<C> consumer) throws IllegalAccessException, InstantiationException {
-        app.configure(type, consumer);
-        return this;
-    }
-
-    @Override
-    public <C> Pipes configure(Class<C> type, String name, Consumer<C> consumer) throws IllegalAccessException, InstantiationException {
-        app.configure(type, name, consumer);
-        return this;
-    }
-
-    @Override
-    public <C> Pipes configure(C configuration, Consumer<C> consumer) {
-        app.configure(configuration, consumer);
-        return this;
-    }
-
-    @Override
-    public <C> Pipes configure(C configuration, String name, Consumer<C> consumer) {
-        app.configure(configuration, name, consumer);
-        return this;
-    }
-
-    @Override
-    public <C> C configuration(Class<C> type) {
-        return app.configuration(type);
-    }
-
-    @Override
-    public <C> C configuration(Class<C> type, String name) {
-        return app.configuration(type, name);
-    }
-
-    @Override
-    public Pipes use(Middleware.StandardMiddleware1<HttpRequest, HttpResponse> middleware) {
-        app.use((request, response) -> {
-            middleware.run(buildRequest(request), buildResponse(response));
-        });
-        return this;
-    }
-
-    @Override
-    public <M> Pipes use(Middleware.StandardMiddleware2<HttpRequest, HttpResponse, M> middleware) {
-        app.<M>use((request, response) -> {
-            return middleware.run(buildRequest(request), buildResponse(response));
-        });
-        return this;
-
-    }
-
-    @Override
-    public <M, N> Pipes use(Middleware.StandardMiddleware3<HttpRequest, HttpResponse, M, N> middleware) {
-        app.<M, N>use((memo, request, response) -> {
-            return middleware.run(memo, buildRequest(request), buildResponse(response));
-        });
-        return this;
-    }
-
-    @Override
-    public Pipes use(Middleware.StandardMiddleware4<HttpRequest, HttpResponse> middleware) {
-        app.use((request, response, next) -> {
-            middleware.run(buildRequest(request), buildResponse(response), next);
-        });
-        return this;
-    }
-
-    @Override
-    public <M> Pipes use(Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> middleware) {
-        app.<M>use((memo, request, response, next) -> {
-            middleware.run(memo, buildRequest(request), buildResponse(response), next);
-        });
-        return this;
-    }
-
-    @Override
-    public Pipes onError(Middleware.ExceptionMiddleware<HttpRequest, HttpResponse> middleware) {
-        app.onError((e, request, response, next) -> {
-            middleware.run(e, buildRequest(request), buildResponse(response), next);
-        });
-        return this;
-    }
-
-    @Override
-    public <E extends Throwable> Pipes onError(Class<E> exceptionType, Middleware.CheckedExceptionMiddleware<HttpRequest, HttpResponse, E> middleware) {
-        onError(ExceptionMapperMiddleware.handleException(exceptionType, middleware));
-        return this;
     }
 
     @Override
@@ -161,27 +58,6 @@ public class Pipes implements App<HttpRequest, HttpResponse, Pipes>, RoutableApp
         return new RestMiddlewarePipeline(this, "put", uriPattern);
     }
 
-    @Override
-    public void run(HttpRequest req, HttpResponse res, Next next) throws Exception {
-        use((req1, res1, next1) -> {
-            Object memo = next1.memo();
-            if (memo != null) {
-                if (memo instanceof String) {
-                    res1.json((String) memo);
-                } else {
-                    res1.toJson(memo);
-                }
-            }
-        });
-        app.run(req.delegate(), res.delegate(), next);
-    }
 
-    private HttpResponseServletAdapter buildResponse(HttpServletResponse response) {
-        return new HttpResponseServletAdapter(response, configuration(ObjectMapper.class));
-    }
-
-    private HttpRequestServletAdapter buildRequest(HttpServletRequest request) {
-        return new HttpRequestServletAdapter(request, configuration(ObjectMapper.class), configuration(ObjectMapper.class, ServletApp.XML_MAPPER_NAME));
-    }
 
 }

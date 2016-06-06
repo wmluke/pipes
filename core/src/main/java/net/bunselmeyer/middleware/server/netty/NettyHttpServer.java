@@ -7,14 +7,16 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import net.bunselmeyer.middleware.core.App;
+import net.bunselmeyer.middleware.pipes.http.HttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import net.bunselmeyer.middleware.server.HttpServer;
 
 
 public class NettyHttpServer implements HttpServer {
 
-    private final App app;
+    private final App<HttpRequest, HttpResponse, ?> app;
 
-    public NettyHttpServer(App app) {
+    public NettyHttpServer(App<HttpRequest, HttpResponse, ?> app) {
         this.app = app;
     }
 

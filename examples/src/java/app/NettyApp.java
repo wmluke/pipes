@@ -5,8 +5,7 @@ import net.bunselmeyer.middleware.server.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JettyApp {
-
+public class NettyApp {
     private static final Logger logger = LoggerFactory.getLogger(JettyApp.class);
 
     public static void main(String[] args) throws Exception {
@@ -20,7 +19,6 @@ public class JettyApp {
 
         new ExampleApp(pipes);
 
-        HttpServer.createJettyServer(pipes).listen(port);
+        HttpServer.createNettyHttpServer(pipes).listen(port);
     }
-
 }

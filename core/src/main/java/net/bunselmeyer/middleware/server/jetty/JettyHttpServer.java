@@ -1,6 +1,8 @@
 package net.bunselmeyer.middleware.server.jetty;
 
 import net.bunselmeyer.middleware.core.App;
+import net.bunselmeyer.middleware.pipes.http.HttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import net.bunselmeyer.middleware.server.HttpServer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -8,14 +10,11 @@ import org.eclipse.jetty.server.session.HashSessionIdManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 public class JettyHttpServer implements HttpServer {
 
-    private final App<HttpServletRequest, HttpServletResponse, ?> app;
+    private final App<HttpRequest, HttpResponse, ?> app;
 
-    public JettyHttpServer(App<HttpServletRequest, HttpServletResponse, ?> app) {
+    public JettyHttpServer(App<HttpRequest, HttpResponse, ?> app) {
         this.app = app;
     }
 

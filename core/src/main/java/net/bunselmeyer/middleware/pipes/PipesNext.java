@@ -1,23 +1,19 @@
-package net.bunselmeyer.middleware.pipes.http.servlet;
+package net.bunselmeyer.middleware.pipes;
 
 import net.bunselmeyer.middleware.core.AbstractNext;
 import net.bunselmeyer.middleware.core.middleware.Middleware;
+import net.bunselmeyer.middleware.pipes.http.HttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Iterator;
 
-class ServletNext extends AbstractNext<HttpServletRequest, HttpServletResponse> {
+public class PipesNext extends AbstractNext<HttpRequest, HttpResponse> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServletNext.class);
+    private static final Logger logger = LoggerFactory.getLogger(PipesNext.class);
 
-    ServletNext(
-        Iterator<Middleware<HttpServletRequest, HttpServletResponse>> stack,
-        HttpServletRequest req,
-        HttpServletResponse res) {
+    protected PipesNext(Iterator<Middleware<HttpRequest, HttpResponse>> stack, HttpRequest req, HttpResponse res) {
         super(stack, req, res);
     }
 
@@ -40,12 +36,8 @@ class ServletNext extends AbstractNext<HttpServletRequest, HttpServletResponse> 
     }
 
     private void sendError(int status, String body) {
-        res.setContentType("text/html");
-        res.setCharacterEncoding("UTF-8");
-        try {
-            res.sendError(status, body);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        res.type("text/html");
+        res.charset("UTF-8");
+        res.send(status, body);
     }
 }
