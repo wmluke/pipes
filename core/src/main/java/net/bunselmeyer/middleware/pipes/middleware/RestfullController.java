@@ -19,7 +19,7 @@ import java.util.function.Function;
 public abstract class RestfullController extends AbstractController implements Controller<Pipes> {
 
     @Override
-    public void configure(ConfigurableApp<Pipes> app) throws InstantiationException, IllegalAccessException {
+    public void configure(ConfigurableApp<Pipes> app) {
 
     }
 

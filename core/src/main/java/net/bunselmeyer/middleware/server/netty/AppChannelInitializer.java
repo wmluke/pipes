@@ -7,15 +7,15 @@ import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import net.bunselmeyer.middleware.core.App;
+import net.bunselmeyer.middleware.core.RunnableApp;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 
-public class AppChannelInitializer extends ChannelInitializer<SocketChannel> {
+class AppChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final App<HttpRequest, HttpResponse, ?> app;
+    private final RunnableApp<HttpRequest, HttpResponse> app;
 
-    public AppChannelInitializer(App<HttpRequest, HttpResponse, ?> app) {
+    AppChannelInitializer(RunnableApp<HttpRequest, HttpResponse> app) {
         this.app = app;
     }
 

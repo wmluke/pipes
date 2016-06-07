@@ -5,6 +5,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.function.Supplier;
+
 public class PersistenceImpl implements Persistence {
 
     private final SessionFactory sessionFactory;
@@ -15,17 +18,13 @@ public class PersistenceImpl implements Persistence {
 
     @Override
     public <M> Repository<M> build(final Class<M> type) {
-        return new AbstractRepository<M>() {
-            @Override
-            protected Session getCurrentSession() {
-                return sessionFactory.getCurrentSession();
-            }
+        return new SimpleRepository<M>(sessionFactory::getCurrentSession, type);
+    }
 
-            @Override
-            protected Class<M> getPersistentClass() {
-                return type;
-            }
-        };
+    @Override
+    public <M, R extends SimpleRepository<M>> R build(final Class<M> type, Class<R> repository) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return repository.getConstructor(Supplier.class, Class.class)
+            .newInstance((Supplier) sessionFactory::getCurrentSession, type);
     }
 
     @Override

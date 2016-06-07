@@ -1,27 +1,27 @@
 package net.bunselmeyer.middleware.server.jetty;
 
-import net.bunselmeyer.middleware.core.App;
+import net.bunselmeyer.middleware.core.RunnableApp;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import net.bunselmeyer.middleware.server.HttpServer;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.session.HashSessionIdManager;
-import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 
 public class JettyHttpServer implements HttpServer {
 
-    private final App<HttpRequest, HttpResponse, ?> app;
+    private final RunnableApp<HttpRequest, HttpResponse> app;
 
-    public JettyHttpServer(App<HttpRequest, HttpResponse, ?> app) {
+    public JettyHttpServer(RunnableApp<HttpRequest, HttpResponse> app) {
         this.app = app;
     }
 
     @Override
     public HttpServer listen(int port) throws Exception {
 
-        SessionHandler sessionHandler = new SessionHandler(app.configuration(HashSessionManager.class));
+        SessionHandler sessionHandler = new SessionHandler(app.configuration(SessionManager.class));
         sessionHandler.setHandler(new MiddlewareHandler(app));
 
         ContextHandler context = new ContextHandler();

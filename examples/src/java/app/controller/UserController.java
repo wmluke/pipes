@@ -34,10 +34,9 @@ public class UserController extends RestfullController {
     private final Persistence persistence;
     private Class<User> modelType = User.class;
 
-    public UserController(Persistence persistence) throws InstantiationException, IllegalAccessException {
+    public UserController(Persistence persistence) {
         this.persistence = persistence;
         userRepository = persistence.build(User.class);
-        this.initialize();
     }
 
     @Path("/")

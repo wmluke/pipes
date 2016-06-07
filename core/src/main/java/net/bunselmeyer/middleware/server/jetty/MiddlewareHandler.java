@@ -2,6 +2,7 @@ package net.bunselmeyer.middleware.server.jetty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bunselmeyer.middleware.core.App;
+import net.bunselmeyer.middleware.core.RunnableApp;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import net.bunselmeyer.middleware.pipes.http.servlet.HttpRequestServletAdapter;
@@ -16,9 +17,9 @@ import java.io.IOException;
 
 class MiddlewareHandler extends AbstractHandler {
 
-    private final App<HttpRequest, HttpResponse, ?> app;
+    private final RunnableApp<HttpRequest, HttpResponse> app;
 
-    MiddlewareHandler(App<HttpRequest, HttpResponse, ?> app) {
+    MiddlewareHandler(RunnableApp<HttpRequest, HttpResponse> app) {
         this.app = app;
     }
 

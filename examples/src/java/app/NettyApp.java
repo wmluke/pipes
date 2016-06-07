@@ -1,6 +1,5 @@
 package app;
 
-import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.server.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +14,6 @@ public class NettyApp {
             port = Integer.parseInt(args[0]);
         }
 
-        Pipes pipes = Pipes.create();
-
-        new ExampleApp(pipes);
-
-        HttpServer.createNettyHttpServer(pipes).listen(port);
+        HttpServer.createNettyHttpServer(new ExampleApp()).listen(port);
     }
 }

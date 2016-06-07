@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpMessage;
 import net.bunselmeyer.middleware.core.App;
+import net.bunselmeyer.middleware.core.RunnableApp;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
@@ -18,11 +19,11 @@ import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMessage> {
+class MiddlewareChanelHandler extends SimpleChannelInboundHandler<HttpMessage> {
 
-    private final App<HttpRequest, HttpResponse, ?> app;
+    private final RunnableApp<HttpRequest, HttpResponse> app;
 
-    public MiddlewareChanelHandler(App<HttpRequest, HttpResponse, ?> app) {
+    MiddlewareChanelHandler(RunnableApp<HttpRequest, HttpResponse> app) {
         this.app = app;
     }
 
