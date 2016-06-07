@@ -4,14 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.ServerCookieDecoder;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
-import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequestBody;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,7 +24,7 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
     public HttpRequestServletAdapter(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
         super(httpRequest.getQueryString());
         this.httpRequest = httpRequest;
-        this.body = new Body(httpRequest, jsonMapper, xmlMapper);
+        this.body = new HttpRequestServletBody(httpRequest, jsonMapper, xmlMapper);
         this.headers.putAll(buildHeaders(httpRequest));
         this.cookies.putAll(buildCookies(httpRequest));
     }
@@ -105,24 +102,5 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
             }
         }
         return cookies;
-    }
-
-    private static class Body extends AbstractHttpRequestBody {
-
-        private final HttpServletRequest httpRequest;
-
-        Body(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
-            super(httpRequest, jsonMapper, xmlMapper);
-            this.httpRequest = httpRequest;
-        }
-
-        @Override
-        public InputStream asInputStream() {
-            try {
-                return httpRequest.getInputStream();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }

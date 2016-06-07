@@ -78,10 +78,10 @@ public class HttpRequestServletAdapterTest {
         assertThat(formUrlEncodedHttpRequest.body().asFormUrlEncoded().get("bb"), hasItem("22"));
 
         assertThat(jsonHttpRequest.body().asText(), is("{\"aa\": 11, \"bb\": 22}"));
-        assertThat(jsonHttpRequest.body().asJson().path("aa").asText(), is("11"));
-        assertThat(jsonHttpRequest.body().asJson().path("bb").asText(), is("22"));
-        assertThat(jsonHttpRequest.body().asJson(TYPE_REFERENCE).get("aa"), is("11"));
-        assertThat(jsonHttpRequest.body().asJson(TYPE_REFERENCE).get("bb"), is("22"));
+        assertThat(jsonHttpRequest.body().fromJson().path("aa").asText(), is("11"));
+        assertThat(jsonHttpRequest.body().fromJson().path("bb").asText(), is("22"));
+        assertThat(jsonHttpRequest.body().fromJson(TYPE_REFERENCE).get("aa"), is("11"));
+        assertThat(jsonHttpRequest.body().fromJson(TYPE_REFERENCE).get("bb"), is("22"));
     }
 
 

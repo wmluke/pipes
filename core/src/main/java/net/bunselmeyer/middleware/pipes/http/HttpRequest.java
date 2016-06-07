@@ -53,14 +53,14 @@ public interface HttpRequest {
 
         Map<String, List<String>> asFormUrlEncoded();
 
-        JsonNode asJson();
+        JsonNode fromJson();
 
-        <B> B asJson(Class<B> type);
+        <B> B fromJson(Class<B> type);
 
-        <B> B asJson(TypeReference<B> type);
+        <B> B fromJson(TypeReference<B> type);
 
-        <B> B asXml(Class<B> type);
+        <B> B fromXml(Class<B> type);
 
-        <B> B asXml(TypeReference type);
+        <B> B fromXml(TypeReference type);
     }
 }

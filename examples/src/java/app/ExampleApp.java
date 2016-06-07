@@ -23,6 +23,9 @@ import org.eclipse.jetty.server.session.HashSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static net.bunselmeyer.middleware.pipes.middleware.LoggerMiddleware.logger;
@@ -50,7 +53,9 @@ public class ExampleApp extends AbstractController {
 
         // Start a session
         app.use((req, res) -> {
-            req.delegate().getSession();
+            HttpServletRequest delegate = req.delegate();
+            if (delegate != null)
+                delegate.getSession();
         });
 
         app.use((req, res) -> {
@@ -111,13 +116,14 @@ public class ExampleApp extends AbstractController {
         });
 
         app.post("/").pipe((req, res) -> {
-            String aaa = req.body().asFormUrlEncoded().get("aaa").get(0);
-            String bbb = req.body().asFormUrlEncoded().get("bbb").get(0);
+            Map<String, List<String>> parameters = req.body().asFormUrlEncoded();
+            String aaa = parameters.get("aaa").get(0);
+            String bbb = parameters.get("bbb").get(0);
             res.send(200, "<p>" + aaa + ", " + bbb + "</p>");
         });
 
         app.post("/foo").pipe((req, res) -> {
-            JsonNode jsonNode = req.body().asJson();
+            JsonNode jsonNode = req.body().fromJson();
             res.toJson(200, jsonNode.toString());
         });
     }
@@ -127,6 +133,8 @@ public class ExampleApp extends AbstractController {
 
         app.onError((err, req, res, next) -> {
             if (err != null) {
+                err.printStackTrace();
+
                 res.send(400, "Handled error: " + err.getMessage());
                 return;
             }

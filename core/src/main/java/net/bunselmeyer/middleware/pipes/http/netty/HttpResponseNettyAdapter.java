@@ -91,7 +91,7 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
 
     @Override
     public HttpResponse cookie(String name, Cookie value) {
-        header(SET_COOKIE, ServerCookieEncoder.encode(value));
+        httpResponse.headers().add(SET_COOKIE, ServerCookieEncoder.encode(value));
         return this;
     }
 
