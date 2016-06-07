@@ -10,12 +10,12 @@ import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 
 public interface Controller<A extends ConfigurableApp & MiddlewareApp> extends RunnableApp<HttpRequest, HttpResponse> {
 
-    void configure(ConfigurableApp<A> app) throws InstantiationException, IllegalAccessException;
+    void configure(ConfigurableApp<A> app);
 
     void middleware(MiddlewareApp<HttpRequest, HttpResponse, A> app);
 
     void route(RoutableApp<HttpRequest, HttpResponse> app);
 
-    void onError(A app) throws IllegalAccessException, InstantiationException;
+    void onError(A app);
 
 }

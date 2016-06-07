@@ -4,6 +4,10 @@ import net.bunselmeyer.middleware.core.middleware.Middleware;
 
 public interface RoutableApp<Q, P> {
 
+    <C> C configuration(Class<C> type);
+
+    <C> C configuration(Class<C> type, String name);
+
     MiddlewarePipeline<Q, P> get(String uriPattern);
 
     MiddlewarePipeline<Q, P> post(String uriPattern);

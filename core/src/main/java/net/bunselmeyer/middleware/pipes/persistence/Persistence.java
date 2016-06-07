@@ -5,9 +5,13 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
+import java.lang.reflect.InvocationTargetException;
+
 public interface Persistence {
 
     <M> Repository<M> build(Class<M> type);
+
+    <M, R extends SimpleRepository<M>> R build(Class<M> type, Class<R> repository) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
 
     <T> T transaction(boolean readOnly, UnitOfWorkWithResult<T> unitOfWork) throws Exception;
 

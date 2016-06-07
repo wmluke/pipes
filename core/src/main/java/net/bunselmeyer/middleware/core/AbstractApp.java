@@ -7,10 +7,12 @@ import net.bunselmeyer.middleware.core.middleware.ExceptionMapperMiddleware;
 import net.bunselmeyer.middleware.core.middleware.Middleware;
 import net.bunselmeyer.middleware.json.StreamModule;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class AbstractApp<Q, P, A extends AbstractApp<Q, P, ?>> implements App<Q, P, A> {
 
@@ -23,7 +25,7 @@ public abstract class AbstractApp<Q, P, A extends AbstractApp<Q, P, ?>> implemen
     }
 
     public AbstractApp() {
-        configs.put(getKey(HashSessionManager.class, null), new HashSessionManager());
+        configs.put(getKey(SessionManager.class, null), new HashSessionManager());
         configs.put(getKey(ObjectMapper.class, null), configureObjectMapper(new ObjectMapper()));
         configs.put(getKey(ObjectMapper.class, XML_MAPPER_NAME), configureObjectMapper(new ObjectMapper()));
     }
@@ -61,17 +63,37 @@ public abstract class AbstractApp<Q, P, A extends AbstractApp<Q, P, ?>> implemen
 
     @SuppressWarnings("unchecked")
     @Override
-    public <S> A configure(Class<S> type, String name, Consumer<S> consumer) throws IllegalAccessException, InstantiationException {
+    public <S> A configure(Class<S> type, String name, Consumer<S> consumer) {
         String key = getKey(type, name);
-        configs.putIfAbsent(key, type.newInstance());
+        try {
+            configs.putIfAbsent(key, type.newInstance());
+            consumer.accept((S) configs.get(key));
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return (A) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <C, S extends C> A configure(Class<C> type, Supplier<S> supplier, Consumer<S> consumer) {
+        configure(type, supplier, "", consumer);
+        return (A) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <C, S extends C> A configure(Class<C> type, Supplier<S> supplier, String name, Consumer<S> consumer) {
+        String key = getKey(type, name);
+        configs.putIfAbsent(key, supplier.get());
         consumer.accept((S) configs.get(key));
         return (A) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <S> A configure(Class<S> type, Consumer<S> consumer) throws IllegalAccessException, InstantiationException {
-        configure(type, null, consumer);
+    public <S> A configure(Class<S> type, Consumer<S> consumer) {
+        configure(type, "", consumer);
         return (A) this;
     }
 

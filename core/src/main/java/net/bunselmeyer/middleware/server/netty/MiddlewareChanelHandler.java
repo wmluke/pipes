@@ -8,7 +8,7 @@ import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpDataFactory;
-import net.bunselmeyer.middleware.core.App;
+import net.bunselmeyer.middleware.core.RunnableApp;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import org.slf4j.Logger;
@@ -18,16 +18,16 @@ import static io.netty.handler.codec.http.HttpHeaderUtil.is100ContinueExpected;
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class MiddlewareChanelHandler extends SimpleChannelInboundHandler<Object> {
+class MiddlewareChanelHandler extends SimpleChannelInboundHandler<Object> {
 
     private static final Logger logger = LoggerFactory.getLogger(MiddlewareChanelHandler.class);
 
     private static final HttpDataFactory factory =
         new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if size exceed
 
-    private final App<HttpRequest, HttpResponse, ?> app;
+    private final RunnableApp<HttpRequest, HttpResponse> app;
 
-    public MiddlewareChanelHandler(App<HttpRequest, HttpResponse, ?> app) {
+    MiddlewareChanelHandler(RunnableApp<HttpRequest, HttpResponse> app) {
         this.app = app;
     }
 

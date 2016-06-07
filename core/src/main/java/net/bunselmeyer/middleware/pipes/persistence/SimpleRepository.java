@@ -8,17 +8,27 @@ import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Order;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-public abstract class AbstractRepository<T> implements Repository<T> {
+public class SimpleRepository<T> implements Repository<T> {
+    private final Supplier<Session> sessionSupplier;
+    private final Class<T> persistentClass;
+
     private String queryCacheRegion;
 
-    public AbstractRepository() {
+    public SimpleRepository(Supplier<Session> sessionSupplier, Class<T> persistentClass) {
+        this.sessionSupplier = sessionSupplier;
+        this.persistentClass = persistentClass;
         queryCacheRegion = StandardQueryCache.class.getName();
     }
 
-    protected abstract Session getCurrentSession();
+    protected Session getCurrentSession() {
+        return sessionSupplier.get();
+    }
 
-    protected abstract Class<T> getPersistentClass();
+    protected Class<T> getPersistentClass() {
+        return persistentClass;
+    }
 
     protected Example createExample(T example) {
         return Example.create(example).excludeZeroes();

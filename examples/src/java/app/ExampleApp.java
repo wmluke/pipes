@@ -18,8 +18,8 @@ import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import net.bunselmeyer.middleware.pipes.persistence.Persistence;
+import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
-import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,14 +32,13 @@ public class ExampleApp extends AbstractController {
 
     private static final Logger logger = LoggerFactory.getLogger(ExampleApp.class);
 
-    public ExampleApp(Pipes app) throws IllegalAccessException, InstantiationException {
-        super(app);
-        initialize();
+    public ExampleApp() throws IllegalAccessException, InstantiationException {
+        super();
     }
 
     @Override
-    public void configure(ConfigurableApp<Pipes> app) throws InstantiationException, IllegalAccessException {
-        app.configure(HashSessionManager.class, SessionManagerConfig::configure);
+    public void configure(ConfigurableApp<Pipes> app) {
+        app.configure(SessionManager.class, HashSessionManager::new, SessionManagerConfig::configure);
         app.configure(ObjectMapper.class, JacksonJsonConfig::configure);
         app.configure((LoggerContext) LoggerFactory.getILoggerFactory(), LogbackConfig::configure);
         app.configure(org.hibernate.cfg.Configuration.class, HibernateConfig::configure);
@@ -124,9 +123,7 @@ public class ExampleApp extends AbstractController {
     }
 
     @Override
-    public void onError(Pipes app) throws IllegalAccessException, InstantiationException {
-        Persistence persistence = Persistence.create(app.configuration(Configuration.class));
-
+    public void onError(Pipes app) {
 
         app.onError((err, req, res, next) -> {
             if (err != null) {
@@ -136,6 +133,7 @@ public class ExampleApp extends AbstractController {
             next.run(null);
         });
 
+        Persistence persistence = app.configuration(Persistence.class);
         app.use(new UserController(persistence));
     }
 }
