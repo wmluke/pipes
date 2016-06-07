@@ -2,7 +2,6 @@ package net.bunselmeyer.middleware.pipes.http;
 
 import io.netty.handler.codec.http.Cookie;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -72,19 +71,19 @@ public interface HttpResponse {
     }
 
     static javax.servlet.http.Cookie servletCookie(Cookie nettyCookie) {
-        javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(nettyCookie.getName(), nettyCookie.getValue());
+        javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(nettyCookie.name(), nettyCookie.value());
         servletCookie.setHttpOnly(nettyCookie.isHttpOnly());
-        servletCookie.setComment(nettyCookie.getComment());
-        if (nettyCookie.getDomain() != null) {
-            servletCookie.setDomain(nettyCookie.getDomain());
+        servletCookie.setComment(nettyCookie.comment());
+        if (nettyCookie.domain() != null) {
+            servletCookie.setDomain(nettyCookie.domain());
         }
-        servletCookie.setPath(nettyCookie.getPath());
-        servletCookie.setMaxAge((int) nettyCookie.getMaxAge());
+        servletCookie.setPath(nettyCookie.path());
+        servletCookie.setMaxAge((int) nettyCookie.maxAge());
         if (nettyCookie.isDiscard()) {
             servletCookie.setMaxAge(0);
         }
         servletCookie.setSecure(nettyCookie.isSecure());
-        servletCookie.setVersion(nettyCookie.getVersion());
+        servletCookie.setVersion(nettyCookie.version());
         return servletCookie;
     }
 }

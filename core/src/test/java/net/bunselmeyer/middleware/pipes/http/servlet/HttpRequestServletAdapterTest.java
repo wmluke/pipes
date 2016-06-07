@@ -66,8 +66,8 @@ public class HttpRequestServletAdapterTest {
 
     @Test
     public void testCookies() throws Exception {
-        assertThat(formUrlEncodedHttpRequest.cookie("foo").getValue(), is("bar"));
-        assertThat(formUrlEncodedHttpRequest.cookie("meh").getValue(), is("blah"));
+        assertThat(formUrlEncodedHttpRequest.cookie("foo").value(), is("bar"));
+        assertThat(formUrlEncodedHttpRequest.cookie("meh").value(), is("blah"));
         assertThat(formUrlEncodedHttpRequest.cookies().size(), is(2));
     }
 

@@ -17,14 +17,14 @@ import static org.hamcrest.Matchers.*;
 
 public class ExampleAppTest {
 
-    private static final List<Integer> ports = Lists.newArrayList(9090);
+    private static final List<Integer> ports = Lists.newArrayList(9191);
 
     @BeforeClass
     public static void startApp() {
         Thread thread = new Thread(() -> {
             try {
-                JettyApp.main(new String[]{"9090"});
-                //NettyApp.main(new String[]{"9191"});
+//                JettyApp.main(new String[]{"9090"});
+                NettyApp.main(new String[]{"9191"});
             } catch (Exception e) {
                 e.printStackTrace();
             }

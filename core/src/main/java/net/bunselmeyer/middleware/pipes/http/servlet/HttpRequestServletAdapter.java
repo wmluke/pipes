@@ -2,14 +2,14 @@ package net.bunselmeyer.middleware.pipes.http.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.CookieDecoder;
-import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.ServerCookieDecoder;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequestBody;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -98,10 +98,10 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     private Map<String, Cookie> buildCookies(HttpServletRequest httpRequest) {
         LinkedHashMap<String, Cookie> cookies = new LinkedHashMap<>();
-        String cookieString = httpRequest.getHeader(HttpHeaders.Names.COOKIE.toString());
+        String cookieString = httpRequest.getHeader(HttpHeaders.COOKIE);
         if (StringUtils.isNotBlank(cookieString)) {
-            for (Cookie cookie : CookieDecoder.decode(cookieString)) {
-                cookies.put(cookie.getName(), cookie);
+            for (Cookie cookie : ServerCookieDecoder.decode(cookieString)) {
+                cookies.put(cookie.name(), cookie);
             }
         }
         return cookies;

@@ -6,6 +6,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import net.bunselmeyer.middleware.core.App;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
@@ -22,18 +24,23 @@ public class NettyHttpServer implements HttpServer {
 
     @Override
     public HttpServer listen(int port) throws InterruptedException {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
+
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.option(ChannelOption.SO_BACKLOG, 1024);
+            
             b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new AppChannelInitializer(app));
+                .channel(NioServerSocketChannel.class)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new AppChannelInitializer(app));
 
             Channel ch = b.bind(port).sync().channel();
-            ch.closeFuture().sync();
 
+            System.err.println("Open your web browser and navigate to http://127.0.0.1:" + port + '/');
+
+            ch.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
