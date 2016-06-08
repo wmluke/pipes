@@ -69,34 +69,37 @@ public class ExampleAppWithNettyTest {
             //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("Handled error: Fail!"));
 
-//        get("/assets").then().contentType(ContentType.HTML).assertThat()
-//            .statusCode(200)
-//            .header("Content-type", is("text/html; charset=UTF-8"))
-//            //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
-//            .body(containsString("<h1>welcome</h1>"));
-//
-//        get("/assets/main.css").then().assertThat()
-//            .statusCode(200)
-//            .header("Content-type", is("text/css;charset=UTF-8"))
-//            //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
-//            .body(containsString("body {\n" +
-//                "    background-color: cornflowerblue;\n" +
-//                "}"));
-//
-//        get("/assets/styles.css").then().assertThat()
-//            .statusCode(200)
-//            .header("Content-type", is("text/css;charset=UTF-8"))
-//            //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
-//            .body(containsString("body {\n" +
-//                "    color: yellow;\n" +
-//                "}"));
-
         get("/stream").then().assertThat()
             .statusCode(200)
             .header("Content-type", is("application/json; charset=UTF-8"))
             .body(containsString("[3,3,5]"));
 
 
+    }
+
+    @Test
+    public void testGetAssets() throws Exception {
+        get("/assets").then().contentType(ContentType.HTML).assertThat()
+            .statusCode(200)
+            .header("Content-type", is("text/html; charset=UTF-8"))
+            //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
+            .body(containsString("<h1>welcome</h1>"));
+
+        get("/assets/main.css").then().assertThat()
+            .statusCode(200)
+            .header("Content-type", is("text/css; charset=UTF-8"))
+            //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
+            .body(containsString("body {\n" +
+                "    background-color: cornflowerblue;\n" +
+                "}"));
+
+        get("/assets/styles.css").then().assertThat()
+            .statusCode(200)
+            .header("Content-type", is("text/css; charset=UTF-8"))
+            //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
+            .body(containsString("body {\n" +
+                "    color: yellow;\n" +
+                "}"));
     }
 
     @Test

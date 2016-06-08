@@ -27,6 +27,8 @@ public interface HttpRequest {
 
     String header(String name);
 
+    long dateHeader(String name);
+
     Map<String, Cookie> cookies();
 
     Cookie cookie(String name);

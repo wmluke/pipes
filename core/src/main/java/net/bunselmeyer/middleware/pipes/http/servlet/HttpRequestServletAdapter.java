@@ -21,8 +21,18 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
     private final HttpServletRequest httpRequest;
     private final HttpRequest.Body body;
 
+    private static String uri(HttpServletRequest httpRequest) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(httpRequest.getPathInfo());
+        if (StringUtils.isNotBlank(httpRequest.getQueryString())) {
+            builder.append("?");
+            builder.append(httpRequest.getQueryString());
+        }
+        return builder.toString();
+    }
+
     public HttpRequestServletAdapter(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
-        super(httpRequest.getQueryString());
+        super(uri(httpRequest));
         this.httpRequest = httpRequest;
         this.body = new HttpRequestServletBody(httpRequest, jsonMapper, xmlMapper);
         this.headers.putAll(buildHeaders(httpRequest));
@@ -72,6 +82,11 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
     @Override
     public String routeParam(String name) {
         return routeParams().get(name);
+    }
+
+    @Override
+    public long dateHeader(String name) {
+        return httpRequest.getDateHeader(name);
     }
 
     @SuppressWarnings("unchecked")

@@ -112,6 +112,10 @@ public abstract class AbstractNext<Q, P> implements Next {
 
     @Override
     public void visit(Middleware.ExceptionMiddleware middleware, Object memo) {
+        if (memo == null) {
+            this.run(null);
+            return;
+        }
         Exception m = null;
         try {
             m = (Exception) memo;
@@ -129,6 +133,10 @@ public abstract class AbstractNext<Q, P> implements Next {
     @SuppressWarnings("unchecked")
     @Override
     public <T, U, E extends Throwable> void visit(Middleware.CheckedExceptionMiddleware<T, U, E> middleware, Object memo) {
+        if (memo == null) {
+            this.run(null);
+            return;
+        }
         E m = null;
         try {
             m = (E) memo;

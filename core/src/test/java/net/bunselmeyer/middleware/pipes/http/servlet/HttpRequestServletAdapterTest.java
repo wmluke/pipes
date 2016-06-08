@@ -102,6 +102,7 @@ public class HttpRequestServletAdapterTest {
             when(servletRequest.getHeader(entry.getKey())).thenReturn(entry.getValue());
         }
 
+        when(servletRequest.getPathInfo()).thenReturn("/foo/bar");
         when(servletRequest.getQueryString()).thenReturn(queryString);
 
         final InputStream inputStream = IOUtils.toInputStream(body, "UTF-8");

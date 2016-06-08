@@ -17,6 +17,7 @@ import net.bunselmeyer.middleware.pipes.AbstractController;
 import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
+import net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware;
 import net.bunselmeyer.middleware.pipes.persistence.Persistence;
 import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
@@ -26,10 +27,11 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static net.bunselmeyer.middleware.pipes.middleware.LoggerMiddleware.logger;
-import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.PipesApp.mountResourceDir;
+import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.mountResourceDir;
 
 public class ExampleApp extends AbstractController {
 
@@ -67,9 +69,10 @@ public class ExampleApp extends AbstractController {
          * Mount multiple resource folders (/assets1, /assets2) to a single URI path (/assets)
          */
 
-        app.use(mountResourceDir("/assets1", "/assets", (options) -> {
+        Consumer<MountResourceMiddleware.Options> block = (options) -> {
             options.handleNotFound = false; // allow missing files to be handled by the next middleware
-        }));
+        };
+        app.use(mountResourceDir("/assets1", "/assets", block));
 
         app.use(mountResourceDir("/assets2", "/assets"));
 

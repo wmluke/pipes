@@ -150,9 +150,11 @@ public abstract class AbstractApp<Q, P, A extends AbstractApp<Q, P, ?>> implemen
     public void run(Q req, P res, Next next) throws Exception {
         use((req1, res1, next1) -> {
             Object memo = next1.memo();
-            if (memo != null) {
+            if (memo != null && !(memo instanceof Throwable)) {
                 toJson(res1, memo);
+                return;
             }
+            next1.run(memo);
         });
         Iterator<Middleware<Q, P>> stack = middlewares.iterator();
         Next n = buildStack(req, res, stack);
