@@ -3,7 +3,9 @@ package net.bunselmeyer.middleware.pipes.http;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
+import java.text.ParseException;
 import java.util.*;
 
 public abstract class AbstractHttpRequest implements HttpRequest {
@@ -12,8 +14,23 @@ public abstract class AbstractHttpRequest implements HttpRequest {
     protected final Map<String, Cookie> cookies = new LinkedHashMap<>();
     protected final Map<String, String> headers = new LinkedHashMap<>();
 
-    public AbstractHttpRequest(String queryString) {
-        this.queryStringDecoder = new QueryStringDecoder("?" + queryString);
+    private final static String dateReceiveFmt[] =
+        {
+            "EEE, dd MMM yyyy HH:mm:ss zzz",
+            "EEE, dd-MMM-yy HH:mm:ss",
+            "EEE MMM dd HH:mm:ss yyyy",
+
+            "EEE, dd MMM yyyy HH:mm:ss", "EEE dd MMM yyyy HH:mm:ss zzz",
+            "EEE dd MMM yyyy HH:mm:ss", "EEE MMM dd yyyy HH:mm:ss zzz", "EEE MMM dd yyyy HH:mm:ss",
+            "EEE MMM-dd-yyyy HH:mm:ss zzz", "EEE MMM-dd-yyyy HH:mm:ss", "dd MMM yyyy HH:mm:ss zzz",
+            "dd MMM yyyy HH:mm:ss", "dd-MMM-yy HH:mm:ss zzz", "dd-MMM-yy HH:mm:ss", "MMM dd HH:mm:ss yyyy zzz",
+            "MMM dd HH:mm:ss yyyy", "EEE MMM dd HH:mm:ss yyyy zzz",
+            "EEE, MMM dd HH:mm:ss yyyy zzz", "EEE, MMM dd HH:mm:ss yyyy", "EEE, dd-MMM-yy HH:mm:ss zzz",
+            "EEE dd-MMM-yy HH:mm:ss zzz", "EEE dd-MMM-yy HH:mm:ss",
+        };
+
+    public AbstractHttpRequest(String uri) {
+        this.queryStringDecoder = new QueryStringDecoder(StringUtils.trimToEmpty(uri));
     }
 
     @Override
@@ -56,6 +73,19 @@ public abstract class AbstractHttpRequest implements HttpRequest {
     @Override
     public String header(String name) {
         return headers().get(name);
+    }
+
+    @Override
+    public long dateHeader(String name) {
+        String header = header(name);
+        if (StringUtils.isBlank(header))
+            return -1;
+
+        try {
+            return DateUtils.parseDate(header, dateReceiveFmt).getTime();
+        } catch (ParseException e) {
+            return -1;
+        }
     }
 
     @Override

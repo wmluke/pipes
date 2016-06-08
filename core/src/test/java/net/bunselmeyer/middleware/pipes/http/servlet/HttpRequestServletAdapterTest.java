@@ -66,8 +66,8 @@ public class HttpRequestServletAdapterTest {
 
     @Test
     public void testCookies() throws Exception {
-        assertThat(formUrlEncodedHttpRequest.cookie("foo").getValue(), is("bar"));
-        assertThat(formUrlEncodedHttpRequest.cookie("meh").getValue(), is("blah"));
+        assertThat(formUrlEncodedHttpRequest.cookie("foo").value(), is("bar"));
+        assertThat(formUrlEncodedHttpRequest.cookie("meh").value(), is("blah"));
         assertThat(formUrlEncodedHttpRequest.cookies().size(), is(2));
     }
 
@@ -78,10 +78,10 @@ public class HttpRequestServletAdapterTest {
         assertThat(formUrlEncodedHttpRequest.body().asFormUrlEncoded().get("bb"), hasItem("22"));
 
         assertThat(jsonHttpRequest.body().asText(), is("{\"aa\": 11, \"bb\": 22}"));
-        assertThat(jsonHttpRequest.body().asJson().path("aa").asText(), is("11"));
-        assertThat(jsonHttpRequest.body().asJson().path("bb").asText(), is("22"));
-        assertThat(jsonHttpRequest.body().asJson(TYPE_REFERENCE).get("aa"), is("11"));
-        assertThat(jsonHttpRequest.body().asJson(TYPE_REFERENCE).get("bb"), is("22"));
+        assertThat(jsonHttpRequest.body().fromJson().path("aa").asText(), is("11"));
+        assertThat(jsonHttpRequest.body().fromJson().path("bb").asText(), is("22"));
+        assertThat(jsonHttpRequest.body().fromJson(TYPE_REFERENCE).get("aa"), is("11"));
+        assertThat(jsonHttpRequest.body().fromJson(TYPE_REFERENCE).get("bb"), is("22"));
     }
 
 
@@ -102,6 +102,7 @@ public class HttpRequestServletAdapterTest {
             when(servletRequest.getHeader(entry.getKey())).thenReturn(entry.getValue());
         }
 
+        when(servletRequest.getPathInfo()).thenReturn("/foo/bar");
         when(servletRequest.getQueryString()).thenReturn(queryString);
 
         final InputStream inputStream = IOUtils.toInputStream(body, "UTF-8");

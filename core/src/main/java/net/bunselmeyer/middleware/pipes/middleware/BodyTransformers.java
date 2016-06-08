@@ -11,11 +11,11 @@ import java.util.Map;
 public class BodyTransformers {
 
     public static <M> Middleware.StandardMiddleware2<HttpRequest, HttpResponse, M> fromJson(Class<M> type) {
-        return (req, res) -> req.body().asJson(type);
+        return (req, res) -> req.body().fromJson(type);
     }
 
     public static <M> Middleware.StandardMiddleware2<HttpRequest, HttpResponse, M> fromJson(TypeReference<M> type) {
-        return (req, res) -> req.body().asJson(type);
+        return (req, res) -> req.body().fromJson(type);
     }
 
     public static Middleware.StandardMiddleware2<HttpRequest, HttpResponse, Map<String, List<String>>> fromFormUrlEncoded() {

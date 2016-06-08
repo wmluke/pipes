@@ -1,29 +1,26 @@
 package net.bunselmeyer.middleware.pipes.http.netty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
-import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequestBody;
 import net.bunselmeyer.middleware.util.HttpUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpRequestNettyAdapter extends AbstractHttpRequest {
 
-    private final DefaultFullHttpRequest httpRequest;
+    private final FullHttpRequest httpRequest;
     private final ObjectMapper jsonMapper;
     private final ObjectMapper xmlMapper;
     private final Map<String, String> routeParams = new LinkedHashMap<>();
 
-    public HttpRequestNettyAdapter(DefaultFullHttpRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
-        super(httpRequest.getUri());
+    public HttpRequestNettyAdapter(FullHttpRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
+        super(httpRequest.uri());
         this.httpRequest = httpRequest;
         this.jsonMapper = jsonMapper;
         this.xmlMapper = xmlMapper;
@@ -33,27 +30,27 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
 
     @Override
     public String protocol() {
-        return httpRequest.getProtocolVersion().protocolName();
+        return String.valueOf(httpRequest.protocolVersion().protocolName());
     }
 
     @Override
     public String host() {
-        return headers().get(HttpHeaders.Names.HOST.toString());
+        return headers().get(HttpHeaderNames.HOST.toString());
     }
 
     @Override
     public String uri() {
-        return httpRequest.getUri();
+        return httpRequest.uri();
     }
 
     @Override
     public String method() {
-        return httpRequest.getMethod().name();
+        return String.valueOf(httpRequest.method().name());
     }
 
     @Override
     public Body body() {
-        return new Body();
+        return new HttpRequestNettyBody(httpRequest, jsonMapper, xmlMapper);
     }
 
     @Override
@@ -73,25 +70,14 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
 
     private Map<String, String> buildHeaders(HttpRequest httpRequest) {
         LinkedHashMap<String, String> headers = new LinkedHashMap<>();
-        for (Map.Entry<String, String> entry : httpRequest.headers()) {
-            headers.put(entry.getKey(), entry.getValue());
+        for (Map.Entry<CharSequence, CharSequence> entry : httpRequest.headers()) {
+            headers.put(entry.getKey().toString(), entry.getValue().toString());
         }
         return headers;
     }
 
     private Map<String, Cookie> buildCookies(HttpRequest httpRequest) {
-        return HttpUtil.parseCookieHeader(httpRequest.headers().get(HttpHeaders.Names.COOKIE));
+        return HttpUtil.parseCookieHeader((String) httpRequest.headers().get(HttpHeaderNames.COOKIE));
     }
 
-    private class Body extends AbstractHttpRequestBody {
-
-        Body() {
-            super(null, jsonMapper, xmlMapper);
-        }
-
-        @Override
-        public InputStream asInputStream() {
-            return new ByteBufInputStream(httpRequest.content());
-        }
-    }
 }

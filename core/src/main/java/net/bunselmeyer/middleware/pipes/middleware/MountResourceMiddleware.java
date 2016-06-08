@@ -9,9 +9,8 @@ import com.google.common.net.MediaType;
 import net.bunselmeyer.middleware.core.middleware.Middleware;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
+import org.eclipse.jetty.http.MimeTypes;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,7 +24,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * Thank you dropwizard for serving static assets!
  * Pulled from com.codahale.dropwizard.servlets.assets.AssetServlet
  */
-public class MountResourceMiddleware implements Middleware.StandardMiddleware1<HttpServletRequest, HttpServletResponse> {
+public class MountResourceMiddleware implements Middleware.StandardMiddleware1<HttpRequest, HttpResponse> {
 
     private static final CharMatcher SLASHES = CharMatcher.is('/');
     private static final MediaType DEFAULT_MEDIA_TYPE = MediaType.HTML_UTF_8;
@@ -35,9 +34,25 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
     private final String indexFile;
     private final Charset defaultCharset;
     private final boolean handleNotFound;
+    private final MimeTypes mimeTypes = new MimeTypes();
 
 
-    public MountResourceMiddleware(Options options) {
+    public static MountResourceMiddleware mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
+        Options options = new Options();
+        options.resourcePath = resourcePath;
+        options.uriPath = uriPath;
+        block.accept(options);
+        return new MountResourceMiddleware(options);
+    }
+
+    public static MountResourceMiddleware mountResourceDir(String resourcePath, String uriPath) {
+        Options options = new Options();
+        options.resourcePath = resourcePath;
+        options.uriPath = uriPath;
+        return new MountResourceMiddleware(options);
+    }
+
+    private MountResourceMiddleware(Options options) {
         final String trimmedPath = SLASHES.trimFrom(options.resourcePath);
         this.resourcePath = trimmedPath.isEmpty() ? trimmedPath : trimmedPath + '/';
         final String trimmedUri = SLASHES.trimTrailingFrom(options.uriPath);
@@ -48,30 +63,29 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
     }
 
     @Override
-    public void run(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    public void run(HttpRequest req, HttpResponse resp) throws Exception {
         try {
-            final StringBuilder builder = new StringBuilder(req.getServletPath());
-            if (req.getPathInfo() != null) {
-                builder.append(req.getPathInfo());
+            final StringBuilder builder = new StringBuilder("");
+            if (req.path() != null) {
+                builder.append(req.path());
             }
             final CachedAsset cachedAsset = loadAsset(builder.toString());
             if (cachedAsset == null) {
                 if (handleNotFound) {
-                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    resp.send(HttpServletResponse.SC_NOT_FOUND);
                 }
                 return;
             }
 
             if (isCachedClientSide(req, cachedAsset)) {
-                resp.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+                resp.send(HttpServletResponse.SC_NOT_MODIFIED);
                 return;
             }
 
-            resp.setDateHeader(HttpHeaders.LAST_MODIFIED, cachedAsset.getLastModifiedTime());
-            resp.setHeader(HttpHeaders.ETAG, cachedAsset.getETag());
+            resp.header(HttpHeaders.LAST_MODIFIED, Long.toString(cachedAsset.getLastModifiedTime()));
+            resp.header(HttpHeaders.ETAG, cachedAsset.getETag());
 
-            final String mimeTypeOfExtension = req.getServletContext()
-                .getMimeType(req.getRequestURI());
+            final String mimeTypeOfExtension = mimeTypes.getMimeByExtension(req.uri());
             MediaType mediaType = DEFAULT_MEDIA_TYPE;
 
             if (mimeTypeOfExtension != null) {
@@ -84,15 +98,15 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
                 }
             }
 
-            resp.setContentType(mediaType.type() + '/' + mediaType.subtype());
+            resp.type(mediaType.type() + '/' + mediaType.subtype());
 
             if (mediaType.charset().isPresent()) {
-                resp.setCharacterEncoding(mediaType.charset().get().toString());
+                resp.charset(mediaType.charset().get().toString());
             }
 
-            try (ServletOutputStream output = resp.getOutputStream()) {
+            resp.sendOutput((output -> {
                 output.write(cachedAsset.getResource());
-            }
+            }));
         } catch (RuntimeException e) {
             // ignored b/c we want to give the next middle a whack at the request
         }
@@ -124,9 +138,9 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
         return new CachedAsset(Resources.toByteArray(requestedResourceURL), lastModified);
     }
 
-    private boolean isCachedClientSide(HttpServletRequest req, CachedAsset cachedAsset) {
-        return cachedAsset.getETag().equals(req.getHeader(HttpHeaders.IF_NONE_MATCH)) ||
-            (req.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE) >= cachedAsset.getLastModifiedTime());
+    private boolean isCachedClientSide(HttpRequest req, CachedAsset cachedAsset) {
+        return cachedAsset.getETag().equals(req.header(HttpHeaders.IF_NONE_MATCH)) ||
+            (req.dateHeader(HttpHeaders.IF_MODIFIED_SINCE) >= cachedAsset.getLastModifiedTime());
     }
 
     private static class CachedAsset {
@@ -140,58 +154,19 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
             this.lastModifiedTime = lastModifiedTime;
         }
 
-        public byte[] getResource() {
+        byte[] getResource() {
             return resource;
         }
 
-        public String getETag() {
+        String getETag() {
             return eTag;
         }
 
-        public long getLastModifiedTime() {
+        long getLastModifiedTime() {
             return lastModifiedTime;
         }
     }
 
-
-    public static class ServeletApp {
-
-        private ServeletApp() {
-        }
-
-        public static StandardMiddleware1<HttpServletRequest, HttpServletResponse> mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
-            Options options = new Options();
-            options.resourcePath = resourcePath;
-            options.uriPath = uriPath;
-            block.accept(options);
-            return new MountResourceMiddleware(options)::run;
-        }
-
-        public static StandardMiddleware1<HttpServletRequest, HttpServletResponse> mountResourceDir(String resourcePath, String uriPath) {
-            Options options = new Options();
-            options.resourcePath = resourcePath;
-            options.uriPath = uriPath;
-            return new MountResourceMiddleware(options)::run;
-        }
-
-    }
-
-
-    public static class PipesApp {
-
-        private PipesApp() {
-        }
-
-        public static StandardMiddleware1<HttpRequest, HttpResponse> mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
-            return (request, response) -> ServeletApp.mountResourceDir(resourcePath, uriPath, block)
-                .run(request.delegate(), response.delegate());
-        }
-
-        public static StandardMiddleware1<HttpRequest, HttpResponse> mountResourceDir(String resourcePath, String uriPath) {
-            return (request, response) -> ServeletApp.mountResourceDir(resourcePath, uriPath)
-                .run(request.delegate(), response.delegate());
-        }
-    }
 
     public static class Options {
 

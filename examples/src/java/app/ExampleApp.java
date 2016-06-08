@@ -17,16 +17,21 @@ import net.bunselmeyer.middleware.pipes.AbstractController;
 import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
+import net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware;
 import net.bunselmeyer.middleware.pipes.persistence.Persistence;
 import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static net.bunselmeyer.middleware.pipes.middleware.LoggerMiddleware.logger;
-import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.PipesApp.mountResourceDir;
+import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.mountResourceDir;
 
 public class ExampleApp extends AbstractController {
 
@@ -50,7 +55,9 @@ public class ExampleApp extends AbstractController {
 
         // Start a session
         app.use((req, res) -> {
-            req.delegate().getSession();
+            HttpServletRequest delegate = req.delegate();
+            if (delegate != null)
+                delegate.getSession();
         });
 
         app.use((req, res) -> {
@@ -62,9 +69,10 @@ public class ExampleApp extends AbstractController {
          * Mount multiple resource folders (/assets1, /assets2) to a single URI path (/assets)
          */
 
-        app.use(mountResourceDir("/assets1", "/assets", (options) -> {
+        Consumer<MountResourceMiddleware.Options> block = (options) -> {
             options.handleNotFound = false; // allow missing files to be handled by the next middleware
-        }));
+        };
+        app.use(mountResourceDir("/assets1", "/assets", block));
 
         app.use(mountResourceDir("/assets2", "/assets"));
 
@@ -111,13 +119,14 @@ public class ExampleApp extends AbstractController {
         });
 
         app.post("/").pipe((req, res) -> {
-            String aaa = req.body().asFormUrlEncoded().get("aaa").get(0);
-            String bbb = req.body().asFormUrlEncoded().get("bbb").get(0);
+            Map<String, List<String>> parameters = req.body().asFormUrlEncoded();
+            String aaa = parameters.get("aaa").get(0);
+            String bbb = parameters.get("bbb").get(0);
             res.send(200, "<p>" + aaa + ", " + bbb + "</p>");
         });
 
         app.post("/foo").pipe((req, res) -> {
-            JsonNode jsonNode = req.body().asJson();
+            JsonNode jsonNode = req.body().fromJson();
             res.toJson(200, jsonNode.toString());
         });
     }
@@ -127,6 +136,8 @@ public class ExampleApp extends AbstractController {
 
         app.onError((err, req, res, next) -> {
             if (err != null) {
+                err.printStackTrace();
+
                 res.send(400, "Handled error: " + err.getMessage());
                 return;
             }

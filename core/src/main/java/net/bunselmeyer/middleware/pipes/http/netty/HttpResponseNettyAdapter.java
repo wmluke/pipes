@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
+import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
+import static javax.ws.rs.core.HttpHeaders.*;
 
 public class HttpResponseNettyAdapter extends AbstractHttpResponse {
 
@@ -64,7 +66,7 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
 
     @Override
     public Integer status() {
-        return httpResponse.getStatus().code();
+        return httpResponse.status().code();
     }
 
     @Override
@@ -75,21 +77,21 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
 
     @Override
     public String header(String name) {
-        return httpResponse.headers().get(name);
+        return (String) httpResponse.headers().get(name);
     }
 
     @Override
     public Map<String, String> headers() {
         Map<String, String> headers = new HashMap<>();
-        for (String name : httpResponse.headers().names()) {
-            headers.put(name, httpResponse.headers().get(name));
+        for (CharSequence name : httpResponse.headers().names()) {
+            headers.put((String) name, (String) httpResponse.headers().get(name));
         }
         return headers;
     }
 
     @Override
     public HttpResponse cookie(String name, Cookie value) {
-        header(SET_COOKIE.toString(), ServerCookieEncoder.encode(value));
+        httpResponse.headers().add(SET_COOKIE, ServerCookieEncoder.encode(value));
         return this;
     }
 
@@ -140,13 +142,16 @@ public class HttpResponseNettyAdapter extends AbstractHttpResponse {
         if (charset() != null) {
             contentType.add("charset=" + charset().name());
         }
-        header(CONTENT_TYPE.toString(), Joiner.on("; ").skipNulls().join(contentType));
-        httpResponse.headers().set(CONTENT_LENGTH, httpResponse.content().readableBytes());
+        header(CONTENT_TYPE, Joiner.on("; ").skipNulls().join(contentType));
+        //httpResponse.headers().setInt(CONTENT_LENGTH, httpResponse.content().readableBytes());
 
         if (!keepAlive) {
-            ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
+            ctx.write(httpResponse);
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         } else {
-            httpResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+            httpResponse.headers()
+                .setInt(CONTENT_LENGTH, httpResponse.content().readableBytes())
+                .set(CONNECTION, KEEP_ALIVE);
             ctx.write(httpResponse);
         }
         committed = true;

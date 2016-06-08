@@ -2,16 +2,13 @@ package net.bunselmeyer.middleware.pipes.http.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.CookieDecoder;
-import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.ServerCookieDecoder;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
-import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequestBody;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.ws.rs.core.HttpHeaders;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -24,10 +21,20 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
     private final HttpServletRequest httpRequest;
     private final HttpRequest.Body body;
 
+    private static String uri(HttpServletRequest httpRequest) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(httpRequest.getPathInfo());
+        if (StringUtils.isNotBlank(httpRequest.getQueryString())) {
+            builder.append("?");
+            builder.append(httpRequest.getQueryString());
+        }
+        return builder.toString();
+    }
+
     public HttpRequestServletAdapter(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
-        super(httpRequest.getQueryString());
+        super(uri(httpRequest));
         this.httpRequest = httpRequest;
-        this.body = new Body(httpRequest, jsonMapper, xmlMapper);
+        this.body = new HttpRequestServletBody(httpRequest, jsonMapper, xmlMapper);
         this.headers.putAll(buildHeaders(httpRequest));
         this.cookies.putAll(buildCookies(httpRequest));
     }
@@ -77,6 +84,11 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
         return routeParams().get(name);
     }
 
+    @Override
+    public long dateHeader(String name) {
+        return httpRequest.getDateHeader(name);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, String> routeParams() {
@@ -98,31 +110,12 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
     private Map<String, Cookie> buildCookies(HttpServletRequest httpRequest) {
         LinkedHashMap<String, Cookie> cookies = new LinkedHashMap<>();
-        String cookieString = httpRequest.getHeader(HttpHeaders.Names.COOKIE.toString());
+        String cookieString = httpRequest.getHeader(HttpHeaders.COOKIE);
         if (StringUtils.isNotBlank(cookieString)) {
-            for (Cookie cookie : CookieDecoder.decode(cookieString)) {
-                cookies.put(cookie.getName(), cookie);
+            for (Cookie cookie : ServerCookieDecoder.decode(cookieString)) {
+                cookies.put(cookie.name(), cookie);
             }
         }
         return cookies;
-    }
-
-    private static class Body extends AbstractHttpRequestBody {
-
-        private final HttpServletRequest httpRequest;
-
-        Body(HttpServletRequest httpRequest, ObjectMapper jsonMapper, ObjectMapper xmlMapper) {
-            super(httpRequest, jsonMapper, xmlMapper);
-            this.httpRequest = httpRequest;
-        }
-
-        @Override
-        public InputStream asInputStream() {
-            try {
-                return httpRequest.getInputStream();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }
