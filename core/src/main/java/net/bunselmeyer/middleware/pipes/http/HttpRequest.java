@@ -45,6 +45,8 @@ public interface HttpRequest {
 
     Body body();
 
+    HttpSession session(boolean start);
+
     HttpServletRequest delegate();
 
     interface Body {

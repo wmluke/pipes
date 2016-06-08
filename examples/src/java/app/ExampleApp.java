@@ -23,7 +23,6 @@ import org.eclipse.jetty.server.session.HashSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -53,9 +52,8 @@ public class ExampleApp extends AbstractController {
 
         // Start a session
         app.use((req, res) -> {
-            HttpServletRequest delegate = req.delegate();
-            if (delegate != null)
-                delegate.getSession();
+            if (req.delegate() != null)
+                req.session(true);
         });
 
         app.use((req, res) -> {

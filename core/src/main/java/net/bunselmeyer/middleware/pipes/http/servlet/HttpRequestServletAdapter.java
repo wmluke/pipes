@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.ServerCookieDecoder;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,6 +73,12 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
     @Override
     public HttpRequest.Body body() {
         return body;
+    }
+
+    @Override
+    public HttpSession session(boolean start) {
+        httpRequest.getSession(start);
+        return new ServletHttpSession(httpRequest);
     }
 
     @Override

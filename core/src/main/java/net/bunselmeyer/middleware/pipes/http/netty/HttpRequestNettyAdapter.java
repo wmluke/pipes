@@ -6,7 +6,9 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
+import net.bunselmeyer.middleware.pipes.http.HttpSession;
 import net.bunselmeyer.middleware.util.HttpUtil;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
@@ -51,6 +53,11 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
     @Override
     public Body body() {
         return new HttpRequestNettyBody(httpRequest, jsonMapper, xmlMapper);
+    }
+
+    @Override
+    public HttpSession session(boolean start) {
+        throw new NotImplementedException();
     }
 
     @Override
