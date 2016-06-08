@@ -8,7 +8,9 @@ Pipes is a middleware framework for Java 1.8.
 
 Pipes is heavily inspired by [Connect](http://www.senchalabs.org/connect) and [Express](http://expressjs.com) for node.
 Specifically, these node middleware frameworks allow developers to create robust web applications by composing simple and lightweight middleware.  
-Hopefully, Pipes can leverage Java's fancy new Lambda support to bring this same spirit to Java. Under the hood, Pipes uses [Jetty](http://www.eclipse.org/jetty).
+Hopefully, Pipes can leverage Java's fancy new Lambda support to bring this same spirit to Java. 
+
+Under the hood, Pipes runs in either embedded [Jetty](http://www.eclipse.org/jetty) or [Netty](http://netty.io).
 
 ## Install
 
@@ -91,7 +93,7 @@ $ mvn exec:java -Dexec.mainClass="App"
 
 ## Run the Example App
 
-The [example app](https://github.com/wmluke/pipes/blob/master/examples/src/java/app/JettyApp.java) illustrates more of Pipes's features beyond a simple hello world app.
+The [example app](https://github.com/wmluke/pipes/blob/2423d9ab7cf3ad3ad4e74d85ca449c4a5403bb8b/examples/src/java/app/ExampleApp.java) illustrates more of Pipes's features beyond a simple hello world app.
 
 Run `make install` then `make run` from the command line.
 
