@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static net.bunselmeyer.middleware.pipes.middleware.LoggerMiddleware.logger;
-import static net.bunselmeyer.middleware.pipes.middleware.MountResourceMiddleware.mountResourceDir;
+import static net.bunselmeyer.middleware.pipes.middleware.Assets.mountResourceDir;
+import static net.bunselmeyer.middleware.pipes.middleware.RequestLogger.logger;
 
 public class ExampleApp extends AbstractController {
 

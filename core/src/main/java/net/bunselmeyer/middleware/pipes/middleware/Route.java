@@ -1,14 +1,13 @@
 package net.bunselmeyer.middleware.pipes.middleware;
 
-import net.bunselmeyer.middleware.core.Route;
+import net.bunselmeyer.middleware.core.middleware.Middleware;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
-import net.bunselmeyer.middleware.core.middleware.Middleware;
 
-public class RouteMiddleware {
+public class Route {
 
     public static <M> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware1<HttpRequest, HttpResponse> middleware) {
-        Route route = new Route(method, uriPattern, middleware);
+        net.bunselmeyer.middleware.core.Route route = new net.bunselmeyer.middleware.core.Route(method, uriPattern, middleware);
         return (memo, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 middleware.run(request, response);
@@ -18,7 +17,7 @@ public class RouteMiddleware {
     }
 
     public static <M> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware2<HttpRequest, HttpResponse, M> middleware) {
-        Route route = new Route(method, uriPattern, middleware);
+        net.bunselmeyer.middleware.core.Route route = new net.bunselmeyer.middleware.core.Route(method, uriPattern, middleware);
         return (memo, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 next.run(middleware.run(request, response));
@@ -30,7 +29,7 @@ public class RouteMiddleware {
 
 
     public static <M, N> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware3<HttpRequest, HttpResponse, M, N> middleware) {
-        Route route = new Route(method, uriPattern, middleware);
+        net.bunselmeyer.middleware.core.Route route = new net.bunselmeyer.middleware.core.Route(method, uriPattern, middleware);
         return (memo, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 next.run(middleware.run(memo, request, response));
@@ -41,7 +40,7 @@ public class RouteMiddleware {
     }
 
     public static <M> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware4<HttpRequest, HttpResponse> middleware) {
-        Route route = new Route(method, uriPattern, middleware);
+        net.bunselmeyer.middleware.core.Route route = new net.bunselmeyer.middleware.core.Route(method, uriPattern, middleware);
         return (memo, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 middleware.run(request, response, next);
@@ -52,7 +51,7 @@ public class RouteMiddleware {
     }
 
     public static <M> Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> route(String method, String uriPattern, Middleware.StandardMiddleware5<HttpRequest, HttpResponse, M> middleware) {
-        Route route = new Route(method, uriPattern, middleware);
+        net.bunselmeyer.middleware.core.Route route = new net.bunselmeyer.middleware.core.Route(method, uriPattern, middleware);
         return (memo, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 middleware.run(memo, request, response, next);
@@ -63,7 +62,7 @@ public class RouteMiddleware {
     }
 
     public static Middleware.ExceptionMiddleware<HttpRequest, HttpResponse> route(String method, String uriPattern, Middleware.ExceptionMiddleware<HttpRequest, HttpResponse> middleware) {
-        Route route = new Route(method, uriPattern, middleware);
+        net.bunselmeyer.middleware.core.Route route = new net.bunselmeyer.middleware.core.Route(method, uriPattern, middleware);
         return (e, request, response, next) -> {
             if (route.matches(request.method(), request.uri(), request.routeParams(), "")) {
                 middleware.run(e, request, response, next);

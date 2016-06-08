@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * Thank you dropwizard for serving static assets!
  * Pulled from com.codahale.dropwizard.servlets.assets.AssetServlet
  */
-public class MountResourceMiddleware implements Middleware.StandardMiddleware1<HttpRequest, HttpResponse> {
+public class Assets implements Middleware.StandardMiddleware1<HttpRequest, HttpResponse> {
 
     private static final CharMatcher SLASHES = CharMatcher.is('/');
     private static final MediaType DEFAULT_MEDIA_TYPE = MediaType.HTML_UTF_8;
@@ -37,22 +37,22 @@ public class MountResourceMiddleware implements Middleware.StandardMiddleware1<H
     private final MimeTypes mimeTypes = new MimeTypes();
 
 
-    public static MountResourceMiddleware mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
+    public static Assets mountResourceDir(String resourcePath, String uriPath, Consumer<Options> block) {
         Options options = new Options();
         options.resourcePath = resourcePath;
         options.uriPath = uriPath;
         block.accept(options);
-        return new MountResourceMiddleware(options);
+        return new Assets(options);
     }
 
-    public static MountResourceMiddleware mountResourceDir(String resourcePath, String uriPath) {
+    public static Assets mountResourceDir(String resourcePath, String uriPath) {
         Options options = new Options();
         options.resourcePath = resourcePath;
         options.uriPath = uriPath;
-        return new MountResourceMiddleware(options);
+        return new Assets(options);
     }
 
-    private MountResourceMiddleware(Options options) {
+    private Assets(Options options) {
         final String trimmedPath = SLASHES.trimFrom(options.resourcePath);
         this.resourcePath = trimmedPath.isEmpty() ? trimmedPath : trimmedPath + '/';
         final String trimmedUri = SLASHES.trimTrailingFrom(options.uriPath);

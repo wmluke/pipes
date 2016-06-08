@@ -7,7 +7,7 @@ import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import javax.validation.*;
 import java.util.Set;
 
-public class ValidationMiddleware {
+public class Validate {
     public static <M> Middleware.StandardMiddleware3<HttpRequest, HttpResponse, M, M> validateMemo() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();

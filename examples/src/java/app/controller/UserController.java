@@ -22,8 +22,8 @@ import javax.ws.rs.Path;
 import java.util.Set;
 
 import static app.api.ApiResponse.toJson;
-import static net.bunselmeyer.middleware.pipes.middleware.BodyTransformers.fromJson;
-import static net.bunselmeyer.middleware.pipes.middleware.ValidationMiddleware.validateMemo;
+import static net.bunselmeyer.middleware.pipes.middleware.RequestBody.fromJson;
+import static net.bunselmeyer.middleware.pipes.middleware.Validate.validateMemo;
 
 @Path("/users")
 public class UserController extends RestfullController {

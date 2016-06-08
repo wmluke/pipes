@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class LoggerMiddleware {
+public class RequestLogger {
 
     public static Middleware.StandardMiddleware4<HttpRequest, HttpResponse> logger(Logger logger, Consumer<Options> block) {
         Options options = new Options();

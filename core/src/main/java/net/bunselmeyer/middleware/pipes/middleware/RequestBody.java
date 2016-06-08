@@ -8,7 +8,7 @@ import net.bunselmeyer.middleware.pipes.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
-public class BodyTransformers {
+public class RequestBody {
 
     public static <M> Middleware.StandardMiddleware2<HttpRequest, HttpResponse, M> fromJson(Class<M> type) {
         return (req, res) -> req.body().fromJson(type);
