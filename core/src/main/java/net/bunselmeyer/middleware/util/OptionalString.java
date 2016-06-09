@@ -3,6 +3,7 @@ package net.bunselmeyer.middleware.util;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -38,36 +39,36 @@ public final class OptionalString implements Serializable {
     }
 
     private Optional<String> optional() {
-        return Optional.of(value).map(StringUtils::trimToNull);
+        return Optional.ofNullable(value);
     }
 
     public OptionalDouble asDouble() {
-        return optional()
-            .filter(StringUtils::isNumeric)
+        return trim()
+            .filter(NumberUtils::isNumber)
             .map(Double::parseDouble)
             .map(OptionalDouble::of)
             .orElse(OptionalDouble.empty());
     }
 
     public OptionalInt asInteger() {
-        return optional()
-            .filter(StringUtils::isNumeric)
+        return trim()
+            .filter(NumberUtils::isDigits)
             .map(Integer::parseInt)
             .map(OptionalInt::of)
             .orElse(OptionalInt.empty());
     }
 
     public OptionalLong asLong() {
-        return optional()
-            .filter(StringUtils::isNumeric)
+        return trim()
+            .filter(NumberUtils::isDigits)
             .map(Long::parseLong)
             .map(OptionalLong::of)
             .orElse(OptionalLong.empty());
     }
 
     public Optional<Boolean> asBoolean() {
-        return optional()
-            .map(BooleanUtils::toBoolean);
+        return trim()
+            .map(BooleanUtils::toBooleanObject);
     }
 
     public <U> Optional<U> map(Function<? super String, ? extends U> mapper) {
@@ -82,8 +83,11 @@ public final class OptionalString implements Serializable {
         return optional().orElseThrow(exceptionSupplier);
     }
 
-    public Optional<String> filter(Predicate<? super String> predicate) {
-        return optional().filter(predicate);
+    public OptionalString filter(Predicate<? super String> predicate) {
+        return optional()
+            .filter(predicate)
+            .map(OptionalString::of)
+            .orElse(OptionalString.empty());
     }
 
     public void ifPresent(Consumer<? super String> consumer) {
@@ -112,6 +116,10 @@ public final class OptionalString implements Serializable {
 
     public boolean equalToIgnoreCase(String other) {
         return StringUtils.equalsIgnoreCase(value, other);
+    }
+
+    public OptionalString trim() {
+        return OptionalString.ofNullable(StringUtils.trimToNull(value));
     }
 
     @Override

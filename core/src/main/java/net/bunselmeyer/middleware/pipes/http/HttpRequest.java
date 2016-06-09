@@ -46,6 +46,12 @@ public interface HttpRequest {
 
     OptionalString queryParam(String name);
 
+    Map<String, List<String>> formParams();
+
+    List<String> formParams(String name);
+
+    OptionalString formParam(String name);
+
     Body body();
 
     Optional<HttpSession> session(boolean create);

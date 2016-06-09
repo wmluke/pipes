@@ -56,13 +56,30 @@ public abstract class AbstractHttpRequest implements HttpRequest {
 
     @Override
     public List<String> queryParams(String name) {
-        Map<String, List<String>> params = queryParams();
-        return params.containsKey(name) ? params.get(name) : Collections.emptyList();
+        List<String> params = queryParams().get(name);
+        return params != null ? params : Collections.emptyList();
     }
 
     @Override
     public OptionalString queryParam(String name) {
         Iterator<String> iterator = queryParams(name).iterator();
+        return iterator.hasNext() ? optionalOf(iterator.next()) : OptionalString.empty();
+    }
+
+    @Override
+    public Map<String, List<String>> formParams() {
+        return body().asFormUrlEncoded();
+    }
+
+    @Override
+    public List<String> formParams(String name) {
+        List<String> params = body().asFormUrlEncoded().get(name);
+        return params != null ? params : Collections.emptyList();
+    }
+
+    @Override
+    public OptionalString formParam(String name) {
+        Iterator<String> iterator = formParams(name).iterator();
         return iterator.hasNext() ? optionalOf(iterator.next()) : OptionalString.empty();
     }
 
