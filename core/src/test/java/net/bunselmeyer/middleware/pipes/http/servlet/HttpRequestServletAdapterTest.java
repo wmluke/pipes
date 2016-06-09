@@ -50,24 +50,26 @@ public class HttpRequestServletAdapterTest {
     @Test
     public void testQueryParams() throws Exception {
         assertThat(formUrlEncodedHttpRequest.query(), is("a=1&b=3&a=2"));
-        assertThat(formUrlEncodedHttpRequest.queryParam("a"), is("1"));
+        assertThat(formUrlEncodedHttpRequest.queryParam("a").get(), is("1"));
         List<String> value = Lists.newArrayList("1", "2");
         assertThat(formUrlEncodedHttpRequest.queryParams("a"), is(value));
-        assertThat(formUrlEncodedHttpRequest.queryParam("b"), is("3"));
+        assertThat(formUrlEncodedHttpRequest.queryParam("b").get(), is("3"));
     }
 
     @Test
     public void testHeaders() throws Exception {
-        assertThat(formUrlEncodedHttpRequest.header("Cookie"), is("foo=bar; meh=blah"));
-        assertThat(formUrlEncodedHttpRequest.header("Accept"), is("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"));
-        assertThat(formUrlEncodedHttpRequest.header("Connection"), is("keep-alive"));
-        assertThat(formUrlEncodedHttpRequest.header("User-Agent"), is("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36"));
+        assertThat(formUrlEncodedHttpRequest.header("Cookie").get(), is("foo=bar; meh=blah"));
+        assertThat(formUrlEncodedHttpRequest.header("Accept")
+            .get(), is("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"));
+        assertThat(formUrlEncodedHttpRequest.header("Connection").get(), is("keep-alive"));
+        assertThat(formUrlEncodedHttpRequest.header("User-Agent")
+            .get(), is("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36"));
     }
 
     @Test
     public void testCookies() throws Exception {
-        assertThat(formUrlEncodedHttpRequest.cookie("foo").value(), is("bar"));
-        assertThat(formUrlEncodedHttpRequest.cookie("meh").value(), is("blah"));
+        assertThat(formUrlEncodedHttpRequest.cookie("foo").get().value(), is("bar"));
+        assertThat(formUrlEncodedHttpRequest.cookie("meh").get().value(), is("blah"));
         assertThat(formUrlEncodedHttpRequest.cookies().size(), is(2));
     }
 

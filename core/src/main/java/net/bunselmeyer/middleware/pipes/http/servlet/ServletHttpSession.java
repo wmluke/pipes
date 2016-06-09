@@ -22,7 +22,7 @@ public class ServletHttpSession implements HttpSession {
     @SuppressWarnings("unchecked")
     @Override
     public <T> Optional<T> get(String name) {
-        return Optional.of((T) getServletSession().getAttribute(name));
+        return Optional.ofNullable((T) getServletSession().getAttribute(name));
     }
 
     @Override

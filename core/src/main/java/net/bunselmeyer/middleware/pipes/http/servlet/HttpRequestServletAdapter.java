@@ -10,10 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class HttpRequestServletAdapter extends AbstractHttpRequest {
 
@@ -76,9 +73,14 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
     }
 
     @Override
-    public HttpSession session(boolean start) {
-        httpRequest.getSession(start);
-        return new ServletHttpSession(httpRequest);
+    public Optional<HttpSession> session(boolean create) {
+        httpRequest.getSession(create);
+        return Optional.of(new ServletHttpSession(httpRequest));
+    }
+
+    @Override
+    public Optional<HttpSession> session() {
+        return session(true);
     }
 
     @Override
@@ -87,13 +89,9 @@ public class HttpRequestServletAdapter extends AbstractHttpRequest {
     }
 
     @Override
-    public String routeParam(String name) {
-        return routeParams().get(name);
-    }
-
-    @Override
-    public long dateHeader(String name) {
-        return httpRequest.getDateHeader(name);
+    public OptionalLong dateHeader(String name) {
+        long ts = httpRequest.getDateHeader(name);
+        return ts > -1 ? OptionalLong.of(ts) : OptionalLong.empty();
     }
 
     @SuppressWarnings("unchecked")

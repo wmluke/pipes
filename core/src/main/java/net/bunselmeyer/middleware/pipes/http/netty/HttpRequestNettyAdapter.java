@@ -8,11 +8,11 @@ import io.netty.handler.codec.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.AbstractHttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpSession;
 import net.bunselmeyer.middleware.util.HttpUtil;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class HttpRequestNettyAdapter extends AbstractHttpRequest {
 
@@ -56,8 +56,13 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
     }
 
     @Override
-    public HttpSession session(boolean start) {
-        throw new NotImplementedException();
+    public Optional<HttpSession> session(boolean create) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<HttpSession> session() {
+        return Optional.empty();
     }
 
     @Override
@@ -68,11 +73,6 @@ public class HttpRequestNettyAdapter extends AbstractHttpRequest {
     @Override
     public Map<String, String> routeParams() {
         return routeParams;
-    }
-
-    @Override
-    public String routeParam(String name) {
-        return routeParams.get(name);
     }
 
     private Map<String, String> buildHeaders(HttpRequest httpRequest) {

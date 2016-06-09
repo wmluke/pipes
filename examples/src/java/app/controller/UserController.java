@@ -56,7 +56,7 @@ public class UserController extends RestfullController {
     public void read(RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
         pipeline
             .pipe(persistence.transactional(true, (req, res) -> {
-                User model = userRepository.read(Integer.parseInt(req.routeParam("id")));
+                User model = userRepository.read(req.routeParam("id").asInteger().orElse(-1));
                 if (model == null) {
                     throw new RecordNotFoundException();
                 }
@@ -82,7 +82,7 @@ public class UserController extends RestfullController {
             .pipe(fromJson(modelType))
             .pipe(validateMemo())
             .pipe(persistence.transactional(false, (body, req, res) -> {
-                User model = userRepository.read(Integer.parseInt(req.routeParam("id")));
+                User model = userRepository.read(req.routeParam("id").asInteger().orElse(-1));
                 if (model == null) {
                     throw new RecordNotFoundException();
                 }
@@ -100,7 +100,7 @@ public class UserController extends RestfullController {
     public void delete(RoutableApp.MiddlewarePipeline<HttpRequest, HttpResponse> pipeline) {
         pipeline
             .pipe(persistence.transactional(false, (req, res) -> {
-                User model = userRepository.read(Integer.parseInt(req.routeParam("id")));
+                User model = userRepository.read(req.routeParam("id").asInteger().orElse(-1));
                 if (model == null) {
                     throw new RecordNotFoundException();
                 }

@@ -17,6 +17,7 @@ import net.bunselmeyer.middleware.pipes.AbstractController;
 import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
+import net.bunselmeyer.middleware.pipes.middleware.RequestBody;
 import net.bunselmeyer.middleware.pipes.persistence.Persistence;
 import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
@@ -52,8 +53,9 @@ public class ExampleApp extends AbstractController {
 
         // Start a session
         app.use((req, res) -> {
-            if (req.delegate() != null)
-                req.session(true);
+            req.session(true).ifPresent((session) -> {
+                session.put("abc", "def");
+            });
         });
 
         app.use((req, res) -> {
@@ -103,9 +105,9 @@ public class ExampleApp extends AbstractController {
             });
 
         app.get("/locations/{country}/{state}/{city}").pipe((req, res) -> {
-            String country = req.routeParam("country");
-            String state = req.routeParam("state");
-            String city = req.routeParam("city");
+            String country = req.routeParam("country").orElse("");
+            String state = req.routeParam("state").orElse("");
+            String city = req.routeParam("city").orElse("");
             res.send(200, "<h1>" + Joiner.on(", ").join(country, state, city) + "</h1>");
         });
 
@@ -124,6 +126,20 @@ public class ExampleApp extends AbstractController {
             JsonNode jsonNode = req.body().fromJson();
             res.toJson(200, jsonNode.toString());
         });
+
+        app.post("/bar")
+            .pipe(RequestBody.fromJson(Map.class))
+            .pipe((map, req, res) -> {
+                Integer status = req.session()
+                    .map((session) -> {
+                        session.put("bar", map);
+                        return 201;
+                    })
+                    .orElse(400);
+                res.status(status);
+                return null;
+            });
+
     }
 
     @Override

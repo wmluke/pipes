@@ -3,11 +3,14 @@ package net.bunselmeyer.middleware.pipes.http;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.handler.codec.http.Cookie;
+import net.bunselmeyer.middleware.util.OptionalString;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 public interface HttpRequest {
 
@@ -25,27 +28,29 @@ public interface HttpRequest {
 
     Map<String, String> headers();
 
-    String header(String name);
+    OptionalString header(String name);
 
-    long dateHeader(String name);
+    OptionalLong dateHeader(String name);
 
     Map<String, Cookie> cookies();
 
-    Cookie cookie(String name);
+    Optional<Cookie> cookie(String name);
 
     Map<String, String> routeParams();
 
-    String routeParam(String name);
+    OptionalString routeParam(String name);
 
     Map<String, List<String>> queryParams();
 
     List<String> queryParams(String name);
 
-    String queryParam(String name);
+    OptionalString queryParam(String name);
 
     Body body();
 
-    HttpSession session(boolean start);
+    Optional<HttpSession> session(boolean create);
+
+    Optional<HttpSession> session();
 
     HttpServletRequest delegate();
 

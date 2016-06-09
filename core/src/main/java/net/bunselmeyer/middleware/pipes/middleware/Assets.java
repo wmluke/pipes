@@ -139,8 +139,8 @@ public class Assets implements Middleware.StandardMiddleware1<HttpRequest, HttpR
     }
 
     private boolean isCachedClientSide(HttpRequest req, CachedAsset cachedAsset) {
-        return cachedAsset.getETag().equals(req.header(HttpHeaders.IF_NONE_MATCH)) ||
-            (req.dateHeader(HttpHeaders.IF_MODIFIED_SINCE) >= cachedAsset.getLastModifiedTime());
+        return req.header(HttpHeaders.IF_NONE_MATCH).equalTo(cachedAsset.getETag()) ||
+            (req.dateHeader(HttpHeaders.IF_MODIFIED_SINCE).orElse(-1L) >= cachedAsset.getLastModifiedTime());
     }
 
     private static class CachedAsset {

@@ -2,6 +2,7 @@ package net.bunselmeyer.middleware.pipes.http;
 
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import net.bunselmeyer.middleware.util.OptionalString;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -60,9 +61,9 @@ public abstract class AbstractHttpRequest implements HttpRequest {
     }
 
     @Override
-    public String queryParam(String name) {
+    public OptionalString queryParam(String name) {
         Iterator<String> iterator = queryParams(name).iterator();
-        return iterator.hasNext() ? iterator.next() : null;
+        return iterator.hasNext() ? optionalOf(iterator.next()) : OptionalString.empty();
     }
 
     @Override
@@ -71,21 +72,26 @@ public abstract class AbstractHttpRequest implements HttpRequest {
     }
 
     @Override
-    public String header(String name) {
-        return headers().get(name);
+    public OptionalString header(String name) {
+        return optionalOf(headers().get(name));
     }
 
     @Override
-    public long dateHeader(String name) {
-        String header = header(name);
-        if (StringUtils.isBlank(header))
-            return -1;
+    public OptionalString routeParam(String name) {
+        return optionalOf(routeParams().get(name));
+    }
 
-        try {
-            return DateUtils.parseDate(header, dateReceiveFmt).getTime();
-        } catch (ParseException e) {
-            return -1;
-        }
+    @Override
+    public OptionalLong dateHeader(String name) {
+        return header(name)
+            .map((dateHeader) -> {
+                try {
+                    return OptionalLong.of(DateUtils.parseDate(dateHeader, dateReceiveFmt).getTime());
+                } catch (ParseException e) {
+                    return null;
+                }
+            })
+            .orElse(OptionalLong.empty());
     }
 
     @Override
@@ -94,7 +100,11 @@ public abstract class AbstractHttpRequest implements HttpRequest {
     }
 
     @Override
-    public Cookie cookie(String name) {
-        return cookies().get(name);
+    public Optional<Cookie> cookie(String name) {
+        return Optional.ofNullable(cookies().get(name));
+    }
+
+    private static OptionalString optionalOf(String value) {
+        return OptionalString.ofNullable(value);
     }
 }
