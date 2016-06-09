@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+@SuppressWarnings("WeakerAccess")
 public final class OptionalString implements Serializable {
 
     private static OptionalString EMPTY = new OptionalString();
@@ -22,11 +23,12 @@ public final class OptionalString implements Serializable {
         return EMPTY;
     }
 
-    public static OptionalString of(String value) {
+
+    public static OptionalString of(CharSequence value) {
         return new OptionalString(value);
     }
 
-    public static OptionalString ofNullable(String value) {
+    public static OptionalString ofNullable(CharSequence value) {
         return value == null ? EMPTY : new OptionalString(value);
     }
 
@@ -34,8 +36,8 @@ public final class OptionalString implements Serializable {
         this.value = null;
     }
 
-    private OptionalString(String value) {
-        this.value = Objects.requireNonNull(value, "OptionalString value cannot be null");
+    private OptionalString(CharSequence value) {
+        this.value = Objects.requireNonNull(value.toString(), "OptionalString value cannot be null");
     }
 
     private Optional<String> optional() {
@@ -66,14 +68,37 @@ public final class OptionalString implements Serializable {
             .orElse(OptionalLong.empty());
     }
 
+    /**
+     * Returns an Optional<Boolean> that can be empty
+     */
     public Optional<Boolean> asBoolean() {
         return trimToNotPresent()
             .map(BooleanUtils::toBooleanObject);
     }
 
+    /**
+     * Returns an Optional<Boolean> that is not empty.
+     * Null and blank values are false.
+     */
+    public Optional<Boolean> asBool() {
+        /**
+         * Would be nice to just do this...
+         * ```
+         * optional()
+         *   .map(StringUtils::trimToNull) 
+         *   .map(BooleanUtils::toBoolean)
+         * ```  
+         * https://developer.atlassian.com/blog/2015/08/optional-broken/  
+         */
+        return value == null ? Optional.of(false) : optional()
+            .map(StringUtils::trimToEmpty)
+            .map(BooleanUtils::toBoolean);
+    }
+
     public <U> Optional<U> map(Function<? super String, ? extends U> mapper) {
         return optional().map(mapper);
     }
+    
 
     public String orElse(String other) {
         return optional().orElse(other);
@@ -102,6 +127,7 @@ public final class OptionalString implements Serializable {
         return optional().orElseGet(other);
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public String get() {
         return optional().get();
     }
@@ -120,6 +146,10 @@ public final class OptionalString implements Serializable {
 
     public OptionalString trimToNotPresent() {
         return OptionalString.ofNullable(StringUtils.trimToNull(value));
+    }
+
+    public OptionalString trim() {
+        return OptionalString.ofNullable(StringUtils.trimToEmpty(value));
     }
 
     @Override

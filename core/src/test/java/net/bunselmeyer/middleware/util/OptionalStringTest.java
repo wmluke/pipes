@@ -77,6 +77,23 @@ public class OptionalStringTest {
     }
 
     @Test
+    public void asBool() throws Exception {
+        assertEquals(false, OptionalString.of("false").asBool().get());
+        assertEquals(false, OptionalString.of("no").asBool().get());
+        assertEquals(false, OptionalString.of("off").asBool().get());
+
+        assertEquals(true, OptionalString.of("  true   ").asBool().get());
+        assertEquals(true, OptionalString.of("true").asBool().get());
+        assertEquals(true, OptionalString.of("yes").asBool().get());
+        assertEquals(true, OptionalString.of("on").asBool().get());
+
+        assertEquals(false, OptionalString.of("xyz").asBool().get());
+        assertEquals(false, OptionalString.of("").asBool().get());
+        assertEquals(false, OptionalString.of("   ").asBool().get());
+        assertEquals(false, OptionalString.ofNullable(null).asBool().get());
+    }
+
+    @Test
     public void filter() throws Exception {
         assertEquals(true, OptionalString.of("abc").filter(StringUtils::isNotBlank).equalTo("abc"));
         assertEquals(false, OptionalString.of("    ").filter(StringUtils::isNotBlank).isPresent());
