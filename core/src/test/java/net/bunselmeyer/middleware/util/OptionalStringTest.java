@@ -1,11 +1,31 @@
 package net.bunselmeyer.middleware.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 public class OptionalStringTest {
+
+
+    @Test
+    public void equalTo() throws Exception {
+        assertEquals(true, OptionalString.of("foo").equalTo("foo"));
+        assertEquals(true, OptionalString.of("foo").equalToIgnoreCase("FOO"));
+        assertEquals(true, OptionalString.of("  foo  ").trimToNotPresent().equalTo("foo"));
+
+        assertEquals(false, OptionalString.of(" foo ").equalTo("foo"));
+        assertEquals(false, OptionalString.of("foo").equalTo("bar"));
+    }
+
+    @Test
+    public void equals() throws Exception {
+        assertEquals(true, OptionalString.of("foo").equals(OptionalString.of("foo")));
+        assertEquals(true, OptionalString.ofNullable(null).equals(OptionalString.empty()));
+        assertEquals(false, OptionalString.of("foo").equals("foo"));
+        assertEquals(false, OptionalString.empty().equals(null));
+    }
 
     @Test
     public void asDouble() throws Exception {
@@ -56,4 +76,23 @@ public class OptionalStringTest {
         assertEquals(false, OptionalString.ofNullable(null).asBoolean().isPresent());
     }
 
+    @Test
+    public void filter() throws Exception {
+        assertEquals(true, OptionalString.of("abc").filter(StringUtils::isNotBlank).equalTo("abc"));
+        assertEquals(false, OptionalString.of("    ").filter(StringUtils::isNotBlank).isPresent());
+    }
+
+    @Test
+    public void isPresent() throws Exception {
+        assertEquals(true, OptionalString.of(" abc  ").isPresent());
+        assertEquals(true, OptionalString.of("   ").isPresent());
+        assertEquals(false, OptionalString.ofNullable(null).isPresent());
+        assertEquals(false, OptionalString.of("   ").trimToNotPresent().isPresent());
+    }
+
+    @Test
+    public void testToString() throws Exception {
+        assertEquals("OptionalString[foo]", OptionalString.of("foo").toString());
+        assertEquals("OptionalString.empty", OptionalString.empty().toString());
+    }
 }

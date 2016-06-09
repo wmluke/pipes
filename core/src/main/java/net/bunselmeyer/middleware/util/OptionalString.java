@@ -43,7 +43,7 @@ public final class OptionalString implements Serializable {
     }
 
     public OptionalDouble asDouble() {
-        return trim()
+        return trimToNotPresent()
             .filter(NumberUtils::isNumber)
             .map(Double::parseDouble)
             .map(OptionalDouble::of)
@@ -51,7 +51,7 @@ public final class OptionalString implements Serializable {
     }
 
     public OptionalInt asInteger() {
-        return trim()
+        return trimToNotPresent()
             .filter(NumberUtils::isDigits)
             .map(Integer::parseInt)
             .map(OptionalInt::of)
@@ -59,7 +59,7 @@ public final class OptionalString implements Serializable {
     }
 
     public OptionalLong asLong() {
-        return trim()
+        return trimToNotPresent()
             .filter(NumberUtils::isDigits)
             .map(Long::parseLong)
             .map(OptionalLong::of)
@@ -67,7 +67,7 @@ public final class OptionalString implements Serializable {
     }
 
     public Optional<Boolean> asBoolean() {
-        return trim()
+        return trimToNotPresent()
             .map(BooleanUtils::toBooleanObject);
     }
 
@@ -118,7 +118,7 @@ public final class OptionalString implements Serializable {
         return StringUtils.equalsIgnoreCase(value, other);
     }
 
-    public OptionalString trim() {
+    public OptionalString trimToNotPresent() {
         return OptionalString.ofNullable(StringUtils.trimToNull(value));
     }
 
