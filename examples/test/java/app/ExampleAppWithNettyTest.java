@@ -1,16 +1,16 @@
 package app;
 
 import app.models.User;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.internal.mapper.ObjectMapperType;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.mapper.ObjectMapperType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.jayway.restassured.RestAssured.*;
+import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 public class ExampleAppWithNettyTest {

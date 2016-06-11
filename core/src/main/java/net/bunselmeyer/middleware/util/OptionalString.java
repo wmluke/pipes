@@ -6,7 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -40,32 +41,26 @@ public final class OptionalString implements Serializable {
         this.value = Objects.requireNonNull(value.toString(), "OptionalString value cannot be null");
     }
 
-    private Optional<String> optional() {
+    public Optional<String> asOptional() {
         return Optional.ofNullable(value);
     }
 
-    public OptionalDouble asDouble() {
+    public Optional<Double> asDouble() {
         return trimToNotPresent()
             .filter(NumberUtils::isNumber)
-            .map(Double::parseDouble)
-            .map(OptionalDouble::of)
-            .orElse(OptionalDouble.empty());
+            .map(Double::parseDouble);
     }
 
-    public OptionalInt asInteger() {
+    public Optional<Integer> asInteger() {
         return trimToNotPresent()
             .filter(NumberUtils::isDigits)
-            .map(Integer::parseInt)
-            .map(OptionalInt::of)
-            .orElse(OptionalInt.empty());
+            .map(Integer::parseInt);
     }
 
-    public OptionalLong asLong() {
+    public Optional<Long> asLong() {
         return trimToNotPresent()
             .filter(NumberUtils::isDigits)
-            .map(Long::parseLong)
-            .map(OptionalLong::of)
-            .orElse(OptionalLong.empty());
+            .map(Long::parseLong);
     }
 
     /**
@@ -90,50 +85,50 @@ public final class OptionalString implements Serializable {
          * ```  
          * https://developer.atlassian.com/blog/2015/08/optional-broken/  
          */
-        return value == null ? Optional.of(false) : optional()
+        return value == null ? Optional.of(false) : asOptional()
             .map(StringUtils::trimToEmpty)
             .map(BooleanUtils::toBoolean);
     }
 
     public <U> Optional<U> map(Function<? super String, ? extends U> mapper) {
-        return optional().map(mapper);
+        return asOptional().map(mapper);
     }
-    
+
 
     public String orElse(String other) {
-        return optional().orElse(other);
+        return asOptional().orElse(other);
     }
 
     public <X extends Throwable> String orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
-        return optional().orElseThrow(exceptionSupplier);
+        return asOptional().orElseThrow(exceptionSupplier);
     }
 
     public OptionalString filter(Predicate<? super String> predicate) {
-        return optional()
+        return asOptional()
             .filter(predicate)
             .map(OptionalString::of)
             .orElse(OptionalString.empty());
     }
 
     public void ifPresent(Consumer<? super String> consumer) {
-        optional().ifPresent(consumer);
+        asOptional().ifPresent(consumer);
     }
 
     public <U> Optional<U> flatMap(Function<? super String, Optional<U>> mapper) {
-        return optional().flatMap(mapper);
+        return asOptional().flatMap(mapper);
     }
 
     public String orElseGet(Supplier<? extends String> other) {
-        return optional().orElseGet(other);
+        return asOptional().orElseGet(other);
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     public String get() {
-        return optional().get();
+        return asOptional().get();
     }
 
     public boolean isPresent() {
-        return optional().isPresent();
+        return asOptional().isPresent();
     }
 
     public boolean equalTo(String other) {

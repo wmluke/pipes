@@ -1,16 +1,18 @@
 package app;
 
 import app.models.User;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.internal.mapper.ObjectMapperType;
+import io.restassured.RestAssured;
+import io.restassured.config.SessionConfig;
+import io.restassured.filter.session.SessionFilter;
+import io.restassured.http.ContentType;
+import io.restassured.mapper.ObjectMapperType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.jayway.restassured.RestAssured.*;
+import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 public class ExampleAppWithJettyTest {
@@ -19,6 +21,8 @@ public class ExampleAppWithJettyTest {
     @BeforeClass
     public static void startApp() {
 
+        RestAssured.config = RestAssured.config().sessionConfig(new SessionConfig().sessionIdName("APPSESSIONID"));
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.port = 9090;
 
         Thread thread = new Thread(() -> {
@@ -35,7 +39,6 @@ public class ExampleAppWithJettyTest {
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-
 
     }
 
@@ -124,6 +127,33 @@ public class ExampleAppWithJettyTest {
             .statusCode(200)
             .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("{\"aaa\":\"111\",\"bbb\":\"222\"}"));
+    }
+
+    @Test
+    public void testSession() throws Exception {
+        SessionFilter sessionFilter = new SessionFilter();
+
+        HashMap<Object, Object> data = new HashMap<>();
+        data.put("abc", 123);
+        data.put("def", 456);
+
+        given()
+            .filter(sessionFilter)
+            .body(data)
+            .put("/session/foo")
+            .then()
+            .statusCode(201)
+            .cookie("APPSESSIONID", not(isEmptyOrNullString()));
+
+        given()
+            .filter(sessionFilter)
+            .get("/session/foo")
+            .then()
+            .statusCode(200)
+            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
+            .header("Content-type", is("application/json;charset=UTF-8"))
+            .body("abc", is(123))
+            .body("def", is(456));
     }
 
     @Test

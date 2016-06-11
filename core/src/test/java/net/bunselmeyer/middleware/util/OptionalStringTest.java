@@ -29,8 +29,8 @@ public class OptionalStringTest {
 
     @Test
     public void asDouble() throws Exception {
-        assertEquals(12.34, OptionalString.of("12.34").asDouble().getAsDouble(), 0.0001);
-        assertEquals(12.34, OptionalString.of("  12.34   ").asDouble().getAsDouble(), 0.0001);
+        assertEquals(12.34, OptionalString.of("12.34").asDouble().get(), 0.0001);
+        assertEquals(12.34, OptionalString.of("  12.34   ").asDouble().get(), 0.0001);
         assertEquals(false, OptionalString.of("xyz").asDouble().isPresent());
         assertEquals(false, OptionalString.of("").asDouble().isPresent());
         assertEquals(false, OptionalString.of("   ").asDouble().isPresent());
@@ -39,8 +39,8 @@ public class OptionalStringTest {
 
     @Test
     public void asInteger() throws Exception {
-        assertEquals(12, OptionalString.of("12").asInteger().getAsInt());
-        assertEquals(12, OptionalString.of("  12   ").asInteger().getAsInt());
+        assertEquals(12, OptionalString.of("12").asInteger().get().intValue());
+        assertEquals(12, OptionalString.of("  12   ").asInteger().get().intValue());
         assertEquals(false, OptionalString.of("12.34").asInteger().isPresent());
         assertEquals(false, OptionalString.of("xyz").asInteger().isPresent());
         assertEquals(false, OptionalString.of("").asInteger().isPresent());
@@ -50,8 +50,8 @@ public class OptionalStringTest {
 
     @Test
     public void asLong() throws Exception {
-        assertEquals(12, OptionalString.of("12").asLong().getAsLong());
-        assertEquals(12, OptionalString.of("  12   ").asLong().getAsLong());
+        assertEquals(12, OptionalString.of("12").asLong().get().intValue());
+        assertEquals(12, OptionalString.of("  12   ").asLong().get().intValue());
         assertEquals(false, OptionalString.of("12.34").asLong().isPresent());
         assertEquals(false, OptionalString.of("xyz").asLong().isPresent());
         assertEquals(false, OptionalString.of("").asLong().isPresent());

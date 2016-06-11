@@ -6,6 +6,7 @@ import app.configure.JacksonJsonConfig;
 import app.configure.LogbackConfig;
 import app.configure.SessionManagerConfig;
 import app.controller.UserController;
+import app.exceptions.RecordNotFoundException;
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +18,10 @@ import net.bunselmeyer.middleware.pipes.AbstractController;
 import net.bunselmeyer.middleware.pipes.Pipes;
 import net.bunselmeyer.middleware.pipes.http.HttpRequest;
 import net.bunselmeyer.middleware.pipes.http.HttpResponse;
+import net.bunselmeyer.middleware.pipes.http.HttpSession;
 import net.bunselmeyer.middleware.pipes.middleware.RequestBody;
 import net.bunselmeyer.middleware.pipes.persistence.Persistence;
+import net.bunselmeyer.middleware.util.Optionals;
 import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.slf4j.Logger;
@@ -127,17 +130,31 @@ public class ExampleApp extends AbstractController {
             res.toJson(200, jsonNode.toString());
         });
 
-        app.post("/bar")
+        app.put("/session/{id}")
             .pipe(RequestBody.fromJson(Map.class))
-            .pipe((map, req, res) -> {
-                Integer status = req.session()
-                    .map((session) -> {
-                        session.put("bar", map);
+            .pipe((data, req, res) -> {
+                res.send(Optionals
+                    .map(req.session(), req.routeParam("id").asOptional(), (session, id) -> {
+                        session.put(id, data);
                         return 201;
                     })
-                    .orElse(400);
-                res.status(status);
+                    .orElse(400));
                 return null;
+            });
+
+        app.get("/session/{id}")
+            .pipe((req, res) -> {
+                // Explicit explicit type parameter, `<RecordNotFoundException>`, needed to fix javac bug
+                // compilation error: `unreported exception X; must be caught or declared to be thrown`
+                // https://gist.github.com/rompetroll/667bf46ac0168a92497a
+                // https://bugs.openjdk.java.net/browse/JDK-8056983
+                return Optionals
+                    .map(req.session(), req.routeParam("id").asOptional(), HttpSession::get)
+                    .<RecordNotFoundException>orElseThrow(RecordNotFoundException::new)
+                    .get();
+            })
+            .pipe((req, res, next) -> {
+                res.toJson(200, next.memo());
             });
 
     }
