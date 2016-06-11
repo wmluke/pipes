@@ -151,7 +151,7 @@ public class ExampleApp extends AbstractController {
                 return Optionals
                     .map(req.session(), req.routeParam("id").asOptional(), HttpSession::get)
                     .<RecordNotFoundException>orElseThrow(RecordNotFoundException::new)
-                    .get();
+                    .<RecordNotFoundException>orElseThrow(RecordNotFoundException::new);
             })
             .pipe((req, res, next) -> {
                 res.toJson(200, next.memo());
@@ -161,6 +161,10 @@ public class ExampleApp extends AbstractController {
 
     @Override
     public void onError(Pipes app) {
+
+        app.onError(RecordNotFoundException.class, (e, req, res, next) -> {
+            res.send(404, "Record not found");
+        });
 
         app.onError((err, req, res, next) -> {
             if (err != null) {

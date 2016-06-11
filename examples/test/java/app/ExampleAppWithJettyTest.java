@@ -150,10 +150,16 @@ public class ExampleAppWithJettyTest {
             .get("/session/foo")
             .then()
             .statusCode(200)
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
+            //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .header("Content-type", is("application/json;charset=UTF-8"))
             .body("abc", is(123))
             .body("def", is(456));
+
+        given()
+            .filter(sessionFilter)
+            .get("/session/bar")
+            .then()
+            .statusCode(404);
     }
 
     @Test
