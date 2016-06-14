@@ -1,6 +1,7 @@
 package app;
 
 import app.models.User;
+import com.googlecode.junittoolbox.ParallelRunner;
 import io.restassured.RestAssured;
 import io.restassured.config.SessionConfig;
 import io.restassured.filter.session.SessionFilter;
@@ -8,6 +9,7 @@ import io.restassured.http.ContentType;
 import io.restassured.mapper.ObjectMapperType;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Map;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
+@RunWith(ParallelRunner.class)
 public class ExampleAppWithJettyTest {
 
 

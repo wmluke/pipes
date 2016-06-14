@@ -113,6 +113,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.googlecode.junit-toolbox</groupId>
+            <artifactId>junit-toolbox</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
@@ -173,33 +179,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!--<plugin>-->
-            <!--<artifactId>maven-failsafe-plugin</artifactId>-->
-            <!--<version>2.16</version>-->
-            <!--<configuration>-->
-            <!--<parallel>methods</parallel>-->
-            <!--<threadCount>10</threadCount>-->
-            <!--<systemPropertyVariables>-->
-            <!--<test.e2e.port>18181</test.e2e.port>-->
-            <!--</systemPropertyVariables>-->
-            <!--</configuration>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<goals>-->
-            <!--<goal>integration-test</goal>-->
-            <!--<goal>verify</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--<dependencies>-->
-            <!--<dependency>-->
-            <!--<groupId>org.apache.maven.surefire</groupId>-->
-            <!--<artifactId>surefire-junit47</artifactId>-->
-            <!--<version>2.16</version>-->
-            <!--</dependency>-->
-            <!--</dependencies>-->
-            <!--</plugin>-->
 
         </plugins>
     </build>

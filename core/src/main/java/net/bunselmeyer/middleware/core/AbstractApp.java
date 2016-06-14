@@ -156,8 +156,7 @@ public abstract class AbstractApp<Q, P, A extends AbstractApp<Q, P, ?>> implemen
             }
             next1.run(memo);
         });
-        Iterator<Middleware<Q, P>> stack = middlewares.iterator();
-        Next n = buildStack(req, res, stack);
+        Next n = buildStack(req, res, Collections.unmodifiableList(new ArrayList<>(middlewares)).iterator());
         n.run(next != null ? next.memo() : null);
     }
 

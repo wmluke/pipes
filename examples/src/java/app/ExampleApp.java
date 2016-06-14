@@ -41,6 +41,7 @@ public class ExampleApp extends AbstractController {
 
     public ExampleApp() throws IllegalAccessException, InstantiationException {
         super();
+        initialize();
     }
 
     @Override
