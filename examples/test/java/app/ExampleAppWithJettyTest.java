@@ -50,28 +50,24 @@ public class ExampleAppWithJettyTest {
             .header("Content-type", is("text/html; charset=UTF-8"))
             .cookie("foo", is("bar"))
             .cookie("foo", is("bar"))
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("<h1>hello world!</h1>"));
 
         get("/restricted/foo").then()
             .statusCode(401)
             .header("Content-type", is("text/html; charset=UTF-8"))
             .header("Cookie", nullValue())
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("Restricted Area"));
 
         get("/locations/usa/ca/san-francisco").then()
             .statusCode(200)
             .header("Content-type", is("text/html; charset=UTF-8"))
             .cookie("foo", is("bar"))
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("<h1>usa, ca, san-francisco</h1>"));
 
         get("/error").then()
             .statusCode(400)
             .header("Content-type", is("text/html; charset=UTF-8"))
             .cookie("foo", is("bar"))
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("Handled error: Fail!"));
 
         get("/stream").then().assertThat()
@@ -86,13 +82,11 @@ public class ExampleAppWithJettyTest {
         get("/assets").then().contentType(ContentType.HTML).assertThat()
             .statusCode(200)
             .header("Content-type", is("text/html; charset=UTF-8"))
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("<h1>welcome</h1>"));
 
         get("/assets/main.css").then().assertThat()
             .statusCode(200)
             .header("Content-type", is("text/css;charset=UTF-8"))
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("body {\n" +
                 "    background-color: cornflowerblue;\n" +
                 "}"));
@@ -100,7 +94,6 @@ public class ExampleAppWithJettyTest {
         get("/assets/styles.css").then().assertThat()
             .statusCode(200)
             .header("Content-type", is("text/css;charset=UTF-8"))
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("body {\n" +
                 "    color: yellow;\n" +
                 "}"));
@@ -114,7 +107,6 @@ public class ExampleAppWithJettyTest {
             .post("/")
             .then()
             .statusCode(200)
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("<p>111, 222</p>"));
 
         Map<String, Object> body = new HashMap<>();
@@ -125,7 +117,6 @@ public class ExampleAppWithJettyTest {
             .post("/foo")
             .then()
             .statusCode(200)
-            .cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .body(containsString("{\"aaa\":\"111\",\"bbb\":\"222\"}"));
     }
 
@@ -139,18 +130,33 @@ public class ExampleAppWithJettyTest {
 
         given()
             .filter(sessionFilter)
-            .body(data)
-            .put("/session/foo")
+            .formParam("username", "jon.doe@foo.com")
+            .formParam("password", "5678")
+            .post("/session")
+            .then()
+            .statusCode(400);
+
+        given()
+            .filter(sessionFilter)
+            .formParam("username", "jon.doe@foo.com")
+            .formParam("password", "1234Password")
+            .post("/session")
             .then()
             .statusCode(201)
             .cookie("APPSESSIONID", not(isEmptyOrNullString()));
 
         given()
             .filter(sessionFilter)
+            .body(data)
+            .put("/session/foo")
+            .then()
+            .statusCode(201);
+
+        given()
+            .filter(sessionFilter)
             .get("/session/foo")
             .then()
             .statusCode(200)
-            //.cookie("APPSESSIONID", not(isEmptyOrNullString()))
             .header("Content-type", is("application/json;charset=UTF-8"))
             .body("abc", is(123))
             .body("def", is(456));

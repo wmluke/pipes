@@ -7,6 +7,7 @@ import app.configure.LogbackConfig;
 import app.configure.SessionManagerConfig;
 import app.controller.UserController;
 import app.exceptions.RecordNotFoundException;
+import app.exceptions.UnauthenticatedException;
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,13 +54,6 @@ public class ExampleApp extends AbstractController {
     @Override
     public void middleware(MiddlewareApp<HttpRequest, HttpResponse, Pipes> app) {
         app.use(logger(logger, (opts) -> opts.logHeaders = true));
-
-        // Start a session
-        app.use((req, res) -> {
-            req.session(true).ifPresent((session) -> {
-                session.put("abc", "def");
-            });
-        });
 
         app.use((req, res) -> {
             res.charset("UTF-8");
@@ -129,6 +123,19 @@ public class ExampleApp extends AbstractController {
             JsonNode jsonNode = req.body().fromJson();
             res.toJson(200, jsonNode.toString());
         });
+
+        app.post("/session")
+            .pipe((req, res, next) -> {
+                if (!req.formParam("username").equalTo("jon.doe@foo.com") ||
+                    !req.formParam("password").equalTo("1234Password")) {
+                    throw new UnauthenticatedException("Failed to authenticate user");
+                }
+                req.session(true).ifPresent((session) -> {
+                    session.put("user", req.formParam("username").get());
+                });
+                res.send(201);
+            });
+
 
         app.put("/session/{id}")
             .pipe(RequestBody.fromJson(Map.class))
